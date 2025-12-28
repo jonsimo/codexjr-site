@@ -6,188 +6,160 @@
   <title>Codex Jr Updater</title>
 
   <style>
-    @font-face {
-      font-family: "PressStart2P";
-      src: url("fonts/PressStart2P.ttf") format("truetype");
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
+    @font-face{
+      font-family:"PressStart2P";
+      src:url("fonts/PressStart2P.ttf") format("truetype");
+      font-weight:400;
+      font-style:normal;
+      font-display:swap;
     }
-    @font-face {
-      font-family: "BitHud";
-      src: url("fonts/8-bit-hud.ttf") format("truetype");
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    :root { --jr-yellow: #ffd54a; }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      background: #000;
-      overflow: hidden;
+    @font-face{
+      font-family:"BitHud";
+      src:url("fonts/8-bit-hud.ttf") format("truetype");
+      font-weight:400;
+      font-style:normal;
+      font-display:swap;
     }
 
-    /* Fullscreen background */
-    body {
-      background-image: url("assets/codexjr-hero-1000.webp");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-    @media (min-width: 900px) {
-      body { background-image: url("assets/codexjr-hero-2000.webp"); }
+    :root{ --jr-yellow:#ffd54a; }
+
+    html,body{
+      width:100%;
+      height:100%;
+      margin:0;
+      background:#000;
+      overflow:hidden;
     }
 
-    .vignette {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(
-        ellipse at center,
-        rgba(0,0,0,0.00) 28%,
-        rgba(0,0,0,0.62) 100%
-      );
-      pointer-events: none;
-      z-index: 1;
+    /* Fullscreen background (swap filenames if yours differ) */
+    body{
+      background-image:url("assets/codexjr-hero-1000.webp");
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+    }
+    @media (min-width:900px){
+      body{ background-image:url("assets/codexjr-hero-2000.webp"); }
+    }
+
+    .vignette{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+      background:radial-gradient(ellipse at center, rgba(0,0,0,0.00) 30%, rgba(0,0,0,0.62) 100%);
     }
 
     /* ---------------- Download Button ---------------- */
-    .dl-wrap {
-      position: fixed;
-      left: 50%;
-      top: 68%;
-      transform: translate(-50%, -50%);
-      cursor: pointer;
-      z-index: 6;
-      -webkit-tap-highlight-color: transparent;
+    .dl-wrap{
+      position:fixed;
+      left:50%;
+      top:68%;
+      transform:translate(-50%,-50%);
+      z-index:6;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .dl-wrap img{
+      width:clamp(240px, 32vw, 460px);
+      height:auto;
+      image-rendering:pixelated;
+      filter:drop-shadow(0 12px 28px rgba(0,0,0,0.60));
+      transition:transform 120ms cubic-bezier(.2,.8,.2,1), filter 120ms cubic-bezier(.2,.8,.2,1);
+    }
+    @keyframes glowPulse{
+      0%   { filter:drop-shadow(0 0 8px rgba(255,213,74,0.55)) drop-shadow(0 12px 28px rgba(0,0,0,0.60)); }
+      50%  { filter:drop-shadow(0 0 16px rgba(255,213,74,0.75)) drop-shadow(0 14px 32px rgba(0,0,0,0.70)); }
+      100% { filter:drop-shadow(0 0 8px rgba(255,213,74,0.55)) drop-shadow(0 12px 28px rgba(0,0,0,0.60)); }
+    }
+    .dl-wrap:hover img{
+      transform:translateY(-3px);
+      animation:glowPulse 1.25s ease-in-out infinite;
+    }
+    .dl-wrap:active img{
+      transform:translateY(2px);
+      animation:none;
     }
 
-    .dl-wrap img {
-      width: clamp(240px, 32vw, 460px);
-      height: auto;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6));
-      transition: transform 120ms cubic-bezier(.2,.8,.2,1), filter 120ms cubic-bezier(.2,.8,.2,1);
-    }
+    body.cheat-open .dl-wrap{ opacity:0; pointer-events:none; }
 
-    @keyframes glowPulse {
-      0%   { filter: drop-shadow(0 0 8px rgba(255,213,74,0.55)) drop-shadow(0 12px 28px rgba(0,0,0,0.6)); }
-      50%  { filter: drop-shadow(0 0 18px rgba(255,213,74,0.85)) drop-shadow(0 14px 32px rgba(0,0,0,0.7)); }
-      100% { filter: drop-shadow(0 0 8px rgba(255,213,74,0.55)) drop-shadow(0 12px 28px rgba(0,0,0,0.6)); }
-    }
-
-    .dl-wrap:hover img {
-      transform: translateY(-3px);
-      animation: glowPulse 1.25s ease-in-out infinite;
-    }
-    .dl-wrap:active img {
-      transform: translateY(2px);
-      animation: none;
-    }
-
-    /* Hide download button when cheat is open */
-    body.cheat-open .dl-wrap { opacity: 0; pointer-events: none; }
-
-    /* ---------------- Secret Sun Hint ---------------- */
+    /* ---------------- Secret Sun Hint (SUBTLE, NO RING) ---------------- */
     #sunHitbox{
-      position: fixed;
-      left: 50%;
-      top: 52%;
-      transform: translate(-50%, -50%);
-      width: 150px;
-      height: 150px;
-      border-radius: 999px;
-      opacity: 0;
-      cursor: pointer;
-      z-index: 7;
-      -webkit-tap-highlight-color: transparent;
+      position:fixed;
+      left:50%;
+      top:52%;
+      transform:translate(-50%,-50%);
+      width:140px;
+      height:140px;
+      border-radius:999px;
+      opacity:0;
+      cursor:pointer;
+      z-index:7;
+      -webkit-tap-highlight-color:transparent;
     }
-
     #sunGlow{
-      position: fixed;
-      left: 50%;
-      top: 52%;
-      transform: translate(-50%, -50%);
-      width: 360px;
-      height: 360px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 3;
-      opacity: 0;
-
-      background: radial-gradient(
-        circle,
+      position:fixed;
+      left:50%;
+      top:52%;
+      transform:translate(-50%,-50%);
+      width:240px;
+      height:240px;
+      border-radius:50%;
+      pointer-events:none;
+      z-index:3;
+      opacity:0;
+      background:radial-gradient(circle,
         rgba(255,213,74,0.00) 0%,
-        rgba(255,213,74,0.26) 26%,
-        rgba(255,213,74,0.14) 44%,
+        rgba(255,213,74,0.10) 26%,
+        rgba(255,213,74,0.06) 44%,
         rgba(255,213,74,0.00) 72%
       );
-
-      transition: opacity 180ms ease, transform 180ms ease;
-      filter: drop-shadow(0 0 22px rgba(255,213,74,0.22));
+      filter:drop-shadow(0 0 12px rgba(255,213,74,0.10));
+      transition:opacity 180ms ease, transform 180ms ease, filter 180ms ease;
     }
-
-    #sunGlow::after{
-      content:"";
-      position:absolute;
-      inset: 34%;
-      border-radius: 999px;
-      border: 2px solid rgba(255,213,74,0.30);
-      opacity: 0;
-      transform: scale(0.92);
-      transition: opacity 180ms ease, transform 180ms ease;
+    @keyframes sunBreatheSoft{
+      0%   { filter:drop-shadow(0 0 10px rgba(255,213,74,0.10)); }
+      50%  { filter:drop-shadow(0 0 18px rgba(255,213,74,0.16)); }
+      100% { filter:drop-shadow(0 0 10px rgba(255,213,74,0.10)); }
     }
-
-    @keyframes sunBreathe {
-      0% { filter: drop-shadow(0 0 14px rgba(255,213,74,0.24)); }
-      50% { filter: drop-shadow(0 0 34px rgba(255,213,74,0.42)); }
-      100% { filter: drop-shadow(0 0 14px rgba(255,213,74,0.24)); }
-    }
-
     #sunHitbox:hover + #sunGlow{
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1.04);
-      animation: sunBreathe 1.6s ease-in-out infinite;
-    }
-    #sunHitbox:hover + #sunGlow::after{
-      opacity: 1;
-      transform: scale(1.0);
+      opacity:1;
+      transform:translate(-50%,-50%) scale(1.02);
+      animation:sunBreatheSoft 1.8s ease-in-out infinite;
     }
 
     /* ---------------- Cheat Overlay ---------------- */
     #cheatOverlay{
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.62);
-      cursor: pointer;
+      position:fixed;
+      inset:0;
+      z-index:50;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.62);
+      cursor:pointer;
     }
-    #cheatOverlay.show{ display: flex; }
+    #cheatOverlay.show{ display:flex; }
 
-    /* Pixel-perfect scaling using PSD canvas size */
+    /* PSD reference canvas */
     .cheatStage{
-      width: 2000px;
-      height: 1185px;
-      position: relative;
-      transform-origin: center center;
-      user-select: none;
+      width:2000px;
+      height:1185px;
+      position:relative;
+      transform-origin:center center;
+      user-select:none;
     }
 
+    /* Center point EXACT per your spec: 990x580 on 2000x1185 */
     .cheatBlock{
-      position: absolute;
-      left: 50%;
-      top: 56%;
-      transform: translate(-50%, -50%);
-      text-align: center;
+      position:absolute;
+      left:990px;
+      top:580px;
+      transform:translate(-50%,-50%);
+      text-align:center;
     }
 
-    .stroke {
+    .stroke{
       text-shadow:
         -2px 0 #000,  2px 0 #000,
          0 -2px #000, 0  2px #000,
@@ -195,31 +167,33 @@
         -2px  2px #000, 2px -2px #000;
     }
 
+    /* Arrows = PressStart2P (as you wanted) */
     .arrows{
-      font-family: "PressStart2P", monospace;
-      color: var(--jr-yellow);
-      font-size: 44px;
-      letter-spacing: 18px;
-      line-height: 1;
-      margin-bottom: 14px;
+      font-family:"PressStart2P", monospace;
+      color:var(--jr-yellow);
+      font-size:44px;
+      letter-spacing:18px;
+      line-height:1;
+      margin-bottom:14px;
     }
-
     .arrow{
-      opacity: 0;
-      display: inline-block;
-      transition: opacity 260ms ease;
+      opacity:0;
+      display:inline-block;
+      transition:opacity 260ms ease;
     }
-    .arrow.on{ opacity: 1; }
+    .arrow.on{ opacity:1; }
 
+    /* Text = 8-bit-hud.ttf (BitHud) */
     .cheatText{
-      font-family: "PressStart2P", monospace;
-      color: var(--jr-yellow);
-      font-size: 24px;
-      line-height: 1.25;
-      opacity: 0;
-      transition: opacity 500ms ease; /* per your spec */
+      font-family:"BitHud", monospace;
+      color:var(--jr-yellow);
+      font-size:40px;         /* closer to your mock */
+      line-height:0.95;       /* tighter like your mock */
+      letter-spacing:0px;
+      opacity:0;
+      transition:opacity 3000ms ease; /* per your request */
     }
-    .cheatText.on{ opacity: 1; }
+    .cheatText.on{ opacity:1; }
   </style>
 </head>
 
@@ -250,53 +224,73 @@
     const OWNER = "jonsimo";
     const REPO  = "codex-jr-updater";
 
-    function detectOS() {
+    function detectOS(){
       const ua = navigator.userAgent.toLowerCase();
-      if (ua.includes("mac os x") && !ua.includes("iphone") && !ua.includes("ipad")) return "mac";
+      if ((ua.includes("mac os x") || ua.includes("macintosh")) && !ua.includes("iphone") && !ua.includes("ipad")) return "mac";
       if (ua.includes("windows")) return "win";
       if (ua.includes("linux")) return "lin";
       return "unknown";
     }
 
-    async function getLatestRelease() {
+    async function getLatestRelease(){
+      // Try unauth'd first; if rate limited, we still fall back later.
       const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`, {
-        headers: { "Accept": "application/vnd.github+json" }
+        headers: { "Accept": "application/vnd.github+json" },
+        cache: "no-store"
       });
-      if (!r.ok) throw new Error("No release");
+      if (!r.ok) throw new Error("latest release fetch failed");
       return await r.json();
     }
 
-    function pickAssetUrl(release, os) {
+    function pickAssetUrl(release, os){
       const assets = release.assets || [];
-      const match = (name) => {
-        const n = (name || "").toLowerCase();
-        if (os === "mac") return n.includes("codexjr-updater-mac-") && n.endsWith(".zip");
-        if (os === "win") return n.includes("codexjr-updater-windows-") && n.endsWith(".zip");
-        if (os === "lin") return n.includes("codexjr-updater-linux-") && n.endsWith(".zip");
-        return false;
-      };
-      const asset = assets.find(a => a && a.name && match(a.name));
+      const norm = (s) => (s || "").toLowerCase();
+
+      // Your exact naming scheme:
+      // CodexJr-Updater-mac-v.1.0.4.zip
+      // CodexJr-Updater-windows-v.1.0.4.zip
+      const want =
+        os === "mac" ? "codexjr-updater-mac-" :
+        os === "win" ? "codexjr-updater-windows-" :
+        os === "lin" ? "codexjr-updater-linux-" :
+        null;
+
+      if (!want) return null;
+
+      const asset = assets.find(a => a && a.name && norm(a.name).includes(want) && norm(a.name).endsWith(".zip"));
       return asset?.browser_download_url || null;
     }
 
-    document.getElementById("downloadBtn").addEventListener("click", async (e) => {
-      e.preventDefault();
-
+    async function startDownload(){
       const os = detectOS();
+
+      // If OS unknown, just go to releases latest
+      if (os === "unknown") {
+        location.href = `https://github.com/${OWNER}/${REPO}/releases/latest`;
+        return;
+      }
+
       try {
         const rel = await getLatestRelease();
         const url = pickAssetUrl(rel, os);
 
-        if (!url) {
-          // If Linux/unknown (or missing asset), just send them to the releases page.
-          location.href = `https://github.com/${OWNER}/${REPO}/releases/latest`;
+        if (url) {
+          // Direct asset download URL (this is what makes it auto-download)
+          location.href = url;
           return;
         }
 
-        location.href = url;
+        // If no matching asset (e.g., linux not published), show latest release
+        location.href = `https://github.com/${OWNER}/${REPO}/releases/latest`;
       } catch {
-        location.href = `https://github.com/${OWNER}/${REPO}/releases`;
+        // If GitHub API fails/rate-limits, fall back to latest release page
+        location.href = `https://github.com/${OWNER}/${REPO}/releases/latest`;
       }
+    }
+
+    document.getElementById("downloadBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      startDownload();
     });
 
     /* ---------------- Cheat overlay animation ---------------- */
@@ -309,9 +303,9 @@
     const CHEAT_SEQ = ["↑","↑","↑","←","↓","→","↑","↑","↑"];
 
     // Timing spec:
-    // - 4000ms total for arrows
-    // - 500ms pause
-    // - 500ms text fade (CSS transition)
+    // - Arrows total: 4000ms
+    // - Pause: 500ms
+    // - Text fade: 3000ms (CSS)
     const ARROW_TOTAL_TIME = 4000;
     const ARROW_COUNT = CHEAT_SEQ.length;
     const ARROW_STEP_MS = Math.round(ARROW_TOTAL_TIME / (ARROW_COUNT - 1)); // ~500ms
@@ -325,7 +319,7 @@
     function fitStage(){
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const s = Math.min(vw / 2000, vh / 1185);
+      const s  = Math.min(vw / 2000, vh / 1185);
       stage.style.transform = `scale(${s})`;
     }
 
@@ -339,23 +333,23 @@
       overlay.setAttribute("aria-hidden", "false");
 
       for (const a of CHEAT_SEQ) {
-        const s = document.createElement("span");
-        s.className = "arrow";
-        s.textContent = a;
-        arrowLine.appendChild(s);
+        const sp = document.createElement("span");
+        sp.className = "arrow";
+        sp.textContent = a;
+        arrowLine.appendChild(sp);
       }
 
       const arrows = Array.from(arrowLine.querySelectorAll(".arrow"));
 
-      // Reveal arrows over ~4000ms total
       arrows.forEach((el, i) => {
         animTimers.push(setTimeout(() => el.classList.add("on"), i * ARROW_STEP_MS));
       });
 
       const totalArrowTime = (ARROW_COUNT - 1) * ARROW_STEP_MS;
 
-      // Pause 500ms, then fade in text over 500ms via CSS transition
-      animTimers.push(setTimeout(() => cheatText.classList.add("on"), totalArrowTime + PAUSE_AFTER_ARROWS));
+      animTimers.push(setTimeout(() => {
+        cheatText.classList.add("on");
+      }, totalArrowTime + PAUSE_AFTER_ARROWS));
     }
 
     function closeCheat(){

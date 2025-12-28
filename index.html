@@ -21,9 +21,7 @@
       font-display: swap;
     }
 
-    :root{
-      --jr-yellow: #ffd54a;
-    }
+    :root { --jr-yellow: #ffd54a; }
 
     html, body {
       width: 100%;
@@ -49,7 +47,7 @@
       inset: 0;
       background: radial-gradient(
         ellipse at center,
-        rgba(0,0,0,0.0) 28%,
+        rgba(0,0,0,0.00) 28%,
         rgba(0,0,0,0.62) 100%
       );
       pointer-events: none;
@@ -71,58 +69,36 @@
       width: clamp(240px, 32vw, 460px);
       height: auto;
       image-rendering: pixelated;
-
       filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6));
-      transition:
-        transform 120ms cubic-bezier(.2,.8,.2,1),
-        filter 120ms cubic-bezier(.2,.8,.2,1);
+      transition: transform 120ms cubic-bezier(.2,.8,.2,1), filter 120ms cubic-bezier(.2,.8,.2,1);
     }
 
     @keyframes glowPulse {
-      0% {
-        filter:
-          drop-shadow(0 0 6px rgba(255,213,74,0.45))
-          drop-shadow(0 12px 28px rgba(0,0,0,0.6));
-      }
-      50% {
-        filter:
-          drop-shadow(0 0 14px rgba(255,213,74,0.75))
-          drop-shadow(0 14px 32px rgba(0,0,0,0.7));
-      }
-      100% {
-        filter:
-          drop-shadow(0 0 6px rgba(255,213,74,0.45))
-          drop-shadow(0 12px 28px rgba(0,0,0,0.6));
-      }
+      0%   { filter: drop-shadow(0 0 8px rgba(255,213,74,0.55)) drop-shadow(0 12px 28px rgba(0,0,0,0.6)); }
+      50%  { filter: drop-shadow(0 0 18px rgba(255,213,74,0.85)) drop-shadow(0 14px 32px rgba(0,0,0,0.7)); }
+      100% { filter: drop-shadow(0 0 8px rgba(255,213,74,0.55)) drop-shadow(0 12px 28px rgba(0,0,0,0.6)); }
     }
 
     .dl-wrap:hover img {
       transform: translateY(-3px);
       animation: glowPulse 1.25s ease-in-out infinite;
     }
-
     .dl-wrap:active img {
       transform: translateY(2px);
-      filter:
-        drop-shadow(0 0 4px rgba(255,213,74,0.35))
-        drop-shadow(0 8px 18px rgba(0,0,0,0.55));
       animation: none;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .dl-wrap:hover img { animation: none; }
-    }
+    /* Hide download button when cheat is open */
+    body.cheat-open .dl-wrap { opacity: 0; pointer-events: none; }
 
     /* ---------------- Secret Sun Hint ---------------- */
-
-    /* Invisible hitbox */
     #sunHitbox{
       position: fixed;
       left: 50%;
       top: 52%;
       transform: translate(-50%, -50%);
-      width: 140px;
-      height: 140px;
+      width: 150px;
+      height: 150px;
       border-radius: 999px;
       opacity: 0;
       cursor: pointer;
@@ -130,28 +106,28 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Glow overlay + subtle ring shimmer */
     #sunGlow{
       position: fixed;
       left: 50%;
       top: 52%;
       transform: translate(-50%, -50%);
-      width: 280px;
-      height: 280px;
+      width: 360px;
+      height: 360px;
       border-radius: 50%;
       pointer-events: none;
       z-index: 3;
+      opacity: 0;
 
       background: radial-gradient(
         circle,
         rgba(255,213,74,0.00) 0%,
-        rgba(255,213,74,0.10) 28%,
-        rgba(255,213,74,0.05) 48%,
-        rgba(255,213,74,0.00) 70%
+        rgba(255,213,74,0.26) 26%,
+        rgba(255,213,74,0.14) 44%,
+        rgba(255,213,74,0.00) 72%
       );
 
-      opacity: 0;
-      transition: opacity 220ms ease, transform 220ms ease;
+      transition: opacity 180ms ease, transform 180ms ease;
+      filter: drop-shadow(0 0 22px rgba(255,213,74,0.22));
     }
 
     #sunGlow::after{
@@ -159,17 +135,23 @@
       position:absolute;
       inset: 34%;
       border-radius: 999px;
-      border: 2px solid rgba(255,213,74,0.18);
+      border: 2px solid rgba(255,213,74,0.30);
       opacity: 0;
       transform: scale(0.92);
-      transition: opacity 220ms ease, transform 220ms ease;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    @keyframes sunBreathe {
+      0% { filter: drop-shadow(0 0 14px rgba(255,213,74,0.24)); }
+      50% { filter: drop-shadow(0 0 34px rgba(255,213,74,0.42)); }
+      100% { filter: drop-shadow(0 0 14px rgba(255,213,74,0.24)); }
     }
 
     #sunHitbox:hover + #sunGlow{
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1.02);
+      transform: translate(-50%, -50%) scale(1.04);
+      animation: sunBreathe 1.6s ease-in-out infinite;
     }
-
     #sunHitbox:hover + #sunGlow::after{
       opacity: 1;
       transform: scale(1.0);
@@ -186,24 +168,40 @@
       background: rgba(0,0,0,0.62);
       cursor: pointer;
     }
-
     #cheatOverlay.show{ display: flex; }
 
-    .cheatBox{
-      width: min(980px, 94vw);
-      text-align: center;
-      transform: translateY(-8px);
+    /* Pixel-perfect scaling using PSD canvas size */
+    .cheatStage{
+      width: 2000px;
+      height: 1185px;
+      position: relative;
+      transform-origin: center center;
       user-select: none;
+    }
+
+    .cheatBlock{
+      position: absolute;
+      left: 50%;
+      top: 56%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .stroke {
+      text-shadow:
+        -2px 0 #000,  2px 0 #000,
+         0 -2px #000, 0  2px #000,
+        -2px -2px #000, 2px 2px #000,
+        -2px  2px #000, 2px -2px #000;
     }
 
     .arrows{
       font-family: "PressStart2P", monospace;
       color: var(--jr-yellow);
-      font-size: clamp(22px, 2.2vw, 44px);
-      letter-spacing: 10px;
-      line-height: 1.2;
-      margin-bottom: 18px;
-      text-shadow: -2px 0 #000, 2px 0 #000, 0 -2px #000, 0 2px #000;
+      font-size: 44px;
+      letter-spacing: 18px;
+      line-height: 1;
+      margin-bottom: 14px;
     }
 
     .arrow{
@@ -214,27 +212,14 @@
     .arrow.on{ opacity: 1; }
 
     .cheatText{
-      font-family: "BitHud", monospace;
+      font-family: "PressStart2P", monospace;
       color: var(--jr-yellow);
-      font-size: clamp(18px, 1.7vw, 30px);
-      line-height: 1.15;
+      font-size: 24px;
+      line-height: 1.25;
       opacity: 0;
-      transition: opacity 420ms ease;
-      text-shadow: -2px 0 #000, 2px 0 #000, 0 -2px #000, 0 2px #000;
+      transition: opacity 500ms ease; /* per your spec */
     }
     .cheatText.on{ opacity: 1; }
-
-    .tapHint{
-      margin-top: 18px;
-      font-family: "BitHud", monospace;
-      font-size: 14px;
-      opacity: 0.55;
-      color: #fff;
-    }
-
-    /* Optional: make overlay dismissable without selecting text */
-    #cheatOverlay * { pointer-events: none; }
-    #cheatOverlay { pointer-events: auto; }
   </style>
 </head>
 
@@ -246,37 +231,24 @@
   <div id="sunGlow"></div>
 
   <!-- Download button -->
-  <a href="#" id="downloadBtn" class="dl-wrap">
+  <a href="#" id="downloadBtn" class="dl-wrap" aria-label="download">
     <img src="assets/dl_button.png" alt="Download Codex Jr Updater">
   </a>
 
-  <!-- Cheat overlay (click anywhere to close) -->
+  <!-- Cheat overlay -->
   <div id="cheatOverlay" aria-hidden="true">
-    <div class="cheatBox">
-      <div class="arrows" id="arrowLine"></div>
-      <div class="cheatText" id="cheatText">pixel pond<br/>cheat code</div>
-      <div class="tapHint">(click anywhere)</div>
+    <div class="cheatStage" id="cheatStage">
+      <div class="cheatBlock">
+        <div class="arrows stroke" id="arrowLine"></div>
+        <div class="cheatText stroke" id="cheatText">pixel pond<br/>cheat code</div>
+      </div>
     </div>
   </div>
 
   <script>
-    /* ---------------- Downloads (GitHub Releases) ----------------
-       Put the updater ZIPs in your *UPDATER REPO* GitHub Releases (not this site repo).
-
-       Example asset names expected:
-         CodexJr-Updater-mac.zip
-         CodexJr-Updater-windows.zip
-         CodexJr-Updater-linux.zip
-    */
-
+    /* ---------------- Downloads (GitHub Releases) ---------------- */
     const OWNER = "jonsimo";
-    const REPO  = "YOUR_UPDATER_REPO_NAME"; // <-- change this
-
-    const ASSET = {
-      mac: "CodexJr-Updater-mac.zip",
-      win: "CodexJr-Updater-windows.zip",
-      lin: "CodexJr-Updater-linux.zip"
-    };
+    const REPO  = "codex-jr-updater";
 
     function detectOS() {
       const ua = navigator.userAgent.toLowerCase();
@@ -286,34 +258,44 @@
       return "unknown";
     }
 
-    async function getLatestReleaseTag() {
-      const r = await fetch(
-        `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`,
-        { headers: { "Accept": "application/vnd.github+json" } }
-      );
+    async function getLatestRelease() {
+      const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`, {
+        headers: { "Accept": "application/vnd.github+json" }
+      });
       if (!r.ok) throw new Error("No release");
-      return (await r.json()).tag_name;
+      return await r.json();
     }
 
-    function releaseAssetUrl(tag, filename) {
-      return `https://github.com/${OWNER}/${REPO}/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(filename)}`;
+    function pickAssetUrl(release, os) {
+      const assets = release.assets || [];
+      const match = (name) => {
+        const n = (name || "").toLowerCase();
+        if (os === "mac") return n.includes("codexjr-updater-mac-") && n.endsWith(".zip");
+        if (os === "win") return n.includes("codexjr-updater-windows-") && n.endsWith(".zip");
+        if (os === "lin") return n.includes("codexjr-updater-linux-") && n.endsWith(".zip");
+        return false;
+      };
+      const asset = assets.find(a => a && a.name && match(a.name));
+      return asset?.browser_download_url || null;
     }
 
     document.getElementById("downloadBtn").addEventListener("click", async (e) => {
       e.preventDefault();
 
       const os = detectOS();
-      if (os === "unknown") {
-        alert("Unsupported OS. Please download from GitHub Releases.");
-        return;
-      }
-
       try {
-        const tag = await getLatestReleaseTag();
-        const file = os === "mac" ? ASSET.mac : os === "win" ? ASSET.win : ASSET.lin;
-        location.href = releaseAssetUrl(tag, file);
+        const rel = await getLatestRelease();
+        const url = pickAssetUrl(rel, os);
+
+        if (!url) {
+          // If Linux/unknown (or missing asset), just send them to the releases page.
+          location.href = `https://github.com/${OWNER}/${REPO}/releases/latest`;
+          return;
+        }
+
+        location.href = url;
       } catch {
-        alert("Latest release not found. Publish a GitHub Release first.");
+        location.href = `https://github.com/${OWNER}/${REPO}/releases`;
       }
     });
 
@@ -322,20 +304,40 @@
     const overlay   = document.getElementById("cheatOverlay");
     const arrowLine = document.getElementById("arrowLine");
     const cheatText = document.getElementById("cheatText");
+    const stage     = document.getElementById("cheatStage");
 
     const CHEAT_SEQ = ["↑","↑","↑","←","↓","→","↑","↑","↑"];
 
+    // Timing spec:
+    // - 4000ms total for arrows
+    // - 500ms pause
+    // - 500ms text fade (CSS transition)
+    const ARROW_TOTAL_TIME = 4000;
+    const ARROW_COUNT = CHEAT_SEQ.length;
+    const ARROW_STEP_MS = Math.round(ARROW_TOTAL_TIME / (ARROW_COUNT - 1)); // ~500ms
+    const PAUSE_AFTER_ARROWS = 500;
+
     let animTimers = [];
+
     function clearAnimTimers(){ animTimers.forEach(t => clearTimeout(t)); animTimers = []; }
     function resetCheatUI(){ arrowLine.innerHTML = ""; cheatText.classList.remove("on"); }
+
+    function fitStage(){
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const s = Math.min(vw / 2000, vh / 1185);
+      stage.style.transform = `scale(${s})`;
+    }
 
     function openCheat(){
       clearAnimTimers();
       resetCheatUI();
+      fitStage();
+
+      document.body.classList.add("cheat-open");
       overlay.classList.add("show");
       overlay.setAttribute("aria-hidden", "false");
 
-      // Build arrow spans
       for (const a of CHEAT_SEQ) {
         const s = document.createElement("span");
         s.className = "arrow";
@@ -344,21 +346,23 @@
       }
 
       const arrows = Array.from(arrowLine.querySelectorAll(".arrow"));
-      const startDelay = 180;
-      const stepMs = 120; // <-- change this if you want faster/slower
 
+      // Reveal arrows over ~4000ms total
       arrows.forEach((el, i) => {
-        animTimers.push(setTimeout(() => el.classList.add("on"), startDelay + i * stepMs));
+        animTimers.push(setTimeout(() => el.classList.add("on"), i * ARROW_STEP_MS));
       });
 
-      const totalArrowTime = startDelay + (arrows.length - 1) * stepMs + 220;
-      animTimers.push(setTimeout(() => cheatText.classList.add("on"), totalArrowTime));
+      const totalArrowTime = (ARROW_COUNT - 1) * ARROW_STEP_MS;
+
+      // Pause 500ms, then fade in text over 500ms via CSS transition
+      animTimers.push(setTimeout(() => cheatText.classList.add("on"), totalArrowTime + PAUSE_AFTER_ARROWS));
     }
 
     function closeCheat(){
       clearAnimTimers();
       overlay.classList.remove("show");
       overlay.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("cheat-open");
       resetCheatUI();
     }
 
@@ -369,7 +373,7 @@
     });
 
     overlay.addEventListener("click", () => closeCheat());
-
+    window.addEventListener("resize", () => overlay.classList.contains("show") && fitStage());
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && overlay.classList.contains("show")) closeCheat();
     });

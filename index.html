@@ -6,7 +6,16 @@
   <title>Codex Jr Updater</title>
 
   <style>
-    :root{ --jr-yellow:#ffd54a; }
+    :root{
+      --jr-yellow:#ffd54a;
+
+      /* ✅ SUN ANCHOR (single source of truth)
+         If you ever need a micro-nudge, do it here only.
+         Start values are based on your earlier 990x580 in a 2000x1185 comp (~49.5%, ~48.9%).
+      */
+      --sun-x:49.5%;
+      --sun-y:48.9%;
+    }
 
     html,body{
       width:100%;
@@ -16,7 +25,6 @@
       overflow:hidden;
     }
 
-    /* Background */
     body{
       background-image:url("assets/codexjr-hero-1000.webp");
       background-size:cover;
@@ -51,47 +59,43 @@
       image-rendering:pixelated;
       filter:drop-shadow(0 12px 28px rgba(0,0,0,0.60));
       transition:transform 120ms cubic-bezier(.2,.8,.2,1), filter 120ms cubic-bezier(.2,.8,.2,1), opacity 120ms ease;
+      display:block;
     }
     @keyframes glowPulse{
       0%   { filter:drop-shadow(0 0 8px rgba(255,213,74,0.55)) drop-shadow(0 12px 28px rgba(0,0,0,0.60)); }
-      50%  { filter:drop-shadow(0 0 16px rgba(255,213,74,0.75)) drop-shadow(0 14px 32px rgba(0,0,0,0.70)); }
+      50%  { filter:drop-shadow(0 0 16px rgba(255,213,74,0.78)) drop-shadow(0 14px 32px rgba(0,0,0,0.72)); }
       100% { filter:drop-shadow(0 0 8px rgba(255,213,74,0.55)) drop-shadow(0 12px 28px rgba(0,0,0,0.60)); }
     }
     .dl-wrap:hover img{
-      transform:translate(-50%,-50%) translateY(-3px);
+      transform:translateY(-3px);
       animation:glowPulse 1.25s ease-in-out infinite;
     }
     .dl-wrap:active img{
-      transform:translate(-50%,-50%) translateY(2px);
+      transform:translateY(2px);
       animation:none;
     }
-
-    /* keep transform simple: wrap handles translate */
-    .dl-wrap{ transform:translate(-50%,-50%); }
-    .dl-wrap:hover img, .dl-wrap:active img{ transform:translateY(var(--btnY,0px)); }
-    .dl-wrap:hover img{ --btnY:-3px; }
-    .dl-wrap:active img{ --btnY:2px; }
-
     body.cheat-open .dl-wrap{ opacity:0; pointer-events:none; }
 
-    /* ---------------- Secret Sun Hint (subtle / no ring artifact) ---------------- */
+    /* ---------------- Secret Sun Hint ---------------- */
     #sunHitbox{
       position:fixed;
-      left:50%;
-      top:52%;
+      left:var(--sun-x);
+      top:var(--sun-y);
       transform:translate(-50%,-50%);
-      width:140px;
-      height:140px;
+      width:150px;
+      height:150px;
       border-radius:999px;
       opacity:0;
       cursor:pointer;
       z-index:7;
       -webkit-tap-highlight-color:transparent;
     }
+
+    /* subtle hover hint (no ring artifact): just a soft bloom */
     #sunGlow{
       position:fixed;
-      left:50%;
-      top:52%;
+      left:var(--sun-x);
+      top:var(--sun-y);
       transform:translate(-50%,-50%);
       width:240px;
       height:240px;
@@ -99,24 +103,25 @@
       pointer-events:none;
       z-index:3;
       opacity:0;
+
+      /* no hard edges / no ring */
       background:radial-gradient(circle,
         rgba(255,213,74,0.00) 0%,
-        rgba(255,213,74,0.10) 26%,
-        rgba(255,213,74,0.06) 44%,
-        rgba(255,213,74,0.00) 72%
+        rgba(255,213,74,0.12) 42%,
+        rgba(255,213,74,0.00) 74%
       );
-      filter:drop-shadow(0 0 10px rgba(255,213,74,0.10));
-      transition:opacity 180ms ease, transform 180ms ease, filter 180ms ease;
+      filter:blur(1px) drop-shadow(0 0 12px rgba(255,213,74,0.14));
+      transition:opacity 160ms ease, transform 160ms ease, filter 160ms ease;
     }
     @keyframes sunBreatheSoft{
-      0%   { filter:drop-shadow(0 0 10px rgba(255,213,74,0.10)); }
-      50%  { filter:drop-shadow(0 0 16px rgba(255,213,74,0.14)); }
-      100% { filter:drop-shadow(0 0 10px rgba(255,213,74,0.10)); }
+      0%   { filter:blur(1px) drop-shadow(0 0 12px rgba(255,213,74,0.14)); }
+      50%  { filter:blur(1px) drop-shadow(0 0 18px rgba(255,213,74,0.22)); }
+      100% { filter:blur(1px) drop-shadow(0 0 12px rgba(255,213,74,0.14)); }
     }
     #sunHitbox:hover + #sunGlow{
       opacity:1;
       transform:translate(-50%,-50%) scale(1.02);
-      animation:sunBreatheSoft 1.8s ease-in-out infinite;
+      animation:sunBreatheSoft 1.7s ease-in-out infinite;
     }
 
     /* ---------------- Cheat Overlay ---------------- */
@@ -132,55 +137,70 @@
     }
     #cheatOverlay.show{ display:flex; }
 
-    /* PSD stage coordinates: 2000 x 1185 */
-    .cheatStage{
-      width:2000px;
-      height:1185px;
-      position:relative;
-      transform-origin:center center;
-      user-select:none;
-    }
-
-    /* Exact center point you gave: 990x580 */
+    /* ✅ Anchor cheat content to the SAME SUN position as the hitbox */
     .cheatBlock{
-      position:absolute;
-      left:990px;
-      top:580px;
+      position:fixed;
+      left:var(--sun-x);
+      top:var(--sun-y);
       transform:translate(-50%,-50%);
       text-align:center;
+      user-select:none;
+      z-index:55;
+      pointer-events:none; /* clicking overlay closes */
     }
 
-    /* Arrow row (centered as a LOCKED group) */
-    .arrowRow{
+    /* Arrow row: use a fixed grid so the true center is the 5th cell */
+    .arrowGrid{
+      display:grid;
+      grid-template-columns:repeat(9, var(--cell));
+      column-gap:var(--gap);
+      align-items:center;
+      justify-content:center;
+      margin:0 auto;
+      width:max-content;
+
+      /* responsive but stable */
+      --cell:clamp(40px, 3.6vw, 64px);
+      --gap:clamp(10px, 1.25vw, 22px);
+      margin-bottom:clamp(12px, 1.25vw, 18px);
+    }
+    .cell{
+      width:var(--cell);
+      height:var(--cell);
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:22px;               /* tweak if needed to match PSD spacing */
-      margin-bottom:18px;     /* tweak to match PSD vertical spacing */
     }
     .arrow{
-      width:64px;             /* tweak to match your arrow PNG size in PSD */
-      height:auto;
+      width:100%;
+      height:100%;
+      object-fit:contain;
       image-rendering:pixelated;
       opacity:0;
       transition:opacity 450ms linear;
       filter:drop-shadow(0 2px 0 rgba(0,0,0,0.9));
+      transform-origin:center center;
+      display:block;
     }
     .arrow.on{ opacity:1; }
+
+    /* rotations */
     .rot90{ transform:rotate(90deg); }
     .rot180{ transform:rotate(180deg); }
     .rot270{ transform:rotate(270deg); }
 
-    /* Cheat text image (exact from PSD) */
-    .cheatImg{
-      width:520px;            /* tweak to match PSD */
+    /* Cheatcode image: centered to sun, fades in 3000ms */
+    #cheatImg{
+      width:clamp(380px, 42vw, 720px);
       height:auto;
       image-rendering:pixelated;
       opacity:0;
-      transition:opacity 3000ms ease; /* your requested 3000ms */
+      transition:opacity 3000ms ease;
       filter:drop-shadow(0 2px 0 rgba(0,0,0,0.9));
+      display:block;
+      margin:0 auto;
     }
-    .cheatImg.on{ opacity:1; }
+    #cheatImg.on{ opacity:1; }
   </style>
 </head>
 
@@ -198,28 +218,21 @@
 
   <!-- Cheat overlay -->
   <div id="cheatOverlay" aria-hidden="true">
-    <div class="cheatStage" id="cheatStage">
-      <div class="cheatBlock">
-        <div class="arrowRow" id="arrowRow"></div>
-        <img class="cheatImg" id="cheatImg" src="assets/cheatcode.png" alt="pixel pond cheat code">
-      </div>
+    <div class="cheatBlock" id="cheatBlock">
+      <div class="arrowGrid" id="arrowGrid"></div>
+      <img id="cheatImg" src="assets/cheatcode.png" alt="pixel pond cheat code">
     </div>
   </div>
 
   <script>
-    /* ---------------- Downloads (DIRECT asset links by tag) ----------------
-       This avoids GitHub API + prerelease “latest” issues completely.
-    */
+    /* ---------------- Downloads (direct asset links by tag) ---------------- */
     const OWNER = "jonsimo";
     const REPO  = "codex-jr-updater";
-    const TAG   = "v.1.0.4"; // your release tag
+    const TAG   = "v.1.0.4";
 
-    // Your exact asset names:
     const ASSET = {
       mac: `CodexJr-Updater-mac-${TAG}.zip`,
       win: `CodexJr-Updater-windows-${TAG}.zip`,
-      // If you later add linux, match your naming here:
-      // lin: `CodexJr-Updater-linux-${TAG}.zip`,
     };
 
     function detectOS(){
@@ -231,23 +244,13 @@
     }
 
     function directAssetUrl(fileName){
-      // Direct download endpoint (forces a download instead of a releases page)
       return `https://github.com/${OWNER}/${REPO}/releases/download/${TAG}/${encodeURIComponent(fileName)}`;
     }
 
     function startDownload(){
       const os = detectOS();
-
-      if (os === "mac") {
-        location.href = directAssetUrl(ASSET.mac);
-        return;
-      }
-      if (os === "win") {
-        location.href = directAssetUrl(ASSET.win);
-        return;
-      }
-
-      // Unknown / linux fallback: open the tag page
+      if (os === "mac") { location.href = directAssetUrl(ASSET.mac); return; }
+      if (os === "win") { location.href = directAssetUrl(ASSET.win); return; }
       location.href = `https://github.com/${OWNER}/${REPO}/releases/tag/${TAG}`;
     }
 
@@ -260,30 +263,25 @@
     const sunHitbox = document.getElementById("sunHitbox");
     const overlay   = document.getElementById("cheatOverlay");
     const cheatImg  = document.getElementById("cheatImg");
-    const stage     = document.getElementById("cheatStage");
-    const arrowRow  = document.getElementById("arrowRow");
+    const arrowGrid = document.getElementById("arrowGrid");
 
     // Sequence: ↑ ↑ ↑ ← ↓ → ↑ ↑ ↑
-    // We'll reuse ONE PNG and rotate it.
     const SEQ = ["up","up","up","left","down","right","up","up","up"];
 
-    // Timing: 4000ms total arrows, then 500ms pause, then cheat image fades (3000ms via CSS)
+    // Timing: arrows over 4000ms total, 500ms pause, cheatImg fades in 3000ms (CSS)
     const ARROW_TOTAL_MS = 4000;
     const PAUSE_MS = 500;
-    const STEP_MS = Math.round(ARROW_TOTAL_MS / (SEQ.length - 1)); // evenly spread
+    const STEP_MS = Math.round(ARROW_TOTAL_MS / (SEQ.length - 1));
 
     let timers = [];
     function clearTimers(){ timers.forEach(t => clearTimeout(t)); timers = []; }
 
-    function fitStage(){
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const s = Math.min(vw / 2000, vh / 1185);
-      stage.style.transform = `scale(${s})`;
-    }
-
     function buildArrows(){
-      arrowRow.innerHTML = "";
+      arrowGrid.innerHTML = "";
       for (const dir of SEQ) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+
         const img = document.createElement("img");
         img.src = "assets/8bitarrow.png";
         img.className = "arrow";
@@ -293,7 +291,8 @@
         if (dir === "down")  img.classList.add("rot180");
         if (dir === "left")  img.classList.add("rot270");
 
-        arrowRow.appendChild(img);
+        cell.appendChild(img);
+        arrowGrid.appendChild(cell);
       }
     }
 
@@ -301,28 +300,22 @@
       clearTimers();
       buildArrows();
       cheatImg.classList.remove("on");
-      Array.from(arrowRow.children).forEach(a => a.classList.remove("on"));
+      Array.from(arrowGrid.querySelectorAll(".arrow")).forEach(a => a.classList.remove("on"));
     }
 
     function openCheat(){
       resetCheat();
-      fitStage();
-
       document.body.classList.add("cheat-open");
       overlay.classList.add("show");
       overlay.setAttribute("aria-hidden","false");
 
-      const arrows = Array.from(arrowRow.children);
-
+      const arrows = Array.from(arrowGrid.querySelectorAll(".arrow"));
       arrows.forEach((el, i) => {
         timers.push(setTimeout(() => el.classList.add("on"), i * STEP_MS));
       });
 
       const totalArrowTime = (SEQ.length - 1) * STEP_MS;
-
-      timers.push(setTimeout(() => {
-        cheatImg.classList.add("on");
-      }, totalArrowTime + PAUSE_MS));
+      timers.push(setTimeout(() => cheatImg.classList.add("on"), totalArrowTime + PAUSE_MS));
     }
 
     function closeCheat(){
@@ -340,12 +333,10 @@
     });
 
     overlay.addEventListener("click", () => closeCheat());
-    window.addEventListener("resize", () => overlay.classList.contains("show") && fitStage());
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && overlay.classList.contains("show")) closeCheat();
     });
 
-    // Build arrows once on load
     buildArrows();
   </script>
 </body>

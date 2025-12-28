@@ -6,6 +6,25 @@
   <title>Codex Jr Updater</title>
 
   <style>
+    @font-face {
+      font-family: "PressStart2P";
+      src: url("fonts/PressStart2P.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "BitHud";
+      src: url("fonts/8-bit-hud.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root{
+      --jr-yellow: #ffd54a;
+    }
+
     html, body {
       width: 100%;
       height: 100%;
@@ -14,22 +33,17 @@
       overflow: hidden;
     }
 
-    /* Fullscreen background via CSS (Safari-safe) */
+    /* Fullscreen background */
     body {
       background-image: url("assets/codexjr-hero-1000.webp");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     }
-
-    /* Larger image for larger screens */
     @media (min-width: 900px) {
-      body {
-        background-image: url("assets/codexjr-hero-2000.webp");
-      }
+      body { background-image: url("assets/codexjr-hero-2000.webp"); }
     }
 
-    /* Optional vignette */
     .vignette {
       position: fixed;
       inset: 0;
@@ -39,15 +53,17 @@
         rgba(0,0,0,0.6) 100%
       );
       pointer-events: none;
+      z-index: 1;
     }
 
     /* Download button */
     .dl-wrap {
       position: fixed;
       left: 50%;
-      top: 68%; /* tweak to align under sun */
+      top: 68%;
       transform: translate(-50%, -50%);
       cursor: pointer;
+      z-index: 3;
     }
 
     .dl-wrap img {
@@ -55,29 +71,164 @@
       height: auto;
       image-rendering: pixelated;
       filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6));
-      transition: transform 120ms ease, filter 120ms ease;
+      transition: transform 120ms cubic-bezier(.2,.8,.2,1), filter 120ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    @keyframes glowPulse {
+      0% {
+        filter: drop-shadow(0 0 6px rgba(255,213,74,0.45)) drop-shadow(0 12px 28px rgba(0,0,0,0.6));
+      }
+      50% {
+        filter: drop-shadow(0 0 14px rgba(255,213,74,0.75)) drop-shadow(0 14px 32px rgba(0,0,0,0.7));
+      }
+      100% {
+        filter: drop-shadow(0 0 6px rgba(255,213,74,0.45)) drop-shadow(0 12px 28px rgba(0,0,0,0.6));
+      }
     }
 
     .dl-wrap:hover img {
       transform: translateY(-3px);
-      filter: drop-shadow(0 16px 34px rgba(0,0,0,0.7));
+      animation: glowPulse 1.25s ease-in-out infinite;
     }
 
     .dl-wrap:active img {
       transform: translateY(2px);
+      filter: drop-shadow(0 0 4px rgba(255,213,74,0.35)) drop-shadow(0 8px 18px rgba(0,0,0,0.55));
+      animation: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .dl-wrap:hover img { animation: none; }
+    }
+
+    /* Secret sun hitbox + subtle glow */
+    #sunHitbox{
+      position: fixed;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 4;
+    }
+
+    #sunGlow{
+      position: fixed;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(
+        circle,
+        rgba(255,213,74,0.18) 0%,
+        rgba(255,213,74,0.12) 25%,
+        rgba(255,213,74,0.06) 45%,
+        rgba(255,213,74,0.0) 65%
+      );
+      opacity: 0;
+      transition: opacity 220ms ease;
+      z-index: 2;
+    }
+    #sunHitbox:hover + #sunGlow { opacity: 1; }
+
+    /* ---------- Cheat Overlay ---------- */
+    #cheatOverlay{
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;          /* hidden by default */
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.60);
+      cursor: pointer;        /* click anywhere to close */
+    }
+
+    #cheatOverlay.show{
+      display: flex;
+    }
+
+    /* Container keeps layout stable */
+    .cheatBox{
+      width: min(900px, 92vw);
+      text-align: center;
+      transform: translateY(-8px);
+      user-select: none;
+    }
+
+    /* Arrows line */
+    .arrows{
+      font-family: "PressStart2P", monospace;
+      color: var(--jr-yellow);
+      font-size: clamp(22px, 2.2vw, 42px);
+      letter-spacing: 10px;
+      line-height: 1.2;
+      margin-bottom: 18px;
+      text-shadow:
+        -2px 0 #000, 2px 0 #000, 0 -2px #000, 0 2px #000;
+    }
+
+    .arrow{
+      opacity: 0;
+      display: inline-block;
+      transition: opacity 260ms ease;
+    }
+    .arrow.on{ opacity: 1; }
+
+    /* Text block */
+    .cheatText{
+      font-family: "BitHud", monospace;
+      color: var(--jr-yellow);
+      font-size: clamp(18px, 1.7vw, 30px);
+      line-height: 1.2;
+      opacity: 0;
+      transition: opacity 420ms ease;
+      text-shadow:
+        -2px 0 #000, 2px 0 #000, 0 -2px #000, 0 2px #000;
+    }
+    .cheatText.on{ opacity: 1; }
+
+    /* Small helper hint (optional) */
+    .tapHint{
+      margin-top: 18px;
+      font-family: "BitHud", monospace;
+      font-size: 14px;
+      opacity: 0.55;
+      color: #fff;
     }
   </style>
 </head>
-<body>
 
+<body>
   <div class="vignette"></div>
 
-  <!-- Image-based download button -->
+  <!-- Secret sun hit area + subtle glow -->
+  <div id="sunHitbox" aria-label="secret"></div>
+  <div id="sunGlow"></div>
+
+  <!-- Download button -->
   <a href="#" id="downloadBtn" class="dl-wrap">
     <img src="assets/dl_button.png" alt="Download Codex Jr Updater">
   </a>
 
+  <!-- Cheat overlay (click anywhere to close) -->
+  <div id="cheatOverlay" aria-hidden="true">
+    <div class="cheatBox">
+      <div class="arrows" id="arrowLine"></div>
+      <div class="cheatText" id="cheatText">
+        pixel pond<br/>cheat code
+      </div>
+      <div class="tapHint">(click anywhere)</div>
+    </div>
+  </div>
+
   <script>
+    /* -------- Download config -------- */
     const OWNER = "YOUR_GITHUB_OWNER";
     const REPO  = "YOUR_UPDATER_REPO";
 
@@ -125,7 +276,78 @@
         alert("Latest release not found. Publish a GitHub Release first.");
       }
     });
-  </script>
 
+    /* -------- Cheat overlay animation -------- */
+    const sunHitbox = document.getElementById("sunHitbox");
+    const overlay = document.getElementById("cheatOverlay");
+    const arrowLine = document.getElementById("arrowLine");
+    const cheatText = document.getElementById("cheatText");
+
+    // Your cheat sequence (use unicode arrows)
+    const CHEAT_SEQ = ["↑","↑","↑","←","↓","→","↑","↑","↑"];
+
+    let animTimers = [];
+
+    function clearAnimTimers(){
+      animTimers.forEach(t => clearTimeout(t));
+      animTimers = [];
+    }
+
+    function resetCheatUI(){
+      arrowLine.innerHTML = "";
+      cheatText.classList.remove("on");
+    }
+
+    function openCheat(){
+      clearAnimTimers();
+      resetCheatUI();
+
+      overlay.classList.add("show");
+      overlay.setAttribute("aria-hidden", "false");
+
+      // Build spans so we can fade each arrow in
+      for (const a of CHEAT_SEQ) {
+        const s = document.createElement("span");
+        s.className = "arrow";
+        s.textContent = a;
+        arrowLine.appendChild(s);
+      }
+
+      // Stagger fade-in per arrow
+      const arrows = Array.from(arrowLine.querySelectorAll(".arrow"));
+      const stepMs = 140;     // speed of reveal (tweak)
+      const startDelay = 180; // slight pause after open
+
+      arrows.forEach((el, i) => {
+        animTimers.push(setTimeout(() => el.classList.add("on"), startDelay + i * stepMs));
+      });
+
+      // After arrows complete, fade in text
+      const totalArrowTime = startDelay + (arrows.length - 1) * stepMs + 220;
+      animTimers.push(setTimeout(() => cheatText.classList.add("on"), totalArrowTime));
+    }
+
+    function closeCheat(){
+      clearAnimTimers();
+      overlay.classList.remove("show");
+      overlay.setAttribute("aria-hidden", "true");
+      resetCheatUI();
+    }
+
+    sunHitbox.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openCheat();
+    });
+
+    overlay.addEventListener("click", () => {
+      closeCheat();
+    });
+
+    // Escape key to close
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && overlay.classList.contains("show")) closeCheat();
+    });
+  </script>
 </body>
 </html>

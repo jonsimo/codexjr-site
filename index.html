@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-  <!-- Favicons -->
-  <link rel="icon" href="favicon.ico">
+  <!-- Favicons (put these in your site root) -->
+  <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
   <style>
     :root{
@@ -96,12 +96,12 @@
         rgba(0,0,0,0.00) 70%
       );
       filter: blur(10px);
-      opacity: 0.00; /* default: invisible */
+      opacity: 0.00;
       transition: opacity 200ms ease;
       pointer-events:none;
     }
     #sunHotspot:hover::before{
-      opacity: 0.16; /* subtle hint (no hard edge / ring) */
+      opacity: 0.16;
     }
 
     /* Cheat overlay */
@@ -142,7 +142,6 @@
       width: 64px;  /* scaled by JS */
       height: 64px; /* scaled by JS */
       opacity: 0;
-      transform: translateY(0px) scale(1);
       will-change: opacity;
     }
     .arrow img{
@@ -179,7 +178,7 @@
 
   <div id="ui">
     <!-- Sun hotspot (hidden click area) -->
-    <div id="sunHotspot" title="" aria-label="Hidden"></div>
+    <div id="sunHotspot" aria-label="Hidden"></div>
 
     <!-- Download button -->
     <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
@@ -202,36 +201,47 @@
 
   <script>
     /******************************************************************
-     * DESIGN SPACE (matches your PSD / exported hero):
+     * DESIGN SPACE:
      *   design size: 2000 x 1185
-     *   arrow+text center point: 990 x 580   (you provided this)
+     *   arrow+text center point: 990 x 580
      ******************************************************************/
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
 
-    // Center point for cheat overlay (align to sun like your mockup)
     const CHEAT_CX = 990;
     const CHEAT_CY = 580;
 
-    // Where the download button should sit in design pixels (tweak if needed)
     const DL_CX = 1000;
     const DL_CY = 760;
 
-    // Sun hotspot center (same as cheat center so the middle arrow aligns to sun)
     const SUN_CX = CHEAT_CX;
     const SUN_CY = CHEAT_CY;
 
-    // Animation timing (your latest request)
-    const ARROWS_TOTAL_MS = 4000;   // total for all arrows to fade in
-    const PAUSE_MS        = 500;    // pause after arrows
-    const TEXT_FADE_MS    = 3000;   // text fade-in duration
+    // Timing:
+    // - arrows fade in across 4000ms total
+    // - 500ms pause
+    // - cheat text fades in over 3000ms
+    const ARROWS_TOTAL_MS = 4000;
+    const PAUSE_MS        = 500;
+    const TEXT_FADE_MS    = 3000;
 
-    // GitHub release lookup (no hardcoded asset URLs)
-    const GH_OWNER = "jonsimo";
-    const GH_REPO  = "codex-jr-updater";
+    // ✅ PUBLIC DOWNLOADS REPO (this is the fix)
+    const DOWNLOADS_OWNER = "jonsimo";
+    const DOWNLOADS_REPO  = "codex-jr-downloads";
+    const RELEASE_TAG     = "v1.0.4"; // tag exactly as shown on your release page
 
-    // Try these tag spellings in order (covers v.1.0.4 vs v1.0.4)
-    const TAG_CANDIDATES = ["v.1.0.4", "v1.0.4"];
+    // Filenames exactly as shown in your Assets list
+    const MAC_FILE = `CodexJr-Updater-mac-${RELEASE_TAG}.zip`;
+    const WIN_FILE = `CodexJr-Updater-windows-${RELEASE_TAG}.zip`;
+
+    const RELEASE_BASE = `https://github.com/${DOWNLOADS_OWNER}/${DOWNLOADS_REPO}/releases/download/${RELEASE_TAG}/`;
+    const RELEASE_PAGE = `https://github.com/${DOWNLOADS_OWNER}/${DOWNLOADS_REPO}/releases/tag/${RELEASE_TAG}`;
+
+    const ASSETS = {
+      mac: `${RELEASE_BASE}${encodeURIComponent(MAC_FILE)}`,
+      win: `${RELEASE_BASE}${encodeURIComponent(WIN_FILE)}`,
+      fallback: RELEASE_PAGE
+    };
 
     // Arrow sequence (9 arrows): ↑ ↑ ↑ ← ↓ → ↑ ↑ ↑
     const SEQ = ["up","up","up","left","down","right","up","up","up"];
@@ -245,7 +255,6 @@
       cheatText: document.getElementById("cheatText"),
     };
 
-    // Build arrows using your PNG (assets/8bitarrow.png)
     function buildArrowRow() {
       ui.arrowRow.innerHTML = "";
 
@@ -257,7 +266,6 @@
         img.src = "assets/8bitarrow.png";
         img.alt = "";
 
-        // rotate the same arrow PNG to match direction
         let rot = 0;
         if (dir === "right") rot = 90;
         if (dir === "down")  rot = 180;
@@ -275,63 +283,17 @@
 
       if (platform.includes("mac") || ua.includes("mac os")) return "mac";
       if (platform.includes("win") || ua.includes("windows")) return "win";
-      if (platform.includes("linux") || ua.includes("linux")) return "lin";
-
       return "unknown";
     }
 
-    async function fetchReleaseByTag(tag) {
-      const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/releases/tags/${encodeURIComponent(tag)}`;
-      const r = await fetch(url, { cache: "no-store" });
-      if (!r.ok) return null;
-      return await r.json();
+    function startDownload() {
+      const os = detectOS();
+      const url = ASSETS[os] || ASSETS.fallback;
+
+      // Use a real navigation (works reliably with GitHub’s redirects)
+      window.location.assign(url);
     }
 
-    function pickAssetUrl(releaseJson, os) {
-      if (!releaseJson || !Array.isArray(releaseJson.assets)) return null;
-
-      // Match your naming style (zip files)
-      const assets = releaseJson.assets;
-
-      const want = {
-        mac: /mac.*\.zip$/i,
-        win: /windows.*\.zip$/i,
-        lin: /linux.*\.zip$/i
-      }[os];
-
-      if (!want) return null;
-
-      const match = assets.find(a => want.test(a.name));
-      return match ? match.browser_download_url : null;
-    }
-
-    async function startDownload() {
-      ui.downloadBtn.disabled = true;
-
-      try {
-        const os = detectOS();
-
-        // Try tag candidates until one exists, then download correct OS asset.
-        for (const tag of TAG_CANDIDATES) {
-          const rel = await fetchReleaseByTag(tag);
-          if (!rel) continue;
-
-          const url = pickAssetUrl(rel, os);
-          if (url) {
-            window.location.href = url;
-            return;
-          }
-        }
-
-        // Fallback: send them to releases page if we couldn't resolve an asset.
-        window.location.href = `https://github.com/${GH_OWNER}/${GH_REPO}/releases`;
-      } finally {
-        // If navigation is blocked, re-enable
-        setTimeout(() => { ui.downloadBtn.disabled = false; }, 800);
-      }
-    }
-
-    // Cover-math so coordinates match your PSD in any viewport size
     function coverTransform() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
@@ -355,33 +317,31 @@
     }
 
     function layout() {
-      // Download button size (in design pixels). Matches your dl_button.png design.
+      // download button (matches your PNG’s intended size)
       placeElement(ui.downloadBtn, DL_CX, DL_CY, 802, 192);
 
-      // Sun hotspot (subtle hover hint)
+      // sun hotspot
       placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 170, 170);
 
-      // Cheat stage anchor point at exact pixel location
+      // cheat stage anchor
       const { scale, offsetX, offsetY } = coverTransform();
       ui.cheatStage.style.left = (offsetX + CHEAT_CX * scale) + "px";
       ui.cheatStage.style.top  = (offsetY + CHEAT_CY * scale) + "px";
 
-      // Arrow row placement relative to anchor
+      // arrows above the center point (center arrow aligned to sun via anchor)
       ui.arrowRow.style.left = "0px";
-      ui.arrowRow.style.top  = (-70 * scale) + "px"; // above center like mockup
-
-      // Gap and arrow size scale with viewport
+      ui.arrowRow.style.top  = (-70 * scale) + "px";
       ui.arrowRow.style.gap = (22 * scale) + "px";
+
       for (const node of ui.arrowRow.querySelectorAll(".arrow")) {
         node.style.width  = (64 * scale) + "px";
         node.style.height = (64 * scale) + "px";
       }
 
-      // Cheat text image placement (match mockup: lower + smaller via natural width scaling)
+      // cheatcode.png placement (under arrows, sized 1:1 relative to its pixels)
       ui.cheatText.style.left = "0px";
-      ui.cheatText.style.top  = (80 * scale) + "px"; // lower than before (fix "too high")
+      ui.cheatText.style.top  = (55 * scale) + "px";
 
-      // Keep cheatcode.png at exact exported size * scale (no random font sizing)
       const img = ui.cheatText.querySelector("img");
       if (img && img.naturalWidth) {
         img.style.width = (img.naturalWidth * scale) + "px";
@@ -389,8 +349,7 @@
     }
 
     function resetCheatVisuals() {
-      const arrows = Array.from(ui.arrowRow.querySelectorAll(".arrow"));
-      for (const a of arrows) a.style.opacity = "0";
+      for (const a of ui.arrowRow.querySelectorAll(".arrow")) a.style.opacity = "0";
       ui.cheatText.style.opacity = "0";
     }
 
@@ -401,7 +360,7 @@
       const n = arrows.length;
 
       const step = ARROWS_TOTAL_MS / n;
-      const fadeEach = Math.min(900, step * 0.9);
+      const fadeEach = Math.min(650, step * 0.85);
 
       arrows.forEach((a, i) => {
         const t = i * step;
@@ -430,7 +389,6 @@
       document.body.classList.remove("cheat-open");
     }
 
-    // Events
     ui.downloadBtn.addEventListener("click", (e) => {
       e.preventDefault();
       startDownload();
@@ -441,7 +399,6 @@
       openCheat();
     });
 
-    // Click anywhere to exit cheat overlay
     ui.cheatOverlay.addEventListener("click", (e) => {
       e.preventDefault();
       closeCheat();
@@ -449,10 +406,8 @@
 
     window.addEventListener("resize", layout);
 
-    // Init
     buildArrowRow();
 
-    // Ensure cheatcode.png sizing uses naturalWidth once loaded
     const cheatImg = ui.cheatText.querySelector("img");
     cheatImg.addEventListener("load", layout);
 

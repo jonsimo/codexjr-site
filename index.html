@@ -4,47 +4,95 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Codex Jr Updater</title>
+
+  <!-- Pixel font (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
   <style>
-    body { margin:0; background:#0b0f1a; color:#e9eefc; font-family: system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 42px 18px; text-align:center; }
-    .hero { position: relative; border-radius: 18px; overflow:hidden; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); }
-    .hero img { width:100%; height:auto; display:block; }
-    .btn {
-      position:absolute; left:50%; bottom:7%; transform:translateX(-50%);
-      padding: 14px 20px; border-radius: 14px; font-weight: 900;
-      background:#ffd54a; color:#1a1400; text-decoration:none;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: #000;
+      overflow: hidden;
+      color: #fff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
-    .btn:hover { filter: brightness(1.03); }
-    .meta { margin-top: 14px; opacity:.8; font-size: 14px; }
-    .links { margin-top: 10px; font-size: 14px; opacity:.85; }
-    .links a { color:#9bb7ff; }
+
+    /* Fullscreen background image */
+    .bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;      /* fills screen */
+      object-position: center;/* keep centered framing */
+      z-index: -2;
+      image-rendering: auto;
+    }
+
+    /* Optional subtle darken for readability */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0.55) 100%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Button positioning */
+    .download {
+      position: fixed;
+      left: 50%;
+      /* Put it just below the sun — tweak this number to taste */
+      top: 68%;
+      transform: translate(-50%, -50%);
+
+      font-family: "Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: clamp(14px, 2.1vw, 24px);
+      line-height: 1;
+
+      padding: 18px 26px;
+      border-radius: 14px;
+      text-decoration: none;
+
+      /* Same yellow vibe as JR */
+      background: #ffd54a;
+      color: #1a1400;
+
+      box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+      border: 2px solid rgba(0,0,0,0.25);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .download:hover { filter: brightness(1.03); }
+    .download:active { transform: translate(-50%, -50%) translateY(2px); }
+
+    /* If you want *sharper* pixel feel (optional) */
+    @media (prefers-reduced-motion: no-preference) {
+      .download { transition: filter 120ms ease; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="hero">
-      <picture>
-        <source srcset="assets/codexjr-hero-2000.webp" media="(min-width: 900px)">
-        <img src="assets/codexjr-hero-1000.webp" alt="Codex Jr Updater">
-      </picture>
-      <a class="btn" id="downloadBtn" href="#">Download</a>
-    </div>
 
-    <div class="meta" id="osHint"></div>
+  <!-- Background: use the bigger one for large screens -->
+  <picture>
+    <source srcset="assets/codexjr-hero-2000.webp" media="(min-width: 900px)">
+    <img class="bg" src="assets/codexjr-hero-1000.webp" alt="Codex Jr Updater background">
+  </picture>
+  <div class="vignette"></div>
 
-    <div class="links">
-      Manual:
-      <a id="macLink" href="#">macOS</a> ·
-      <a id="winLink" href="#">Windows</a> ·
-      <a id="linLink" href="#">Linux</a>
-    </div>
-  </div>
+  <a class="download" id="downloadBtn" href="#">DOWNLOAD</a>
 
 <script>
+  // Set these to your updater repo
   const OWNER = "YOUR_GITHUB_OWNER";
   const REPO  = "YOUR_UPDATER_REPO";
 
+  // Filenames of your Release assets (must match exactly)
   const ASSET = {
     mac: "CodexJr-Updater-mac.zip",
     win: "CodexJr-Updater-windows.zip",
@@ -62,7 +110,7 @@
   async function getLatestReleaseTag() {
     const url = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
     const r = await fetch(url, { headers: { "Accept": "application/vnd.github+json" }});
-    if (!r.ok) throw new Error("Could not fetch latest release");
+    if (!r.ok) throw new Error("latest release lookup failed");
     const j = await r.json();
     return j.tag_name;
   }
@@ -71,32 +119,24 @@
     return `https://github.com/${OWNER}/${REPO}/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(filename)}`;
   }
 
-  (async () => {
+  document.getElementById("downloadBtn").addEventListener("click", async (ev) => {
+    ev.preventDefault();
+
     const os = detectOS();
-    const hint = document.getElementById("osHint");
-    hint.textContent = os === "unknown"
-      ? "Couldn’t detect OS — use manual links below."
-      : `Detected: ${os === "mac" ? "macOS" : os === "win" ? "Windows" : "Linux"}`;
-
-    let tag = null;
-    try { tag = await getLatestReleaseTag(); }
-    catch (e) { hint.textContent += " (Latest release lookup failed.)"; }
-
-    if (tag) {
-      macLink.href = releaseAssetUrl(tag, ASSET.mac);
-      winLink.href = releaseAssetUrl(tag, ASSET.win);
-      linLink.href = releaseAssetUrl(tag, ASSET.lin);
+    if (os === "unknown") {
+      alert("Couldn’t detect your OS. Please download from the GitHub Releases page.");
+      return;
     }
 
-    downloadBtn.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      if (!tag) return alert("Could not find latest release. Use manual links or check repo settings.");
-      if (os === "mac") location.href = releaseAssetUrl(tag, ASSET.mac);
-      else if (os === "win") location.href = releaseAssetUrl(tag, ASSET.win);
-      else if (os === "lin") location.href = releaseAssetUrl(tag, ASSET.lin);
-      else alert("Couldn’t detect OS. Use the manual links below.");
-    });
-  })();
+    try {
+      const tag = await getLatestReleaseTag();
+      const file = os === "mac" ? ASSET.mac : os === "win" ? ASSET.win : ASSET.lin;
+      window.location.href = releaseAssetUrl(tag, file);
+    } catch (e) {
+      alert("Couldn’t find the latest release on GitHub yet. Publish a GitHub Release with the .zip assets.");
+    }
+  });
 </script>
+
 </body>
 </html>

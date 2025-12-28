@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
+  <!-- Favicons -->
+  <link rel="icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
   <style>
     :root{
       --design-w: 2000;
@@ -220,17 +226,12 @@
     const PAUSE_MS        = 500;    // pause after arrows
     const TEXT_FADE_MS    = 3000;   // text fade-in duration
 
-    // GitHub release + assets (direct-download links)
-    const RELEASE_TAG = "v.1.0.4";
-    const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-updater/releases/download/${RELEASE_TAG}/`;
+    // GitHub release lookup (no hardcoded asset URLs)
+    const GH_OWNER = "jonsimo";
+    const GH_REPO  = "codex-jr-updater";
 
-    const ASSETS = {
-      mac: `${RELEASE_BASE}CodexJr-Updater-mac-${RELEASE_TAG}.zip`,
-      win: `${RELEASE_BASE}CodexJr-Updater-windows-${RELEASE_TAG}.zip`,
-      // If you add Linux later, drop it in the release and uncomment:
-      // lin: `${RELEASE_BASE}CodexJr-Updater-linux-${RELEASE_TAG}.zip`,
-      fallback: `https://github.com/jonsimo/codex-jr-updater/releases/tag/${RELEASE_TAG}`
-    };
+    // Try these tag spellings in order (covers v.1.0.4 vs v1.0.4)
+    const TAG_CANDIDATES = ["v.1.0.4", "v1.0.4"];
 
     // Arrow sequence (9 arrows): ↑ ↑ ↑ ← ↓ → ↑ ↑ ↑
     const SEQ = ["up","up","up","left","down","right","up","up","up"];
@@ -272,20 +273,62 @@
       const ua = navigator.userAgent.toLowerCase();
       const platform = (navigator.platform || "").toLowerCase();
 
-      // mac
       if (platform.includes("mac") || ua.includes("mac os")) return "mac";
-      // windows
       if (platform.includes("win") || ua.includes("windows")) return "win";
-      // linux (optional)
       if (platform.includes("linux") || ua.includes("linux")) return "lin";
 
       return "unknown";
     }
 
-    function startDownload() {
-      const os = detectOS();
-      const url = ASSETS[os] || ASSETS.fallback;
-      window.location.href = url;
+    async function fetchReleaseByTag(tag) {
+      const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/releases/tags/${encodeURIComponent(tag)}`;
+      const r = await fetch(url, { cache: "no-store" });
+      if (!r.ok) return null;
+      return await r.json();
+    }
+
+    function pickAssetUrl(releaseJson, os) {
+      if (!releaseJson || !Array.isArray(releaseJson.assets)) return null;
+
+      // Match your naming style (zip files)
+      const assets = releaseJson.assets;
+
+      const want = {
+        mac: /mac.*\.zip$/i,
+        win: /windows.*\.zip$/i,
+        lin: /linux.*\.zip$/i
+      }[os];
+
+      if (!want) return null;
+
+      const match = assets.find(a => want.test(a.name));
+      return match ? match.browser_download_url : null;
+    }
+
+    async function startDownload() {
+      ui.downloadBtn.disabled = true;
+
+      try {
+        const os = detectOS();
+
+        // Try tag candidates until one exists, then download correct OS asset.
+        for (const tag of TAG_CANDIDATES) {
+          const rel = await fetchReleaseByTag(tag);
+          if (!rel) continue;
+
+          const url = pickAssetUrl(rel, os);
+          if (url) {
+            window.location.href = url;
+            return;
+          }
+        }
+
+        // Fallback: send them to releases page if we couldn't resolve an asset.
+        window.location.href = `https://github.com/${GH_OWNER}/${GH_REPO}/releases`;
+      } finally {
+        // If navigation is blocked, re-enable
+        setTimeout(() => { ui.downloadBtn.disabled = false; }, 800);
+      }
     }
 
     // Cover-math so coordinates match your PSD in any viewport size
@@ -312,21 +355,20 @@
     }
 
     function layout() {
-      // Download button size (in design pixels). Tweak if you want bigger/smaller.
+      // Download button size (in design pixels). Matches your dl_button.png design.
       placeElement(ui.downloadBtn, DL_CX, DL_CY, 802, 192);
 
       // Sun hotspot (subtle hover hint)
       placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 170, 170);
 
-      // Cheat stage anchor point (top-left at exact pixel location)
+      // Cheat stage anchor point at exact pixel location
       const { scale, offsetX, offsetY } = coverTransform();
       ui.cheatStage.style.left = (offsetX + CHEAT_CX * scale) + "px";
       ui.cheatStage.style.top  = (offsetY + CHEAT_CY * scale) + "px";
 
-      // Arrow row placement relative to the anchor (match your mockup spacing)
-      // These offsets are in *design pixels* (then scaled).
+      // Arrow row placement relative to anchor
       ui.arrowRow.style.left = "0px";
-      ui.arrowRow.style.top  = (-70 * scale) + "px"; // arrows slightly above center
+      ui.arrowRow.style.top  = (-70 * scale) + "px"; // above center like mockup
 
       // Gap and arrow size scale with viewport
       ui.arrowRow.style.gap = (22 * scale) + "px";
@@ -335,13 +377,11 @@
         node.style.height = (64 * scale) + "px";
       }
 
-      // Cheat text image placement (lower than before to match your mockup)
-      // This anchors the *center* of cheatcode.png under the arrows.
+      // Cheat text image placement (match mockup: lower + smaller via natural width scaling)
       ui.cheatText.style.left = "0px";
-      ui.cheatText.style.top  = (55 * scale) + "px"; // move text down (fix "too high")
+      ui.cheatText.style.top  = (80 * scale) + "px"; // lower than before (fix "too high")
 
-      // Keep cheatcode.png at 1:1 design scale via natural size * scale
-      // (so it matches your exported pixel-art exactly)
+      // Keep cheatcode.png at exact exported size * scale (no random font sizing)
       const img = ui.cheatText.querySelector("img");
       if (img && img.naturalWidth) {
         img.style.width = (img.naturalWidth * scale) + "px";
@@ -349,11 +389,8 @@
     }
 
     function resetCheatVisuals() {
-      // reset arrows
       const arrows = Array.from(ui.arrowRow.querySelectorAll(".arrow"));
       for (const a of arrows) a.style.opacity = "0";
-
-      // reset text
       ui.cheatText.style.opacity = "0";
     }
 
@@ -363,20 +400,17 @@
       const arrows = Array.from(ui.arrowRow.querySelectorAll(".arrow"));
       const n = arrows.length;
 
-      // total = 4000ms across all arrows
       const step = ARROWS_TOTAL_MS / n;
-      const fadeEach = Math.min(650, step * 0.85); // smooth fade, still staggered
+      const fadeEach = Math.min(900, step * 0.9);
 
       arrows.forEach((a, i) => {
         const t = i * step;
-        // schedule fade in
         setTimeout(() => {
           a.style.transition = `opacity ${fadeEach}ms ease`;
           a.style.opacity = "1";
         }, t);
       });
 
-      // After arrows + pause, fade in cheat text over 3000ms
       const afterArrows = ARROWS_TOTAL_MS + PAUSE_MS;
       setTimeout(() => {
         ui.cheatText.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;

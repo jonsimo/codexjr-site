@@ -49,40 +49,50 @@
       inset: 0;
       background: radial-gradient(
         ellipse at center,
-        rgba(0,0,0,0.0) 30%,
-        rgba(0,0,0,0.6) 100%
+        rgba(0,0,0,0.0) 28%,
+        rgba(0,0,0,0.62) 100%
       );
       pointer-events: none;
       z-index: 1;
     }
 
-    /* Download button */
+    /* ---------------- Download Button ---------------- */
     .dl-wrap {
       position: fixed;
       left: 50%;
       top: 68%;
       transform: translate(-50%, -50%);
       cursor: pointer;
-      z-index: 3;
+      z-index: 6;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .dl-wrap img {
       width: clamp(240px, 32vw, 460px);
       height: auto;
       image-rendering: pixelated;
+
       filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6));
-      transition: transform 120ms cubic-bezier(.2,.8,.2,1), filter 120ms cubic-bezier(.2,.8,.2,1);
+      transition:
+        transform 120ms cubic-bezier(.2,.8,.2,1),
+        filter 120ms cubic-bezier(.2,.8,.2,1);
     }
 
     @keyframes glowPulse {
       0% {
-        filter: drop-shadow(0 0 6px rgba(255,213,74,0.45)) drop-shadow(0 12px 28px rgba(0,0,0,0.6));
+        filter:
+          drop-shadow(0 0 6px rgba(255,213,74,0.45))
+          drop-shadow(0 12px 28px rgba(0,0,0,0.6));
       }
       50% {
-        filter: drop-shadow(0 0 14px rgba(255,213,74,0.75)) drop-shadow(0 14px 32px rgba(0,0,0,0.7));
+        filter:
+          drop-shadow(0 0 14px rgba(255,213,74,0.75))
+          drop-shadow(0 14px 32px rgba(0,0,0,0.7));
       }
       100% {
-        filter: drop-shadow(0 0 6px rgba(255,213,74,0.45)) drop-shadow(0 12px 28px rgba(0,0,0,0.6));
+        filter:
+          drop-shadow(0 0 6px rgba(255,213,74,0.45))
+          drop-shadow(0 12px 28px rgba(0,0,0,0.6));
       }
     }
 
@@ -93,7 +103,9 @@
 
     .dl-wrap:active img {
       transform: translateY(2px);
-      filter: drop-shadow(0 0 4px rgba(255,213,74,0.35)) drop-shadow(0 8px 18px rgba(0,0,0,0.55));
+      filter:
+        drop-shadow(0 0 4px rgba(255,213,74,0.35))
+        drop-shadow(0 8px 18px rgba(0,0,0,0.55));
       animation: none;
     }
 
@@ -101,76 +113,97 @@
       .dl-wrap:hover img { animation: none; }
     }
 
-    /* Secret sun hitbox + subtle glow */
+    /* ---------------- Secret Sun Hint ---------------- */
+
+    /* Invisible hitbox */
     #sunHitbox{
       position: fixed;
       left: 50%;
       top: 52%;
       transform: translate(-50%, -50%);
-      width: 120px;
-      height: 120px;
+      width: 140px;
+      height: 140px;
       border-radius: 999px;
       opacity: 0;
       cursor: pointer;
-      z-index: 4;
+      z-index: 7;
+      -webkit-tap-highlight-color: transparent;
     }
 
+    /* Glow overlay + subtle ring shimmer */
     #sunGlow{
       position: fixed;
       left: 50%;
       top: 52%;
       transform: translate(-50%, -50%);
-      width: 220px;
-      height: 220px;
+      width: 280px;
+      height: 280px;
       border-radius: 50%;
       pointer-events: none;
+      z-index: 3;
+
       background: radial-gradient(
         circle,
-        rgba(255,213,74,0.18) 0%,
-        rgba(255,213,74,0.12) 25%,
-        rgba(255,213,74,0.06) 45%,
-        rgba(255,213,74,0.0) 65%
+        rgba(255,213,74,0.00) 0%,
+        rgba(255,213,74,0.10) 28%,
+        rgba(255,213,74,0.05) 48%,
+        rgba(255,213,74,0.00) 70%
       );
-      opacity: 0;
-      transition: opacity 220ms ease;
-      z-index: 2;
-    }
-    #sunHitbox:hover + #sunGlow { opacity: 1; }
 
-    /* ---------- Cheat Overlay ---------- */
+      opacity: 0;
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+
+    #sunGlow::after{
+      content:"";
+      position:absolute;
+      inset: 34%;
+      border-radius: 999px;
+      border: 2px solid rgba(255,213,74,0.18);
+      opacity: 0;
+      transform: scale(0.92);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+
+    #sunHitbox:hover + #sunGlow{
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.02);
+    }
+
+    #sunHitbox:hover + #sunGlow::after{
+      opacity: 1;
+      transform: scale(1.0);
+    }
+
+    /* ---------------- Cheat Overlay ---------------- */
     #cheatOverlay{
       position: fixed;
       inset: 0;
       z-index: 50;
-      display: none;          /* hidden by default */
+      display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.60);
-      cursor: pointer;        /* click anywhere to close */
+      background: rgba(0,0,0,0.62);
+      cursor: pointer;
     }
 
-    #cheatOverlay.show{
-      display: flex;
-    }
+    #cheatOverlay.show{ display: flex; }
 
-    /* Container keeps layout stable */
     .cheatBox{
-      width: min(900px, 92vw);
+      width: min(980px, 94vw);
       text-align: center;
       transform: translateY(-8px);
       user-select: none;
     }
 
-    /* Arrows line */
     .arrows{
       font-family: "PressStart2P", monospace;
       color: var(--jr-yellow);
-      font-size: clamp(22px, 2.2vw, 42px);
+      font-size: clamp(22px, 2.2vw, 44px);
       letter-spacing: 10px;
       line-height: 1.2;
       margin-bottom: 18px;
-      text-shadow:
-        -2px 0 #000, 2px 0 #000, 0 -2px #000, 0 2px #000;
+      text-shadow: -2px 0 #000, 2px 0 #000, 0 -2px #000, 0 2px #000;
     }
 
     .arrow{
@@ -180,20 +213,17 @@
     }
     .arrow.on{ opacity: 1; }
 
-    /* Text block */
     .cheatText{
       font-family: "BitHud", monospace;
       color: var(--jr-yellow);
       font-size: clamp(18px, 1.7vw, 30px);
-      line-height: 1.2;
+      line-height: 1.15;
       opacity: 0;
       transition: opacity 420ms ease;
-      text-shadow:
-        -2px 0 #000, 2px 0 #000, 0 -2px #000, 0 2px #000;
+      text-shadow: -2px 0 #000, 2px 0 #000, 0 -2px #000, 0 2px #000;
     }
     .cheatText.on{ opacity: 1; }
 
-    /* Small helper hint (optional) */
     .tapHint{
       margin-top: 18px;
       font-family: "BitHud", monospace;
@@ -201,13 +231,17 @@
       opacity: 0.55;
       color: #fff;
     }
+
+    /* Optional: make overlay dismissable without selecting text */
+    #cheatOverlay * { pointer-events: none; }
+    #cheatOverlay { pointer-events: auto; }
   </style>
 </head>
 
 <body>
   <div class="vignette"></div>
 
-  <!-- Secret sun hit area + subtle glow -->
+  <!-- Secret sun hotspot + hover hint -->
   <div id="sunHitbox" aria-label="secret"></div>
   <div id="sunGlow"></div>
 
@@ -220,17 +254,23 @@
   <div id="cheatOverlay" aria-hidden="true">
     <div class="cheatBox">
       <div class="arrows" id="arrowLine"></div>
-      <div class="cheatText" id="cheatText">
-        pixel pond<br/>cheat code
-      </div>
+      <div class="cheatText" id="cheatText">pixel pond<br/>cheat code</div>
       <div class="tapHint">(click anywhere)</div>
     </div>
   </div>
 
   <script>
-    /* -------- Download config -------- */
-    const OWNER = "YOUR_GITHUB_OWNER";
-    const REPO  = "YOUR_UPDATER_REPO";
+    /* ---------------- Downloads (GitHub Releases) ----------------
+       Put the updater ZIPs in your *UPDATER REPO* GitHub Releases (not this site repo).
+
+       Example asset names expected:
+         CodexJr-Updater-mac.zip
+         CodexJr-Updater-windows.zip
+         CodexJr-Updater-linux.zip
+    */
+
+    const OWNER = "jonsimo";
+    const REPO  = "YOUR_UPDATER_REPO_NAME"; // <-- change this
 
     const ASSET = {
       mac: "CodexJr-Updater-mac.zip",
@@ -277,35 +317,25 @@
       }
     });
 
-    /* -------- Cheat overlay animation -------- */
+    /* ---------------- Cheat overlay animation ---------------- */
     const sunHitbox = document.getElementById("sunHitbox");
-    const overlay = document.getElementById("cheatOverlay");
+    const overlay   = document.getElementById("cheatOverlay");
     const arrowLine = document.getElementById("arrowLine");
     const cheatText = document.getElementById("cheatText");
 
-    // Your cheat sequence (use unicode arrows)
     const CHEAT_SEQ = ["↑","↑","↑","←","↓","→","↑","↑","↑"];
 
     let animTimers = [];
-
-    function clearAnimTimers(){
-      animTimers.forEach(t => clearTimeout(t));
-      animTimers = [];
-    }
-
-    function resetCheatUI(){
-      arrowLine.innerHTML = "";
-      cheatText.classList.remove("on");
-    }
+    function clearAnimTimers(){ animTimers.forEach(t => clearTimeout(t)); animTimers = []; }
+    function resetCheatUI(){ arrowLine.innerHTML = ""; cheatText.classList.remove("on"); }
 
     function openCheat(){
       clearAnimTimers();
       resetCheatUI();
-
       overlay.classList.add("show");
       overlay.setAttribute("aria-hidden", "false");
 
-      // Build spans so we can fade each arrow in
+      // Build arrow spans
       for (const a of CHEAT_SEQ) {
         const s = document.createElement("span");
         s.className = "arrow";
@@ -313,16 +343,14 @@
         arrowLine.appendChild(s);
       }
 
-      // Stagger fade-in per arrow
       const arrows = Array.from(arrowLine.querySelectorAll(".arrow"));
-      const stepMs = 140;     // speed of reveal (tweak)
-      const startDelay = 180; // slight pause after open
+      const startDelay = 180;
+      const stepMs = 120; // <-- change this if you want faster/slower
 
       arrows.forEach((el, i) => {
         animTimers.push(setTimeout(() => el.classList.add("on"), startDelay + i * stepMs));
       });
 
-      // After arrows complete, fade in text
       const totalArrowTime = startDelay + (arrows.length - 1) * stepMs + 220;
       animTimers.push(setTimeout(() => cheatText.classList.add("on"), totalArrowTime));
     }
@@ -340,11 +368,8 @@
       openCheat();
     });
 
-    overlay.addEventListener("click", () => {
-      closeCheat();
-    });
+    overlay.addEventListener("click", () => closeCheat());
 
-    // Escape key to close
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && overlay.classList.contains("show")) closeCheat();
     });

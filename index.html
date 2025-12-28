@@ -14,18 +14,22 @@
       overflow: hidden;
     }
 
-    /* Fullscreen background image */
-    .bg {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      z-index: -2;
+    /* Fullscreen background via CSS (Safari-safe) */
+    body {
+      background-image: url("assets/codexjr-hero-1000.webp");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
 
-    /* Optional vignette for contrast */
+    /* Larger image for larger screens */
+    @media (min-width: 900px) {
+      body {
+        background-image: url("assets/codexjr-hero-2000.webp");
+      }
+    }
+
+    /* Optional vignette */
     .vignette {
       position: fixed;
       inset: 0;
@@ -34,15 +38,14 @@
         rgba(0,0,0,0.0) 30%,
         rgba(0,0,0,0.6) 100%
       );
-      z-index: -1;
       pointer-events: none;
     }
 
-    /* Download button wrapper */
+    /* Download button */
     .dl-wrap {
       position: fixed;
       left: 50%;
-      top: 68%; /* adjust slightly if needed */
+      top: 68%; /* tweak to align under sun */
       transform: translate(-50%, -50%);
       cursor: pointer;
     }
@@ -67,20 +70,14 @@
 </head>
 <body>
 
-  <!-- Background -->
-  <picture>
-    <source srcset="assets/codexjr-hero-2000.webp" media="(min-width: 900px)">
-    <img class="bg" src="assets/codexjr-hero-1000.webp" alt="Codex Jr Updater">
-  </picture>
   <div class="vignette"></div>
 
-  <!-- Download button (image-based) -->
+  <!-- Image-based download button -->
   <a href="#" id="downloadBtn" class="dl-wrap">
     <img src="assets/dl_button.png" alt="Download Codex Jr Updater">
   </a>
 
   <script>
-    /* CONFIG — SET THESE */
     const OWNER = "YOUR_GITHUB_OWNER";
     const REPO  = "YOUR_UPDATER_REPO";
 
@@ -99,19 +96,20 @@
     }
 
     async function getLatestReleaseTag() {
-      const url = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
-      const r = await fetch(url, { headers: { "Accept": "application/vnd.github+json" }});
+      const r = await fetch(
+        `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`,
+        { headers: { "Accept": "application/vnd.github+json" } }
+      );
       if (!r.ok) throw new Error("No release");
-      const j = await r.json();
-      return j.tag_name;
+      return (await r.json()).tag_name;
     }
 
     function releaseAssetUrl(tag, filename) {
       return `https://github.com/${OWNER}/${REPO}/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(filename)}`;
     }
 
-    document.getElementById("downloadBtn").addEventListener("click", async (ev) => {
-      ev.preventDefault();
+    document.getElementById("downloadBtn").addEventListener("click", async (e) => {
+      e.preventDefault();
 
       const os = detectOS();
       if (os === "unknown") {
@@ -121,12 +119,8 @@
 
       try {
         const tag = await getLatestReleaseTag();
-        const file =
-          os === "mac" ? ASSET.mac :
-          os === "win" ? ASSET.win :
-          ASSET.lin;
-
-        window.location.href = releaseAssetUrl(tag, file);
+        const file = os === "mac" ? ASSET.mac : os === "win" ? ASSET.win : ASSET.lin;
+        location.href = releaseAssetUrl(tag, file);
       } catch {
         alert("Latest release not found. Publish a GitHub Release first.");
       }

@@ -5,29 +5,24 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-<!-- Favicons -->
-<link rel="icon" href="assets/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <!-- Favicons (YOU HAVE THEM IN /assets, so we point there explicitly) -->
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
   <style>
-    :root{
-      --design-w: 2000;
-      --design-h: 1185;
-    }
-
+    :root { --design-w: 2000; --design-h: 1185; }
     html, body { height: 100%; margin: 0; }
     body{
-      overflow: hidden;
-      background: #000;
+      overflow:hidden;
+      background:#000;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
     /* Full-screen hero */
     #hero{
-      position: fixed;
-      inset: 0;
+      position:fixed; inset:0;
       background-image: image-set(
         url("assets/codexjr-hero-1000.webp") 1x,
         url("assets/codexjr-hero-2000.webp") 2x
@@ -38,31 +33,23 @@
       transform: translateZ(0);
     }
 
-    /* Overlay for positioned UI elements */
-    #ui{
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-    }
+    /* UI layer */
+    #ui{ position:fixed; inset:0; pointer-events:none; }
 
     /* Download button */
     #downloadBtn{
-      position: absolute;
-      border: 0;
-      background: transparent;
-      padding: 0;
-      margin: 0;
-      cursor: pointer;
-      pointer-events: auto;
+      position:absolute;
+      border:0; background:transparent;
+      padding:0; margin:0;
+      cursor:pointer;
+      pointer-events:auto;
       transform: translate(-50%, -50%);
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      z-index: 5;
+      user-select:none;
     }
     #downloadBtn img{
-      display: block;
-      width: 100%;
-      height: auto;
+      display:block;
+      width:100%; height:auto;
       image-rendering: pixelated;
       transform: translateZ(0);
       transition: transform 140ms ease, filter 140ms ease;
@@ -76,107 +63,112 @@
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* Sun hotspot (FIXED: z-index + tiny transparent bg so hover reliably fires) */
+    /* SUN HOTSPOT + HOVER GLOW (this is the part you said is missing) */
     #sunHotspot{
-      position: absolute;
+      position:absolute;
       transform: translate(-50%, -50%);
-      width: 170px; /* scaled by JS */
-      height: 170px; /* scaled by JS */
       border-radius: 999px;
-      pointer-events: auto;
-      cursor: pointer;
-
-      z-index: 10;                    /* <-- ensure it's above everything */
-      background: rgba(0,0,0,0.001);  /* <-- invisible but hoverable (Safari fix) */
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
+      pointer-events:auto;
+      cursor:pointer;
+      background: rgba(0,0,0,0); /* ensure element exists */
     }
-    #sunHotspot::before{
+
+    /* We do TWO layers to avoid “ring artifact”: a soft halo + a softer core */
+    #sunHotspot::before,
+    #sunHotspot::after{
       content:"";
       position:absolute;
-      inset:-18px;
-      border-radius: 999px;
+      inset:-28px;            /* halo size (scaled by JS via element sizing) */
+      border-radius:999px;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 180ms ease;
+      transform: translateZ(0);
+      will-change: opacity;
+    }
+
+    /* outer halo */
+    #sunHotspot::before{
       background: radial-gradient(circle,
-        rgba(255,235,160,0.22) 0%,
-        rgba(255,205,110,0.10) 35%,
+        rgba(255,230,150,0.00) 0%,
+        rgba(255,220,130,0.16) 30%,
+        rgba(255,200,110,0.10) 48%,
+        rgba(255,180,90,0.04) 62%,
+        rgba(0,0,0,0.00) 76%
+      );
+      filter: blur(14px);
+    }
+
+    /* subtle inner warmth */
+    #sunHotspot::after{
+      inset:-10px;
+      background: radial-gradient(circle,
+        rgba(255,235,170,0.18) 0%,
+        rgba(255,210,120,0.08) 45%,
         rgba(0,0,0,0.00) 70%
       );
-      filter: blur(10px);
-      opacity: 0.00;
-      transition: opacity 200ms ease;
-      pointer-events:none;
+      filter: blur(8px);
     }
-    #sunHotspot:hover::before{
-      opacity: 0.16;
-    }
+
+    /* Make it visible on hover (not too obvious) */
+    #sunHotspot:hover::before{ opacity: 0.22; }
+    #sunHotspot:hover::after { opacity: 0.12; }
 
     /* Cheat overlay */
     #cheatOverlay{
-      position: fixed;
-      inset: 0;
-      display: none;
-      pointer-events: auto;
-      z-index: 50;
+      position:fixed; inset:0;
+      display:none;
+      pointer-events:auto;
     }
-    #cheatOverlay.show{ display: block; }
+    #cheatOverlay.show{ display:block; }
 
     #cheatDim{
-      position:absolute;
-      inset:0;
+      position:absolute; inset:0;
       background: rgba(0,0,0,0.55);
     }
 
     #cheatStage{
       position:absolute;
-      left: 0;
-      top: 0;
-      width: 0;
-      height: 0;
+      left:0; top:0;
+      width:0; height:0;
       transform: translateZ(0);
     }
 
-    /* Arrow row (9 arrows) */
+    /* Arrow row */
     #arrowRow{
       position:absolute;
       display:flex;
       align-items:center;
       justify-content:center;
-      gap: 22px; /* scaled by JS */
       transform: translate(-50%, -50%);
-      opacity: 1;
     }
     .arrow{
-      width: 64px;  /* scaled by JS */
-      height: 64px; /* scaled by JS */
-      opacity: 0;
+      opacity:0;
       will-change: opacity;
     }
     .arrow img{
-      width: 100%;
-      height: 100%;
+      width:100%; height:100%;
       display:block;
       image-rendering: pixelated;
       transform-origin: 50% 50%;
     }
 
-    /* Cheat text image (your exact pixel-art) */
+    /* Cheat text is your exact PNG */
     #cheatText{
       position:absolute;
       transform: translate(-50%, -50%);
-      opacity: 0;
+      opacity:0;
       will-change: opacity;
     }
     #cheatText img{
       display:block;
-      width: 100%;
-      height: auto;
+      width:100%;
+      height:auto;
       image-rendering: pixelated;
     }
 
-    /* Hide download button when cheat is open */
-    body.cheat-open #downloadBtn{
-      display: none;
-    }
+    /* Hide download button while cheat is open */
+    body.cheat-open #downloadBtn{ display:none; }
   </style>
 </head>
 
@@ -184,8 +176,8 @@
   <div id="hero" aria-hidden="true"></div>
 
   <div id="ui">
-    <!-- Sun hotspot (hidden click area) -->
-    <div id="sunHotspot" aria-label="Hidden"></div>
+    <!-- Sun hotspot -->
+    <div id="sunHotspot" aria-label="Hidden cheat"></div>
 
     <!-- Download button -->
     <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
@@ -207,15 +199,17 @@
   </div>
 
   <script>
-    // DESIGN SPACE
+    /******************************************************************
+     * DESIGN SPACE
+     ******************************************************************/
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
 
-    // Center point for cheat overlay (align to sun like your mockup)
+    // You provided this: arrow/text center align point
     const CHEAT_CX = 990;
     const CHEAT_CY = 580;
 
-    // Download button position in design pixels
+    // Download button placement (design pixels)
     const DL_CX = 1000;
     const DL_CY = 760;
 
@@ -223,30 +217,23 @@
     const SUN_CX = CHEAT_CX;
     const SUN_CY = CHEAT_CY;
 
-    // Timing
+    // Animation timing
     const ARROWS_TOTAL_MS = 4000;
     const PAUSE_MS        = 500;
     const TEXT_FADE_MS    = 3000;
 
-    // PUBLIC DOWNLOADS REPO
-    const DOWNLOADS_OWNER = "jonsimo";
-    const DOWNLOADS_REPO  = "codex-jr-downloads";
-    const RELEASE_TAG     = "v1.0.4";
+    // Public releases repo (your screenshot)
+    const RELEASE_TAG = "v1.0.4";
+    const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
 
-    // Filenames exactly as your release assets
-    const MAC_FILE = `CodexJr-Updater-mac-${RELEASE_TAG}.zip`;
-    const WIN_FILE = `CodexJr-Updater-windows-${RELEASE_TAG}.zip`;
-
-    const RELEASE_BASE = `https://github.com/${DOWNLOADS_OWNER}/${DOWNLOADS_REPO}/releases/download/${RELEASE_TAG}/`;
-    const RELEASE_PAGE = `https://github.com/${DOWNLOADS_OWNER}/${DOWNLOADS_REPO}/releases/tag/${RELEASE_TAG}`;
-
+    // NOTE: these must match the asset names EXACTLY in the Releases list
     const ASSETS = {
-      mac: `${RELEASE_BASE}${encodeURIComponent(MAC_FILE)}`,
-      win: `${RELEASE_BASE}${encodeURIComponent(WIN_FILE)}`,
-      fallback: RELEASE_PAGE
+      mac: `${RELEASE_BASE}Codex-Jr-Updater-mac-v1.0.4.zip`,
+      win: `${RELEASE_BASE}Codex-Jr-Updater-windows-v1.0.4.zip`,
+      fallback: `https://github.com/jonsimo/codex-jr-downloads/releases/tag/${RELEASE_TAG}`
     };
 
-    // Arrow sequence: ↑ ↑ ↑ ← ↓ → ↑ ↑ ↑
+    // Arrow sequence (9 arrows): ↑ ↑ ↑ ← ↓ → ↑ ↑ ↑
     const SEQ = ["up","up","up","left","down","right","up","up","up"];
 
     const ui = {
@@ -282,7 +269,6 @@
     function detectOS() {
       const ua = navigator.userAgent.toLowerCase();
       const platform = (navigator.platform || "").toLowerCase();
-
       if (platform.includes("mac") || ua.includes("mac os")) return "mac";
       if (platform.includes("win") || ua.includes("windows")) return "win";
       return "unknown";
@@ -297,14 +283,11 @@
     function coverTransform() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-
       const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
       const drawW = DESIGN_W * scale;
       const drawH = DESIGN_H * scale;
-
       const offsetX = (vw - drawW) / 2;
       const offsetY = (vh - drawH) / 2;
-
       return { scale, offsetX, offsetY };
     }
 
@@ -317,29 +300,37 @@
     }
 
     function layout() {
+      // Download button uses the PNG’s size you were using earlier
       placeElement(ui.downloadBtn, DL_CX, DL_CY, 802, 192);
+
+      // Sun hotspot size (big enough to hit, but not obvious)
       placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 170, 170);
 
+      // Cheat anchor at exact PSD point
       const { scale, offsetX, offsetY } = coverTransform();
       ui.cheatStage.style.left = (offsetX + CHEAT_CX * scale) + "px";
       ui.cheatStage.style.top  = (offsetY + CHEAT_CY * scale) + "px";
 
+      // Arrow row centered exactly on cheat anchor
       ui.arrowRow.style.left = "0px";
       ui.arrowRow.style.top  = (-70 * scale) + "px";
 
+      // Spacing / sizing
       ui.arrowRow.style.gap = (22 * scale) + "px";
+      const arrowW = 64 * scale;
+      const arrowH = 64 * scale;
       for (const node of ui.arrowRow.querySelectorAll(".arrow")) {
-        node.style.width  = (64 * scale) + "px";
-        node.style.height = (64 * scale) + "px";
+        node.style.width  = arrowW + "px";
+        node.style.height = arrowH + "px";
       }
 
+      // Cheatcode.png: center under arrows (lower)
       ui.cheatText.style.left = "0px";
       ui.cheatText.style.top  = (55 * scale) + "px";
 
+      // Keep cheatcode.png pixel-true by scaling its natural size
       const img = ui.cheatText.querySelector("img");
-      if (img && img.naturalWidth) {
-        img.style.width = (img.naturalWidth * scale) + "px";
-      }
+      if (img && img.naturalWidth) img.style.width = (img.naturalWidth * scale) + "px";
     }
 
     function resetCheatVisuals() {
@@ -349,10 +340,8 @@
 
     function playCheatSequence() {
       resetCheatVisuals();
-
       const arrows = Array.from(ui.arrowRow.querySelectorAll(".arrow"));
       const n = arrows.length;
-
       const step = ARROWS_TOTAL_MS / n;
       const fadeEach = Math.min(650, step * 0.85);
 

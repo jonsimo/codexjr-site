@@ -2,201 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Codex Jr Updater</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Codex Jr</title>
 
-  <!-- Favicons (in /assets) -->
-  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <!-- Favicons -->
+  <link rel="icon" href="assets/favicon.ico">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
+  <!-- Pixel font -->
   <style>
-    html, body { height: 100%; margin: 0; }
-    body{
-      overflow: hidden;
-      background: #000;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
-
-    /* Blocky pixel font for footer version label */
-    @font-face{
+    @font-face {
       font-family: "BitHUD";
-      src: url("fonts/8-bit-hud.ttf") format("truetype");
+      src: url("assets/8-bit-hud.ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
       font-display: swap;
     }
 
-    /* HERO as an <img> so we don't fail silently */
-    #heroWrap{
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      background: #000;
-    }
-    #heroImg{
+    html, body {
+      margin: 0;
+      padding: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center center;
-      image-rendering: auto;
-      display: block;
+      background: #000;
+      overflow: hidden;
     }
 
-    /* UI overlay */
-    #ui{
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Full background */
+    #hero {
       position: fixed;
       inset: 0;
-      z-index: 10;
-      pointer-events: none;
-    }
-
-    /* Download button */
-    #downloadBtn{
-      position: absolute;
-      border: 0;
-      background: transparent;
-      padding: 0;
-      margin: 0;
-      cursor: pointer;
-      pointer-events: auto;
-      transform: translate(-50%, -50%);
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      z-index: 20;
-    }
-    #downloadBtn img{
-      display: block;
-      width: 100%;
-      height: auto;
-      image-rendering: pixelated;
-      transition: transform 140ms ease, filter 140ms ease;
-    }
-    #downloadBtn:hover img{
-      transform: scale(1.03);
-      filter: brightness(1.08) drop-shadow(0 10px 22px rgba(0,0,0,0.45));
-    }
-    #downloadBtn:active img{
-      transform: scale(0.985);
-      filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
-    }
-
-    /* Sun hotspot + smooth subtle glow */
-    #sunHotspot{
-      position: absolute;
-      transform: translate(-50%, -50%);
-      border-radius: 999px;
-      pointer-events: auto;
-      cursor: pointer;
-      background: rgba(0,0,0,0.001);
-      z-index: 30;
-    }
-    #sunHotspot::before,
-    #sunHotspot::after{
-      content:"";
-      position:absolute;
-      border-radius:999px;
-      pointer-events:none;
-      opacity: 0;
-      transition: opacity 520ms ease-in-out; /* smoother */
-      will-change: opacity;
-    }
-    #sunHotspot::before{
-      inset:-55px;
-      background: radial-gradient(circle,
-        rgba(255,245,200,0.26) 0%,
-        rgba(255,220,140,0.16) 30%,
-        rgba(255,190,110,0.08) 52%,
-        rgba(0,0,0,0.00) 72%
+      background-image: image-set(
+        url("assets/codexjr-hero-1000.webp") 1x,
+        url("assets/codexjr-hero-2000.webp") 2x
       );
-      filter: blur(12px);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 0;
     }
-    #sunHotspot::after{
-      inset:-18px;
-      background: radial-gradient(circle,
-        rgba(255,255,210,0.14) 0%,
-        rgba(255,215,140,0.07) 42%,
-        rgba(0,0,0,0.00) 70%
-      );
-      filter: blur(7px);
-    }
-    #sunHotspot:hover::before{ opacity: 1; }
-    #sunHotspot:hover::after { opacity: 1; }
 
-    /* Footer version label */
-    #version{
-      position: fixed;
+    /* Sun hover hotspot */
+    #sun-hotspot {
+      position: absolute;
       left: 50%;
-      bottom: 14px;
-      transform: translateX(-50%) scale(0.875); /* 16px -> ~14px, stays chunky */
-      transform-origin: 50% 100%;
-      font-family: "BitHUD", monospace;
-      font-size: 16px;
-      line-height: 16px;
-      letter-spacing: 1px;
-      color: #FFD75A;
-      opacity: 0.9;
+      top: 50%;
+      width: 180px;
+      height: 180px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      z-index: 2;
+      cursor: pointer;
+    }
+
+    #sun-hotspot::after {
+      content: "";
+      position: absolute;
+      inset: -30px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 220, 120, 0.18) 0%,
+        rgba(255, 200, 90, 0.10) 35%,
+        rgba(255, 180, 60, 0.05) 55%,
+        rgba(0,0,0,0) 70%
+      );
+      opacity: 0;
+      transition: opacity 600ms ease-in-out;
       pointer-events: none;
-      z-index: 40;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.45);
-      -webkit-font-smoothing: none;
+    }
+
+    #sun-hotspot:hover::after {
+      opacity: 1;
+    }
+
+    /* Footer version text */
+    #version {
+      position: fixed;
+      bottom: 12px;
+      width: 100%;
+      text-align: center;
+      font-family: "BitHUD", monospace;
+      font-size: 14px;
+      color: #f5d76e;
+      letter-spacing: 1px;
+      z-index: 3;
+      pointer-events: none;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.6);
     }
   </style>
 </head>
 
 <body>
-  <div id="heroWrap">
-    <!-- If your hero file is actually named differently, this will show black.
-         Try opening https://codexjr.com/assets/codexjr-hero-2000.webp in Safari to confirm. -->
-    <img id="heroImg" src="assets/codexjr-hero-2000.webp" alt="" />
-  </div>
+  <div id="hero"></div>
 
-  <div id="ui">
-    <div id="sunHotspot" aria-label="Hidden cheat"></div>
+  <!-- Invisible sun interaction -->
+  <div id="sun-hotspot" aria-label="Hidden interaction"></div>
 
-    <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="assets/dl_button.png" alt="Download" draggable="false" />
-    </button>
-  </div>
-
-  <div id="version">codex jr beta site v1.0.2</div>
-
-  <script>
-    // Design reference (your PSD)
-    const DESIGN_W = 2000;
-    const DESIGN_H = 1185;
-
-    // Sun center (you gave this)
-    const SUN_X = 990;
-    const SUN_Y = 580;
-
-    // Download button center (tweak if you want)
-    const DL_X = 1000;
-    const DL_Y = 760;
-
-    function coverTransform(){
-      const vw = innerWidth, vh = innerHeight;
-      const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
-      const ox = (vw - DESIGN_W * scale) / 2;
-      const oy = (vh - DESIGN_H * scale) / 2;
-      return { scale, ox, oy };
-    }
-
-    function place(el, x, y, w, h){
-      const { scale, ox, oy } = coverTransform();
-      el.style.left = (ox + x * scale) + "px";
-      el.style.top  = (oy + y * scale) + "px";
-      if (w != null) el.style.width  = (w * scale) + "px";
-      if (h != null) el.style.height = (h * scale) + "px";
-    }
-
-    function layout(){
-      place(document.getElementById("sunHotspot"), SUN_X, SUN_Y, 170, 170);
-      place(document.getElementById("downloadBtn"), DL_X, DL_Y, 802, 192);
-    }
-
-    addEventListener("resize", layout);
-    layout();
-  </script>
+  <!-- Version marker -->
+  <div id="version">codex jr beta site v1.0.0</div>
 </body>
 </html>

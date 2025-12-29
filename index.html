@@ -11,6 +11,9 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
+  <!-- Preload the pixel font (adjust path if needed) -->
+  <link rel="preload" href="fonts/8-bit-hud.ttf?v=101" as="font" type="font/ttf" crossorigin>
+
   <style>
     html, body { height: 100%; margin: 0; }
     body{
@@ -19,12 +22,11 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    /* Pixel font for version label */
-@font-face{
-  font-family: "BitHUD";
-  src: url("fonts/8-bit-hud.ttf") format("truetype");
-  font-display: swap;
-}
+    /* Pixel font (blockier) */
+    @font-face{
+      font-family: "BitHUD";
+      src: url("fonts/8-bit-hud.ttf?v=101") format("truetype");
+      font-display: swap;
     }
 
     /* Full-screen hero */
@@ -81,7 +83,7 @@
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* SUN HOTSPOT (tuned + subtle fade) */
+    /* Sun hotspot (subtle fade, already working) */
     #sunHotspot{
       position:absolute;
       z-index:30;
@@ -91,7 +93,6 @@
       cursor:pointer;
       background: rgba(0,0,0,0.001);
     }
-
     #sunHotspot::before,
     #sunHotspot::after{
       content:"";
@@ -103,8 +104,6 @@
       will-change: opacity;
       transition: opacity 420ms ease-in-out;
     }
-
-    /* outer halo (reduced intensity) */
     #sunHotspot::before{
       inset:-55px;
       background: radial-gradient(circle,
@@ -115,8 +114,6 @@
       );
       filter: blur(12px);
     }
-
-    /* inner warmth (reduced intensity) */
     #sunHotspot::after{
       inset:-18px;
       background: radial-gradient(circle,
@@ -126,23 +123,29 @@
       );
       filter: blur(7px);
     }
-
     #sunHotspot:hover::before{ opacity: 0.7; }
     #sunHotspot:hover::after { opacity: 0.6; }
 
-    /* Footer version label */
+    /* Footer version label (blocky + pixel-snapped) */
     #version{
       position:fixed;
-      bottom:16px;
+      bottom:14px;
       left:50%;
-      transform: translateX(-50%);
-      font-family: "PressStart2P", monospace;
-      font-size:14px;
+      transform: translateX(-50%) scale(0.875); /* 16px -> ~14px but stays blocky */
+      transform-origin: 50% 100%;
+      font-family: "BitHUD", monospace;
+      font-size:16px;
+      line-height:16px;
       color:#FFD75A;
-      opacity:0.85;
+      opacity:0.9;
+      letter-spacing: 1px;
       pointer-events:none;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.4);
       z-index:40;
+
+      -webkit-font-smoothing: none;
+      text-rendering: geometricPrecision;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.45);
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -153,12 +156,12 @@
   <div id="ui">
     <div id="sunHotspot"></div>
 
-    <button id="downloadBtn">
+    <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
       <img src="assets/dl_button.png" alt="Download" draggable="false">
     </button>
   </div>
 
-  <div id="version">codex jr beta site v1.0.0</div>
+  <div id="version">codex jr beta site v1.0.1</div>
 
   <script>
     const DESIGN_W = 2000;

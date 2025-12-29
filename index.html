@@ -3,53 +3,56 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Codex Jr Updater</title>
+  <title>Codex Jr</title>
 
-  <meta name="codex-build" content="v1.0.6" />
+  <!-- VERSION -->
+  <meta name="codex-build" content="v1.0.1" />
 
   <!-- Favicons -->
-  <link rel="icon" href="/assets/favicon.ico?v=106" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=106">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=106">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=106">
+  <link rel="icon" href="/assets/favicon.ico?v=101" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=101">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=101">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=101">
 
   <style>
-    :root{
-      --design-w: 2000;
-      --design-h: 1185;
+    :root {
       --yellow: #f6e15a;
     }
 
     @font-face{
       font-family: "BitHUD";
-      src: url("/assets/8-bit-hud.ttf?v=106") format("truetype");
-      font-weight: 400;
+      src: url("/assets/8-bit-hud.ttf?v=101") format("truetype");
+      font-weight: normal;
       font-style: normal;
       font-display: swap;
     }
 
-    html, body { height: 100%; margin: 0; }
-    body{
-      overflow: hidden;
+    html, body {
+      margin: 0;
+      height: 100%;
       background: #000;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow: hidden;
     }
 
-    #hero{
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Background */
+    #hero {
       position: fixed;
       inset: 0;
       background-image: image-set(
-        url("/assets/codexjr-hero-1000.webp?v=106") 1x,
-        url("/assets/codexjr-hero-2000.webp?v=106") 2x
+        url("/assets/codexjr-hero-1000.webp?v=101") 1x,
+        url("/assets/codexjr-hero-2000.webp?v=101") 2x
       );
       background-size: cover;
-      background-position: center center;
+      background-position: center;
       background-repeat: no-repeat;
-      transform: translateZ(0);
       z-index: 0;
     }
 
-    #ui{
+    #ui {
       position: fixed;
       inset: 0;
       pointer-events: none;
@@ -57,379 +60,117 @@
     }
 
     /* Download button */
-    #downloadBtn{
+    #downloadBtn {
       position: absolute;
+      left: 50%;
+      top: 760px;
+      transform: translate(-50%, -50%);
       border: 0;
       background: transparent;
       padding: 0;
-      margin: 0;
       cursor: pointer;
       pointer-events: auto;
-      transform: translate(-50%, -50%);
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      z-index: 20;
     }
-    #downloadBtn img{
-      display: block;
-      width: 100%;
-      height: auto;
+
+    #downloadBtn img {
+      width: 802px;
       image-rendering: pixelated;
-      transform: translateZ(0);
       transition: transform 140ms ease, filter 140ms ease;
     }
-    #downloadBtn:hover img{
+
+    #downloadBtn:hover img {
       transform: scale(1.03);
-      filter: brightness(1.08) drop-shadow(0 10px 22px rgba(0,0,0,0.45));
-    }
-    #downloadBtn:active img{
-      transform: scale(0.985);
-      filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+      filter: brightness(1.1) drop-shadow(0 10px 22px rgba(0,0,0,0.45));
     }
 
-    /* Sun hotspot (smaller hit area: 50% of previous) */
-    #sunHotspot{
+    #downloadBtn:active img {
+      transform: scale(0.98);
+    }
+
+    /* SUN HOTSPOT — SMALLER HIT BOX */
+    #sunHotspot {
       position: absolute;
+      left: 50%;
+      top: 50%;
       transform: translate(-50%, -50%);
-      width: 85px;   /* 50% of 170 */
-      height: 85px;  /* 50% of 170 */
-      border-radius: 999px;
+      width: 90px;     /* ↓ reduced hit box */
+      height: 90px;
+      border-radius: 50%;
       pointer-events: auto;
       cursor: pointer;
-      z-index: 9999;
-      background: rgba(255,255,255,0.001); /* Safari hover/click reliability */
-      -webkit-tap-highlight-color: transparent;
+      background: rgba(255,255,255,0.001); /* Safari hover reliability */
     }
 
-    /* Debug outline toggle */
-    body.debug-hotspot #sunHotspot{
-      outline: 2px dashed rgba(255,255,255,0.65);
-      outline-offset: -2px;
+    /* DEBUG */
+    body.debug-hotspot #sunHotspot {
+      outline: 2px dashed rgba(255,255,255,0.7);
     }
 
-    /* Glow (hover) — INCREASED intensity + smooth fade */
-    #sunHotspot::before{
-      content:"";
-      position:absolute;
-      inset:-44px; /* larger halo area even though hit area is smaller */
-      border-radius: 999px;
-      background: radial-gradient(circle,
-        rgba(255,245,190,0.34) 0%,
-        rgba(255,215,130,0.18) 34%,
-        rgba(0,0,0,0.00) 74%
+    /* GLOW — ORIGINAL, WORKING VERSION */
+    #sunHotspot::before {
+      content: "";
+      position: absolute;
+      inset: -36px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255,235,160,0.28) 0%,
+        rgba(255,205,110,0.16) 35%,
+        rgba(0,0,0,0.0) 70%
       );
-      filter: blur(14px);
+      filter: blur(12px);
       opacity: 0;
-      transition: opacity 1200ms ease-in-out;
-      pointer-events:none;
+      transition: opacity 450ms ease-in-out;
+      pointer-events: none;
     }
 
-    #sunHotspot::after{
-      content:"";
-      position:absolute;
-      inset: 8px; /* core glow tighter so it "reads" on the sun */
-      border-radius: 999px;
-      box-shadow:
-        0 0 28px rgba(255,245,190,0.35),
-        0 0 70px rgba(255,205,120,0.20);
-      opacity: 0;
-      transition: opacity 1200ms ease-in-out;
-      pointer-events:none;
-    }
-
-    #sunHotspot:hover::before,
-    #sunHotspot:hover::after{
-      opacity: 1;
-    }
-
-    /* Touch/forced hover helper */
-    #sunHotspot.touch-glow::before,
-    #sunHotspot.touch-glow::after{
+    #sunHotspot:hover::before {
       opacity: 1;
     }
 
     /* Footer version */
-    #footerVersion{
+    #footer {
       position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 16px;
-      display: flex;
-      justify-content: center;
-      pointer-events: none;
-      z-index: 50;
-    }
-    #footerVersion span{
-      color: var(--yellow);
+      bottom: 14px;
+      width: 100%;
+      text-align: center;
       font-family: "BitHUD", monospace;
       font-size: 14px;
+      color: var(--yellow);
       letter-spacing: 1px;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.55);
       opacity: 0.9;
+      z-index: 10;
+      pointer-events: none;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.6);
     }
-
-    /* Cheat overlay */
-    #cheatOverlay{
-      position: fixed;
-      inset: 0;
-      display: none;
-      z-index: 20000;
-      pointer-events: auto;
-    }
-    #cheatOverlay.show{ display:block; }
-    #cheatDim{
-      position:absolute;
-      inset:0;
-      background: rgba(0,0,0,0.55);
-    }
-    #cheatStage{
-      position:absolute;
-      left:0;
-      top:0;
-      transform: translateZ(0);
-    }
-    #arrowRow{
-      position:absolute;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      transform: translate(-50%, -50%);
-      gap: 22px;
-    }
-    .arrow{
-      opacity: 0;
-      will-change: opacity;
-    }
-    .arrow img{
-      width: 100%;
-      height: 100%;
-      display:block;
-      image-rendering: pixelated;
-      transform-origin: 50% 50%;
-    }
-    #cheatText{
-      position:absolute;
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      will-change: opacity;
-    }
-    #cheatText img{
-      display:block;
-      width: 100%;
-      height:auto;
-      image-rendering: pixelated;
-    }
-
-    body.cheat-open #downloadBtn{ display:none; }
   </style>
 </head>
 
 <body>
-  <div id="hero" aria-hidden="true"></div>
+  <div id="hero"></div>
 
   <div id="ui">
-    <div id="sunHotspot" aria-label="Hidden"></div>
+    <div id="sunHotspot" aria-label="Hidden Cheat"></div>
 
-    <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="/assets/dl_button.png?v=106" alt="Download" draggable="false" />
+    <button id="downloadBtn">
+      <img src="/assets/dl_button.png?v=101" alt="Download Codex Jr" />
     </button>
   </div>
 
-  <div id="cheatOverlay" role="dialog" aria-modal="true" aria-label="Cheat Code">
-    <div id="cheatDim"></div>
-    <div id="cheatStage">
-      <div id="arrowRow" aria-hidden="true"></div>
-      <div id="cheatText" aria-hidden="true">
-        <img src="/assets/cheatcode.png?v=106" alt="" draggable="false" />
-      </div>
-    </div>
-  </div>
-
-  <div id="footerVersion">
-    <span>codex jr beta site v1.0.6</span>
-  </div>
+  <div id="footer">codex jr beta site v1.0.1</div>
 
   <script>
-    const DESIGN_W = 2000;
-    const DESIGN_H = 1185;
-
-    // Your alignment point (sun center / arrows center / cheat text center)
-    const CX = 990, CY = 580;
-
-    // Download button center in design pixels
-    const DL_CX = 1000, DL_CY = 760;
-
-    // Cheat animation timing
-    const ARROWS_TOTAL_MS = 4000;
-    const PAUSE_MS = 500;
-    const TEXT_FADE_MS = 3000;
-
-    // GitHub release (public downloads repo)
-    const RELEASE_TAG = "v1.0.4";
-    const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
-    const ASSETS = {
-      mac: `${RELEASE_BASE}CodexJr-Updater-mac-${RELEASE_TAG}.zip`,
-      win: `${RELEASE_BASE}CodexJr-Updater-windows-${RELEASE_TAG}.zip`,
-      fallback: `https://github.com/jonsimo/codex-jr-downloads/releases/tag/${RELEASE_TAG}`
-    };
-
-    const SEQ = ["up","up","up","left","down","right","up","up","up"];
-
-    const downloadBtn  = document.getElementById("downloadBtn");
-    const sunHotspot   = document.getElementById("sunHotspot");
-    const cheatOverlay = document.getElementById("cheatOverlay");
-    const cheatStage   = document.getElementById("cheatStage");
-    const arrowRow     = document.getElementById("arrowRow");
-    const cheatText    = document.getElementById("cheatText");
-
-    function detectOS() {
-      const ua = navigator.userAgent.toLowerCase();
-      const platform = (navigator.platform || "").toLowerCase();
-      if (platform.includes("mac") || ua.includes("mac os")) return "mac";
-      if (platform.includes("win") || ua.includes("windows")) return "win";
-      return "unknown";
-    }
-
-    function startDownload() {
-      const os = detectOS();
-      const url = ASSETS[os] || ASSETS.fallback;
-      window.location.href = url;
-    }
-
-    function coverTransform() {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
-      const drawW = DESIGN_W * scale;
-      const drawH = DESIGN_H * scale;
-      const offsetX = (vw - drawW) / 2;
-      const offsetY = (vh - drawH) / 2;
-      return { scale, offsetX, offsetY };
-    }
-
-    function placeElement(el, x, y, w, h) {
-      const { scale, offsetX, offsetY } = coverTransform();
-      el.style.left = (offsetX + x * scale) + "px";
-      el.style.top  = (offsetY + y * scale) + "px";
-      if (w != null) el.style.width  = (w * scale) + "px";
-      if (h != null) el.style.height = (h * scale) + "px";
-    }
-
-    function buildArrowRow() {
-      arrowRow.innerHTML = "";
-      for (const dir of SEQ) {
-        const a = document.createElement("div");
-        a.className = "arrow";
-        const img = document.createElement("img");
-        img.src = "/assets/8bitarrow.png?v=106";
-        img.alt = "";
-        let rot = 0;
-        if (dir === "right") rot = 90;
-        if (dir === "down")  rot = 180;
-        if (dir === "left")  rot = -90;
-        img.style.transform = `rotate(${rot}deg)`;
-        a.appendChild(img);
-        arrowRow.appendChild(a);
-      }
-    }
-
-    function layout() {
-      const { scale, offsetX, offsetY } = coverTransform();
-
-      // Download
-      placeElement(downloadBtn, DL_CX, DL_CY, 802, 192);
-
-      // Sun hotspot (smaller hit area, same center)
-      placeElement(sunHotspot, CX, CY, 85, 85);
-
-      // Cheat stage anchor
-      cheatStage.style.left = (offsetX + CX * scale) + "px";
-      cheatStage.style.top  = (offsetY + CY * scale) + "px";
-
-      // Arrow row
-      arrowRow.style.left = "0px";
-      arrowRow.style.top  = (-70 * scale) + "px";
-      arrowRow.style.gap  = (22 * scale) + "px";
-
-      for (const node of arrowRow.querySelectorAll(".arrow")) {
-        node.style.width  = (64 * scale) + "px";
-        node.style.height = (64 * scale) + "px";
-      }
-
-      // Cheat text
-      cheatText.style.left = "0px";
-      cheatText.style.top  = (55 * scale) + "px";
-
-      const img = cheatText.querySelector("img");
-      if (img && img.naturalWidth) img.style.width = (img.naturalWidth * scale) + "px";
-    }
-
-    function resetCheat() {
-      for (const a of arrowRow.querySelectorAll(".arrow")) a.style.opacity = "0";
-      cheatText.style.opacity = "0";
-    }
-
-    function playCheatSequence() {
-      resetCheat();
-      const arrows = Array.from(arrowRow.querySelectorAll(".arrow"));
-      const step = ARROWS_TOTAL_MS / arrows.length;
-      const fadeEach = Math.min(650, step * 0.85);
-
-      arrows.forEach((a, i) => {
-        setTimeout(() => {
-          a.style.transition = `opacity ${fadeEach}ms ease`;
-          a.style.opacity = "1";
-        }, i * step);
-      });
-
-      setTimeout(() => {
-        cheatText.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
-        cheatText.style.opacity = "1";
-      }, ARROWS_TOTAL_MS + PAUSE_MS);
-    }
-
-    function openCheat() {
-      document.body.classList.add("cheat-open");
-      cheatOverlay.classList.add("show");
-      layout();
-      playCheatSequence();
-    }
-
-    function closeCheat() {
-      cheatOverlay.classList.remove("show");
-      document.body.classList.remove("cheat-open");
-    }
-
-    downloadBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      startDownload();
-    });
-
-    sunHotspot.addEventListener("click", (e) => {
-      e.preventDefault();
-      openCheat();
-    });
-
-    sunHotspot.addEventListener("touchstart", () => {
-      sunHotspot.classList.add("touch-glow");
-      setTimeout(() => sunHotspot.classList.remove("touch-glow"), 900);
-    }, { passive: true });
-
-    cheatOverlay.addEventListener("click", (e) => {
-      e.preventDefault();
-      closeCheat();
-    });
-
-    window.addEventListener("resize", layout);
-
-    // Debug toggle: H
+    // Debug toggle
     window.addEventListener("keydown", (e) => {
-      if (e.key.toLowerCase() === "h") document.body.classList.toggle("debug-hotspot");
+      if (e.key.toLowerCase() === "h") {
+        document.body.classList.toggle("debug-hotspot");
+      }
     });
 
-    buildArrowRow();
-    cheatText.querySelector("img").addEventListener("load", layout);
-    layout();
+    // Click handler (placeholder)
+    document.getElementById("sunHotspot").addEventListener("click", () => {
+      console.log("Sun clicked (cheat hook)");
+    });
   </script>
 </body>
 </html>

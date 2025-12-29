@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-  <!-- bump this when you change anything -->
-  <meta name="codex-build" content="v1.0.3" />
+  <meta name="codex-build" content="v1.0.4" />
 
-  <!-- Favicons (all live in /assets/) -->
-  <link rel="icon" href="/assets/favicon.ico?v=103" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=103">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=103">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=103">
+  <link rel="icon" href="/assets/favicon.ico?v=104" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=104">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=104">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=104">
 
   <style>
     :root{
@@ -23,7 +21,7 @@
 
     @font-face{
       font-family: "BitHUD";
-      src: url("/assets/8-bit-hud.ttf?v=103") format("truetype");
+      src: url("/assets/8-bit-hud.ttf?v=104") format("truetype");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -36,25 +34,25 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    /* Full-screen hero */
     #hero{
       position: fixed;
       inset: 0;
       background-image: image-set(
-        url("/assets/codexjr-hero-1000.webp?v=103") 1x,
-        url("/assets/codexjr-hero-2000.webp?v=103") 2x
+        url("/assets/codexjr-hero-1000.webp?v=104") 1x,
+        url("/assets/codexjr-hero-2000.webp?v=104") 2x
       );
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
       transform: translateZ(0);
+      z-index: 0;
     }
 
-    /* UI overlay */
     #ui{
       position: fixed;
       inset: 0;
       pointer-events: none;
+      z-index: 1;
     }
 
     /* Download button */
@@ -69,7 +67,7 @@
       transform: translate(-50%, -50%);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      z-index: 3;
+      z-index: 20;
     }
     #downloadBtn img{
       display: block;
@@ -88,37 +86,46 @@
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* Sun hotspot hover glow */
+    /* Sun hotspot: FORCE above everything */
     #sunHotspot{
       position: absolute;
       transform: translate(-50%, -50%);
       width: 170px;
       height: 170px;
       border-radius: 999px;
-      pointer-events: auto;
+      pointer-events: auto;        /* must be */
       cursor: pointer;
-      z-index: 2;
+      z-index: 9999;               /* FORCE top */
+      background: transparent;
     }
+
+    /* Debug outline toggle */
+    body.debug-hotspot #sunHotspot{
+      outline: 2px dashed rgba(255,255,255,0.65);
+      outline-offset: -2px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Glow */
     #sunHotspot::before{
       content:"";
       position:absolute;
       inset:-18px;
       border-radius: 999px;
       background: radial-gradient(circle,
-        rgba(255,235,160,0.20) 0%,
-        rgba(255,205,110,0.085) 35%,
-        rgba(0,0,0,0.00) 70%
+        rgba(255,235,160,0.18) 0%,
+        rgba(255,205,110,0.075) 38%,
+        rgba(0,0,0,0.00) 72%
       );
       filter: blur(10px);
       opacity: 0;
-      transition: opacity 650ms ease-in-out;
+      transition: opacity 850ms ease-in-out;
       pointer-events:none;
     }
     #sunHotspot:hover::before{
-      opacity: 0.11;
+      opacity: 0.10;
     }
 
-    /* Footer version */
     #footerVersion{
       position: fixed;
       left: 0;
@@ -127,7 +134,7 @@
       display: flex;
       justify-content: center;
       pointer-events: none;
-      z-index: 5;
+      z-index: 50;
     }
     #footerVersion span{
       color: var(--yellow);
@@ -147,25 +154,23 @@
     <div id="sunHotspot" aria-label="Hidden"></div>
 
     <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="/assets/dl_button.png?v=103" alt="Download" draggable="false" />
+      <img src="/assets/dl_button.png?v=104" alt="Download" draggable="false" />
     </button>
   </div>
 
   <div id="footerVersion">
-    <span id="verText">codex jr beta site v1.0.3</span>
+    <span>codex jr beta site v1.0.4</span>
   </div>
 
   <script>
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
 
-    // Download button center (design pixels) — adjust if you want
-    const DL_CX = 1000, DL_CY = 760;
-
-    // Sun center (design pixels)
+    // If glow isn't showing, 99% chance these are off.
+    // These are your earlier numbers; we'll adjust after you toggle debug outline.
     const SUN_CX = 990, SUN_CY = 580;
+    const DL_CX  = 1000, DL_CY  = 760;
 
-    // Downloads repo (public)
     const RELEASE_TAG = "v1.0.4";
     const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
     const ASSETS = {
@@ -220,11 +225,11 @@
       startDownload();
     });
 
-    // keep click behavior for now (you can re-wire cheat overlay later)
-    sunHotspot.addEventListener("click", (e) => {
-      e.preventDefault();
-      // placeholder
-      // alert("cheat");
+    // Debug toggle: press H
+    window.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "h") {
+        document.body.classList.toggle("debug-hotspot");
+      }
     });
 
     window.addEventListener("resize", layout);

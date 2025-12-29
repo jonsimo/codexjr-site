@@ -5,24 +5,25 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-  <!-- Favicons (your files are in /assets/) -->
-  <link rel="icon" href="assets/favicon.ico?v=103" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png?v=103">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png?v=103">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=103">
+  <!-- bump this when you change anything -->
+  <meta name="codex-build" content="v1.0.3" />
+
+  <!-- Favicons (all live in /assets/) -->
+  <link rel="icon" href="/assets/favicon.ico?v=103" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=103">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=103">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=103">
 
   <style>
     :root{
       --design-w: 2000;
       --design-h: 1185;
-      --ver: "codex jr beta site v1.0.3";
       --yellow: #f6e15a;
     }
 
-    /* Force Safari to re-fetch assets easier (still may cache, but helps) */
     @font-face{
       font-family: "BitHUD";
-      src: url("assets/8-bit-hud.ttf?v=103") format("truetype");
+      src: url("/assets/8-bit-hud.ttf?v=103") format("truetype");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -40,8 +41,8 @@
       position: fixed;
       inset: 0;
       background-image: image-set(
-        url("assets/codexjr-hero-1000.webp?v=103") 1x,
-        url("assets/codexjr-hero-2000.webp?v=103") 2x
+        url("/assets/codexjr-hero-1000.webp?v=103") 1x,
+        url("/assets/codexjr-hero-2000.webp?v=103") 2x
       );
       background-size: cover;
       background-position: center center;
@@ -49,7 +50,7 @@
       transform: translateZ(0);
     }
 
-    /* Overlay for positioned UI elements */
+    /* UI overlay */
     #ui{
       position: fixed;
       inset: 0;
@@ -68,6 +69,7 @@
       transform: translate(-50%, -50%);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      z-index: 3;
     }
     #downloadBtn img{
       display: block;
@@ -86,7 +88,7 @@
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* Sun hotspot (subtle, smooth fade) */
+    /* Sun hotspot hover glow */
     #sunHotspot{
       position: absolute;
       transform: translate(-50%, -50%);
@@ -95,6 +97,7 @@
       border-radius: 999px;
       pointer-events: auto;
       cursor: pointer;
+      z-index: 2;
     }
     #sunHotspot::before{
       content:"";
@@ -108,11 +111,11 @@
       );
       filter: blur(10px);
       opacity: 0;
-      transition: opacity 520ms ease-in-out; /* smoother */
+      transition: opacity 650ms ease-in-out;
       pointer-events:none;
     }
     #sunHotspot:hover::before{
-      opacity: 0.11; /* ~30% less than the “too intense” version */
+      opacity: 0.11;
     }
 
     /* Footer version */
@@ -134,11 +137,6 @@
       text-shadow: 0 2px 0 rgba(0,0,0,0.55);
       opacity: 0.9;
     }
-
-    /* Tiny debug: turns green if the font actually loads */
-    #footerVersion span.ok{
-      filter: drop-shadow(0 0 10px rgba(255,225,90,0.15));
-    }
   </style>
 </head>
 
@@ -149,24 +147,27 @@
     <div id="sunHotspot" aria-label="Hidden"></div>
 
     <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="assets/dl_button.png?v=103" alt="Download" draggable="false" />
+      <img src="/assets/dl_button.png?v=103" alt="Download" draggable="false" />
     </button>
   </div>
 
-  <div id="footerVersion"><span id="verText">codex jr beta site v1.0.3</span></div>
+  <div id="footerVersion">
+    <span id="verText">codex jr beta site v1.0.3</span>
+  </div>
 
   <script>
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
 
-    // You can tweak these if needed
+    // Download button center (design pixels) — adjust if you want
     const DL_CX = 1000, DL_CY = 760;
-    const SUN_CX = 990,  SUN_CY = 580;
 
-    // PUBLIC releases repo (your new one)
+    // Sun center (design pixels)
+    const SUN_CX = 990, SUN_CY = 580;
+
+    // Downloads repo (public)
     const RELEASE_TAG = "v1.0.4";
     const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
-
     const ASSETS = {
       mac: `${RELEASE_BASE}CodexJr-Updater-mac-${RELEASE_TAG}.zip`,
       win: `${RELEASE_BASE}CodexJr-Updater-windows-${RELEASE_TAG}.zip`,
@@ -175,7 +176,6 @@
 
     const downloadBtn = document.getElementById("downloadBtn");
     const sunHotspot  = document.getElementById("sunHotspot");
-    const verText     = document.getElementById("verText");
 
     function detectOS() {
       const ua = navigator.userAgent.toLowerCase();
@@ -220,23 +220,15 @@
       startDownload();
     });
 
-    // (keeping click behavior simple for now)
+    // keep click behavior for now (you can re-wire cheat overlay later)
     sunHotspot.addEventListener("click", (e) => {
       e.preventDefault();
-      // placeholder: you can re-open the cheat overlay here
-      // alert("cheat!");
+      // placeholder
+      // alert("cheat");
     });
 
     window.addEventListener("resize", layout);
     layout();
-
-    // Prove whether the font actually loaded in THIS build:
-    // If it loads, we tag the footer span with class "ok"
-    if (document.fonts && document.fonts.load) {
-      document.fonts.load('14px "BitHUD"').then(() => {
-        verText.classList.add("ok");
-      }).catch(() => {});
-    }
   </script>
 </body>
 </html>

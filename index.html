@@ -99,27 +99,27 @@
       outline: none;
     }
 
-    #sunGlow{
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 280%;
-      height: 280%;
-      transform: translate(-50%, -50%);
-      border-radius: 999px;
-      pointer-events: none;
+#sunGlow{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 280%;
+  height: 280%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  pointer-events: none;
 
-      /* this is the "too obvious" glow you said you could see */
-      background: radial-gradient(circle,
-        rgba(255,245,190,0.32) 0%,
-        rgba(255,210,120,0.18) 34%,
-        rgba(255,160,80,0.06) 52%,
-        rgba(0,0,0,0.00) 72%
-      );
-      filter: blur(12px);
-      opacity: 0;
-      transition: opacity 520ms ease-in-out;
-    }
+  background: radial-gradient(circle,
+    rgba(255,250,210,0.55) 0%,
+    rgba(255,225,150,0.32) 32%,
+    rgba(255,180,90,0.14) 52%,
+    rgba(0,0,0,0.00) 72%
+  );
+
+  filter: blur(14px);
+  opacity: 0;
+  transition: opacity 600ms ease-in-out;
+}
 
     #sunHotspot:hover #sunGlow,
     #sunHotspot:focus-visible #sunGlow{

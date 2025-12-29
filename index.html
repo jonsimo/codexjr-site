@@ -2,110 +2,241 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Codex Jr</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Codex Jr Updater</title>
 
-  <!-- Favicons -->
-  <link rel="icon" href="assets/favicon.ico">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <!-- Favicons (your files are in /assets/) -->
+  <link rel="icon" href="assets/favicon.ico?v=103" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png?v=103">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png?v=103">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=103">
 
-  <!-- Pixel font -->
   <style>
-    @font-face {
+    :root{
+      --design-w: 2000;
+      --design-h: 1185;
+      --ver: "codex jr beta site v1.0.3";
+      --yellow: #f6e15a;
+    }
+
+    /* Force Safari to re-fetch assets easier (still may cache, but helps) */
+    @font-face{
       font-family: "BitHUD";
-      src: url("assets/8-bit-hud.ttf") format("truetype");
-      font-weight: normal;
+      src: url("assets/8-bit-hud.ttf?v=103") format("truetype");
+      font-weight: 400;
       font-style: normal;
       font-display: swap;
     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
+    html, body { height: 100%; margin: 0; }
+    body{
       overflow: hidden;
+      background: #000;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    /* Full background */
-    #hero {
+    /* Full-screen hero */
+    #hero{
       position: fixed;
       inset: 0;
       background-image: image-set(
-        url("assets/codexjr-hero-1000.webp") 1x,
-        url("assets/codexjr-hero-2000.webp") 2x
+        url("assets/codexjr-hero-1000.webp?v=103") 1x,
+        url("assets/codexjr-hero-2000.webp?v=103") 2x
       );
       background-size: cover;
-      background-position: center;
+      background-position: center center;
       background-repeat: no-repeat;
-      z-index: 0;
+      transform: translateZ(0);
     }
 
-    /* Sun hover hotspot */
-    #sun-hotspot {
+    /* Overlay for positioned UI elements */
+    #ui{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* Download button */
+    #downloadBtn{
       position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 180px;
-      height: 180px;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      pointer-events: auto;
       transform: translate(-50%, -50%);
-      border-radius: 50%;
-      z-index: 2;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    #downloadBtn img{
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+      transform: translateZ(0);
+      transition: transform 140ms ease, filter 140ms ease;
+    }
+    #downloadBtn:hover img{
+      transform: scale(1.03);
+      filter: brightness(1.08) drop-shadow(0 10px 22px rgba(0,0,0,0.45));
+    }
+    #downloadBtn:active img{
+      transform: scale(0.985);
+      filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+    }
+
+    /* Sun hotspot (subtle, smooth fade) */
+    #sunHotspot{
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 170px;
+      height: 170px;
+      border-radius: 999px;
+      pointer-events: auto;
       cursor: pointer;
     }
-
-    #sun-hotspot::after {
-      content: "";
-      position: absolute;
-      inset: -30px;
-      border-radius: 50%;
-      background: radial-gradient(
-        circle,
-        rgba(255, 220, 120, 0.18) 0%,
-        rgba(255, 200, 90, 0.10) 35%,
-        rgba(255, 180, 60, 0.05) 55%,
-        rgba(0,0,0,0) 70%
+    #sunHotspot::before{
+      content:"";
+      position:absolute;
+      inset:-18px;
+      border-radius: 999px;
+      background: radial-gradient(circle,
+        rgba(255,235,160,0.20) 0%,
+        rgba(255,205,110,0.085) 35%,
+        rgba(0,0,0,0.00) 70%
       );
+      filter: blur(10px);
       opacity: 0;
-      transition: opacity 600ms ease-in-out;
-      pointer-events: none;
+      transition: opacity 520ms ease-in-out; /* smoother */
+      pointer-events:none;
+    }
+    #sunHotspot:hover::before{
+      opacity: 0.11; /* ~30% less than the “too intense” version */
     }
 
-    #sun-hotspot:hover::after {
-      opacity: 1;
-    }
-
-    /* Footer version text */
-    #version {
+    /* Footer version */
+    #footerVersion{
       position: fixed;
-      bottom: 12px;
-      width: 100%;
-      text-align: center;
+      left: 0;
+      right: 0;
+      bottom: 16px;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+    #footerVersion span{
+      color: var(--yellow);
       font-family: "BitHUD", monospace;
       font-size: 14px;
-      color: #f5d76e;
       letter-spacing: 1px;
-      z-index: 3;
-      pointer-events: none;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.6);
+      text-shadow: 0 2px 0 rgba(0,0,0,0.55);
+      opacity: 0.9;
+    }
+
+    /* Tiny debug: turns green if the font actually loads */
+    #footerVersion span.ok{
+      filter: drop-shadow(0 0 10px rgba(255,225,90,0.15));
     }
   </style>
 </head>
 
 <body>
-  <div id="hero"></div>
+  <div id="hero" aria-hidden="true"></div>
 
-  <!-- Invisible sun interaction -->
-  <div id="sun-hotspot" aria-label="Hidden interaction"></div>
+  <div id="ui">
+    <div id="sunHotspot" aria-label="Hidden"></div>
 
-  <!-- Version marker -->
-  <div id="version">codex jr beta site v1.0.0</div>
+    <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
+      <img src="assets/dl_button.png?v=103" alt="Download" draggable="false" />
+    </button>
+  </div>
+
+  <div id="footerVersion"><span id="verText">codex jr beta site v1.0.3</span></div>
+
+  <script>
+    const DESIGN_W = 2000;
+    const DESIGN_H = 1185;
+
+    // You can tweak these if needed
+    const DL_CX = 1000, DL_CY = 760;
+    const SUN_CX = 990,  SUN_CY = 580;
+
+    // PUBLIC releases repo (your new one)
+    const RELEASE_TAG = "v1.0.4";
+    const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
+
+    const ASSETS = {
+      mac: `${RELEASE_BASE}CodexJr-Updater-mac-${RELEASE_TAG}.zip`,
+      win: `${RELEASE_BASE}CodexJr-Updater-windows-${RELEASE_TAG}.zip`,
+      fallback: `https://github.com/jonsimo/codex-jr-downloads/releases/tag/${RELEASE_TAG}`
+    };
+
+    const downloadBtn = document.getElementById("downloadBtn");
+    const sunHotspot  = document.getElementById("sunHotspot");
+    const verText     = document.getElementById("verText");
+
+    function detectOS() {
+      const ua = navigator.userAgent.toLowerCase();
+      const platform = (navigator.platform || "").toLowerCase();
+      if (platform.includes("mac") || ua.includes("mac os")) return "mac";
+      if (platform.includes("win") || ua.includes("windows")) return "win";
+      return "unknown";
+    }
+
+    function startDownload() {
+      const os = detectOS();
+      const url = ASSETS[os] || ASSETS.fallback;
+      window.location.href = url;
+    }
+
+    function coverTransform() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
+      const drawW = DESIGN_W * scale;
+      const drawH = DESIGN_H * scale;
+      const offsetX = (vw - drawW) / 2;
+      const offsetY = (vh - drawH) / 2;
+      return { scale, offsetX, offsetY };
+    }
+
+    function placeElement(el, x, y, w, h) {
+      const { scale, offsetX, offsetY } = coverTransform();
+      el.style.left = (offsetX + x * scale) + "px";
+      el.style.top  = (offsetY + y * scale) + "px";
+      if (w != null) el.style.width  = (w * scale) + "px";
+      if (h != null) el.style.height = (h * scale) + "px";
+    }
+
+    function layout() {
+      placeElement(downloadBtn, DL_CX, DL_CY, 802, 192);
+      placeElement(sunHotspot,  SUN_CX, SUN_CY, 170, 170);
+    }
+
+    downloadBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      startDownload();
+    });
+
+    // (keeping click behavior simple for now)
+    sunHotspot.addEventListener("click", (e) => {
+      e.preventDefault();
+      // placeholder: you can re-open the cheat overlay here
+      // alert("cheat!");
+    });
+
+    window.addEventListener("resize", layout);
+    layout();
+
+    // Prove whether the font actually loaded in THIS build:
+    // If it loads, we tag the footer span with class "ok"
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load('14px "BitHUD"').then(() => {
+        verText.classList.add("ok");
+      }).catch(() => {});
+    }
+  </script>
 </body>
 </html>

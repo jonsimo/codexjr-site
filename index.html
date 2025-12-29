@@ -6,10 +6,10 @@
   <title>Codex Jr Updater</title>
 
   <!-- Favicons (in /assets) -->
-  <link rel="icon" href="assets/favicon.ico?v=1.0.2" sizes="any">
-  <link rel="icon" type="image/png" href="assets/favicon-32x32.png?v=1.0.2" sizes="32x32">
-  <link rel="icon" type="image/png" href="assets/favicon-16x16.png?v=1.0.2" sizes="16x16">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=1.0.2">
+  <link rel="icon" href="assets/favicon.ico?v=1.0.1" sizes="any">
+  <link rel="icon" type="image/png" href="assets/favicon-32x32.png?v=1.0.1" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/favicon-16x16.png?v=1.0.1" sizes="16x16">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=1.0.1">
 
   <style>
     :root{ --design-w: 2000; --design-h: 1185; }
@@ -20,20 +20,18 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
-    /* Pixel font for footer version */
     @font-face{
       font-family: "BitHUD";
-      src: url("assets/8-bit-hud.ttf?v=1.0.2") format("truetype");
+      src: url("assets/8-bit-hud.ttf?v=1.0.1") format("truetype");
       font-display: swap;
     }
 
-    /* Full-screen hero */
     #hero{
       position: fixed;
       inset: 0;
       background-image: image-set(
-        url("assets/codexjr-hero-1000.webp?v=1.0.2") 1x,
-        url("assets/codexjr-hero-2000.webp?v=1.0.2") 2x
+        url("assets/codexjr-hero-1000.webp?v=1.0.1") 1x,
+        url("assets/codexjr-hero-2000.webp?v=1.0.1") 2x
       );
       background-size: cover;
       background-position: center center;
@@ -59,6 +57,7 @@
       transform: translate(-50%, -50%);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      z-index: 20;
     }
     #downloadBtn img{
       display: block;
@@ -78,10 +77,10 @@
     }
 
     /*
-      Sun hotspot:
-      - Small hitbox, but not microscopic
-      - Glow aura extends beyond hitbox (visual hint)
-      - Hover OR focus-visible to test with keyboard
+      KNOWN-GOOD SUN GLOW:
+      - Big glow aura that definitely shows
+      - Hitbox small (we’ll size it in JS)
+      - High z-index so nothing blocks hover/click
     */
     #sunHotspot{
       position: absolute;
@@ -89,42 +88,41 @@
       pointer-events: auto;
       cursor: pointer;
       border-radius: 999px;
+      z-index: 30;
 
-      /* Safari hover reliability: give it a real box + compositing */
-      background: rgba(255,255,255,0.001);
-      will-change: transform, opacity;
+      /* Safari: ensure hover works on an "invisible" element */
+      background: rgba(255,255,255,0.01);
       transform: translate(-50%, -50%) translateZ(0);
-
+      will-change: transform, opacity;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       outline: none;
     }
 
-    #sunHotspot::before{
-      content:"";
-      position:absolute;
+    #sunGlow{
+      position: absolute;
       left: 50%;
       top: 50%;
-
-      /* Glow aura size relative to hitbox */
-      width: 340%;
-      height: 340%;
+      width: 280%;
+      height: 280%;
       transform: translate(-50%, -50%);
       border-radius: 999px;
+      pointer-events: none;
 
+      /* this is the "too obvious" glow you said you could see */
       background: radial-gradient(circle,
-        rgba(255,245,190,0.18) 0%,
-        rgba(255,210,120,0.10) 36%,
+        rgba(255,245,190,0.32) 0%,
+        rgba(255,210,120,0.18) 34%,
+        rgba(255,160,80,0.06) 52%,
         rgba(0,0,0,0.00) 72%
       );
-      filter: blur(10px);
+      filter: blur(12px);
       opacity: 0;
-      transition: opacity 700ms ease-in-out;
-      pointer-events:none;
+      transition: opacity 520ms ease-in-out;
     }
 
-    #sunHotspot:hover::before,
-    #sunHotspot:focus-visible::before{
+    #sunHotspot:hover #sunGlow,
+    #sunHotspot:focus-visible #sunGlow{
       opacity: 1;
     }
 
@@ -134,6 +132,7 @@
       inset: 0;
       display: none;
       pointer-events: auto;
+      z-index: 50;
     }
     #cheatOverlay.show{ display: block; }
     #cheatDim{ position:absolute; inset:0; background: rgba(0,0,0,0.55); }
@@ -147,11 +146,7 @@
       transform: translate(-50%, -50%);
     }
     .arrow{ opacity: 0; will-change: opacity; }
-    .arrow img{
-      display:block;
-      image-rendering: pixelated;
-      transform-origin: 50% 50%;
-    }
+    .arrow img{ display:block; image-rendering: pixelated; transform-origin: 50% 50%; }
 
     #cheatText{
       position:absolute;
@@ -159,15 +154,10 @@
       opacity: 0;
       will-change: opacity;
     }
-    #cheatText img{
-      display:block;
-      height:auto;
-      image-rendering: pixelated;
-    }
+    #cheatText img{ display:block; height:auto; image-rendering: pixelated; }
 
     body.cheat-open #downloadBtn{ display:none; }
 
-    /* Footer version */
     #siteVersion{
       position: fixed;
       left: 0; right: 0; bottom: 10px;
@@ -180,6 +170,7 @@
       letter-spacing: 0.5px;
       -webkit-font-smoothing: none;
       font-smooth: never;
+      z-index: 60;
     }
   </style>
 </head>
@@ -188,29 +179,29 @@
   <div id="hero" aria-hidden="true"></div>
 
   <div id="ui">
-    <div id="sunHotspot" tabindex="0" aria-label="Hidden"></div>
+    <div id="sunHotspot" tabindex="0" aria-label="Hidden">
+      <div id="sunGlow" aria-hidden="true"></div>
+    </div>
 
     <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="assets/dl_button.png?v=1.0.2" alt="Download" draggable="false" />
+      <img src="assets/dl_button.png?v=1.0.1" alt="Download" draggable="false" />
     </button>
   </div>
 
   <div id="cheatOverlay" role="dialog" aria-modal="true" aria-label="Cheat Code">
     <div id="cheatDim"></div>
-
     <div id="cheatStage">
       <div id="arrowRow" aria-hidden="true"></div>
-
       <div id="cheatText" aria-hidden="true">
-        <img src="assets/cheatcode.png?v=1.0.2" alt="" draggable="false" />
+        <img src="assets/cheatcode.png?v=1.0.1" alt="" draggable="false" />
       </div>
     </div>
   </div>
 
-  <div id="siteVersion">codex jr beta site v1.0.2</div>
+  <div id="siteVersion">codex jr beta site v1.0.1</div>
 
   <script>
-    const SITE_VERSION = "1.0.2";
+    const SITE_VERSION = "1.0.1";
 
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
@@ -285,14 +276,11 @@
     function coverTransform() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-
       const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
       const drawW = DESIGN_W * scale;
       const drawH = DESIGN_H * scale;
-
       const offsetX = (vw - drawW) / 2;
       const offsetY = (vh - drawH) / 2;
-
       return { scale, offsetX, offsetY };
     }
 
@@ -309,9 +297,9 @@
 
       placeElement(ui.downloadBtn, DL_CX, DL_CY, 802, 192);
 
-      // Hitbox: inner-ish sun. Slightly bigger than before so hover is actually hittable.
-      // (Still not obvious because it's invisible.)
-      placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 110, 110);
+      // 50% inner sun click area (small, but still hittable):
+      // This is the part you asked for.
+      placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 80, 80);
 
       ui.cheatStage.style.left = (offsetX + CHEAT_CX * scale) + "px";
       ui.cheatStage.style.top  = (offsetY + CHEAT_CY * scale) + "px";
@@ -348,7 +336,6 @@
 
       const arrows = Array.from(ui.arrowRow.querySelectorAll(".arrow"));
       const n = arrows.length;
-
       const step = ARROWS_TOTAL_MS / n;
       const fadeEach = Math.min(650, step * 0.85);
 

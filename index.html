@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-  <!-- Favicons (put these in your site root) -->
+  <!-- Favicons (files in site root) -->
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -38,7 +38,7 @@
       transform: translateZ(0);
     }
 
-    /* Overlay for positioned UI elements (we place things in "design pixels" via JS) */
+    /* Overlay for positioned UI elements */
     #ui{
       position: fixed;
       inset: 0;
@@ -57,6 +57,7 @@
       transform: translate(-50%, -50%);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      z-index: 5;
     }
     #downloadBtn img{
       display: block;
@@ -75,7 +76,7 @@
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* Hidden sun hotspot (subtle hint on hover, no ring artifact) */
+    /* Sun hotspot (FIXED: z-index + tiny transparent bg so hover reliably fires) */
     #sunHotspot{
       position: absolute;
       transform: translate(-50%, -50%);
@@ -84,6 +85,11 @@
       border-radius: 999px;
       pointer-events: auto;
       cursor: pointer;
+
+      z-index: 10;                    /* <-- ensure it's above everything */
+      background: rgba(0,0,0,0.001);  /* <-- invisible but hoverable (Safari fix) */
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
     #sunHotspot::before{
       content:"";
@@ -110,6 +116,7 @@
       inset: 0;
       display: none;
       pointer-events: auto;
+      z-index: 50;
     }
     #cheatOverlay.show{ display: block; }
 
@@ -200,37 +207,33 @@
   </div>
 
   <script>
-    /******************************************************************
-     * DESIGN SPACE:
-     *   design size: 2000 x 1185
-     *   arrow+text center point: 990 x 580
-     ******************************************************************/
+    // DESIGN SPACE
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
 
+    // Center point for cheat overlay (align to sun like your mockup)
     const CHEAT_CX = 990;
     const CHEAT_CY = 580;
 
+    // Download button position in design pixels
     const DL_CX = 1000;
     const DL_CY = 760;
 
+    // Sun hotspot center (same as cheat center)
     const SUN_CX = CHEAT_CX;
     const SUN_CY = CHEAT_CY;
 
-    // Timing:
-    // - arrows fade in across 4000ms total
-    // - 500ms pause
-    // - cheat text fades in over 3000ms
+    // Timing
     const ARROWS_TOTAL_MS = 4000;
     const PAUSE_MS        = 500;
     const TEXT_FADE_MS    = 3000;
 
-    // ✅ PUBLIC DOWNLOADS REPO (this is the fix)
+    // PUBLIC DOWNLOADS REPO
     const DOWNLOADS_OWNER = "jonsimo";
     const DOWNLOADS_REPO  = "codex-jr-downloads";
-    const RELEASE_TAG     = "v1.0.4"; // tag exactly as shown on your release page
+    const RELEASE_TAG     = "v1.0.4";
 
-    // Filenames exactly as shown in your Assets list
+    // Filenames exactly as your release assets
     const MAC_FILE = `CodexJr-Updater-mac-${RELEASE_TAG}.zip`;
     const WIN_FILE = `CodexJr-Updater-windows-${RELEASE_TAG}.zip`;
 
@@ -243,7 +246,7 @@
       fallback: RELEASE_PAGE
     };
 
-    // Arrow sequence (9 arrows): ↑ ↑ ↑ ← ↓ → ↑ ↑ ↑
+    // Arrow sequence: ↑ ↑ ↑ ← ↓ → ↑ ↑ ↑
     const SEQ = ["up","up","up","left","down","right","up","up","up"];
 
     const ui = {
@@ -257,7 +260,6 @@
 
     function buildArrowRow() {
       ui.arrowRow.innerHTML = "";
-
       for (const dir of SEQ) {
         const a = document.createElement("div");
         a.className = "arrow";
@@ -289,8 +291,6 @@
     function startDownload() {
       const os = detectOS();
       const url = ASSETS[os] || ASSETS.fallback;
-
-      // Use a real navigation (works reliably with GitHub’s redirects)
       window.location.assign(url);
     }
 
@@ -317,28 +317,22 @@
     }
 
     function layout() {
-      // download button (matches your PNG’s intended size)
       placeElement(ui.downloadBtn, DL_CX, DL_CY, 802, 192);
-
-      // sun hotspot
       placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 170, 170);
 
-      // cheat stage anchor
       const { scale, offsetX, offsetY } = coverTransform();
       ui.cheatStage.style.left = (offsetX + CHEAT_CX * scale) + "px";
       ui.cheatStage.style.top  = (offsetY + CHEAT_CY * scale) + "px";
 
-      // arrows above the center point (center arrow aligned to sun via anchor)
       ui.arrowRow.style.left = "0px";
       ui.arrowRow.style.top  = (-70 * scale) + "px";
-      ui.arrowRow.style.gap = (22 * scale) + "px";
 
+      ui.arrowRow.style.gap = (22 * scale) + "px";
       for (const node of ui.arrowRow.querySelectorAll(".arrow")) {
         node.style.width  = (64 * scale) + "px";
         node.style.height = (64 * scale) + "px";
       }
 
-      // cheatcode.png placement (under arrows, sized 1:1 relative to its pixels)
       ui.cheatText.style.left = "0px";
       ui.cheatText.style.top  = (55 * scale) + "px";
 

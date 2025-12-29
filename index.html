@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-  <meta name="codex-build" content="v1.0.5" />
+  <meta name="codex-build" content="v1.0.6" />
 
   <!-- Favicons -->
-  <link rel="icon" href="/assets/favicon.ico?v=105" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=105">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=105">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=105">
+  <link rel="icon" href="/assets/favicon.ico?v=106" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=106">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=106">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=106">
 
   <style>
     :root{
@@ -22,7 +22,7 @@
 
     @font-face{
       font-family: "BitHUD";
-      src: url("/assets/8-bit-hud.ttf?v=105") format("truetype");
+      src: url("/assets/8-bit-hud.ttf?v=106") format("truetype");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -39,8 +39,8 @@
       position: fixed;
       inset: 0;
       background-image: image-set(
-        url("/assets/codexjr-hero-1000.webp?v=105") 1x,
-        url("/assets/codexjr-hero-2000.webp?v=105") 2x
+        url("/assets/codexjr-hero-1000.webp?v=106") 1x,
+        url("/assets/codexjr-hero-2000.webp?v=106") 2x
       );
       background-size: cover;
       background-position: center center;
@@ -87,17 +87,17 @@
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* Sun hotspot */
+    /* Sun hotspot (smaller hit area: 50% of previous) */
     #sunHotspot{
       position: absolute;
       transform: translate(-50%, -50%);
-      width: 170px;
-      height: 170px;
+      width: 85px;   /* 50% of 170 */
+      height: 85px;  /* 50% of 170 */
       border-radius: 999px;
       pointer-events: auto;
       cursor: pointer;
       z-index: 9999;
-      background: rgba(255,255,255,0.001); /* IMPORTANT: helps Safari register hover reliably */
+      background: rgba(255,255,255,0.001); /* Safari hover/click reliability */
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -107,32 +107,33 @@
       outline-offset: -2px;
     }
 
-    /* Glow (hover) — stronger + smoother, no ring edge */
+    /* Glow (hover) — INCREASED intensity + smooth fade */
     #sunHotspot::before{
       content:"";
       position:absolute;
-      inset:-26px;
+      inset:-44px; /* larger halo area even though hit area is smaller */
       border-radius: 999px;
       background: radial-gradient(circle,
-        rgba(255,245,180,0.18) 0%,
-        rgba(255,210,120,0.10) 35%,
-        rgba(0,0,0,0.00) 72%
+        rgba(255,245,190,0.34) 0%,
+        rgba(255,215,130,0.18) 34%,
+        rgba(0,0,0,0.00) 74%
       );
-      filter: blur(12px);
+      filter: blur(14px);
       opacity: 0;
-      transition: opacity 1100ms ease-in-out;
+      transition: opacity 1200ms ease-in-out;
       pointer-events:none;
     }
+
     #sunHotspot::after{
       content:"";
       position:absolute;
-      inset: 22px;
+      inset: 8px; /* core glow tighter so it "reads" on the sun */
       border-radius: 999px;
       box-shadow:
-        0 0 22px rgba(255,235,160,0.18),
-        0 0 54px rgba(255,200,110,0.10);
+        0 0 28px rgba(255,245,190,0.35),
+        0 0 70px rgba(255,205,120,0.20);
       opacity: 0;
-      transition: opacity 1100ms ease-in-out;
+      transition: opacity 1200ms ease-in-out;
       pointer-events:none;
     }
 
@@ -230,7 +231,7 @@
     <div id="sunHotspot" aria-label="Hidden"></div>
 
     <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="/assets/dl_button.png?v=105" alt="Download" draggable="false" />
+      <img src="/assets/dl_button.png?v=106" alt="Download" draggable="false" />
     </button>
   </div>
 
@@ -239,13 +240,13 @@
     <div id="cheatStage">
       <div id="arrowRow" aria-hidden="true"></div>
       <div id="cheatText" aria-hidden="true">
-        <img src="/assets/cheatcode.png?v=105" alt="" draggable="false" />
+        <img src="/assets/cheatcode.png?v=106" alt="" draggable="false" />
       </div>
     </div>
   </div>
 
   <div id="footerVersion">
-    <span>codex jr beta site v1.0.5</span>
+    <span>codex jr beta site v1.0.6</span>
   </div>
 
   <script>
@@ -263,7 +264,7 @@
     const PAUSE_MS = 500;
     const TEXT_FADE_MS = 3000;
 
-    // GitHub release (your public downloads repo)
+    // GitHub release (public downloads repo)
     const RELEASE_TAG = "v1.0.4";
     const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
     const ASSETS = {
@@ -320,7 +321,7 @@
         const a = document.createElement("div");
         a.className = "arrow";
         const img = document.createElement("img");
-        img.src = "/assets/8bitarrow.png?v=105";
+        img.src = "/assets/8bitarrow.png?v=106";
         img.alt = "";
         let rot = 0;
         if (dir === "right") rot = 90;
@@ -338,29 +339,27 @@
       // Download
       placeElement(downloadBtn, DL_CX, DL_CY, 802, 192);
 
-      // Sun hotspot
-      placeElement(sunHotspot, CX, CY, 170, 170);
+      // Sun hotspot (smaller hit area, same center)
+      placeElement(sunHotspot, CX, CY, 85, 85);
 
       // Cheat stage anchor
       cheatStage.style.left = (offsetX + CX * scale) + "px";
       cheatStage.style.top  = (offsetY + CY * scale) + "px";
 
-      // Arrow row: slightly above center (match mockup vibe)
+      // Arrow row
       arrowRow.style.left = "0px";
       arrowRow.style.top  = (-70 * scale) + "px";
       arrowRow.style.gap  = (22 * scale) + "px";
 
-      // Arrow sizes
       for (const node of arrowRow.querySelectorAll(".arrow")) {
         node.style.width  = (64 * scale) + "px";
         node.style.height = (64 * scale) + "px";
       }
 
-      // Cheat text: slightly below center (match mockup)
+      // Cheat text
       cheatText.style.left = "0px";
       cheatText.style.top  = (55 * scale) + "px";
 
-      // Keep cheatcode.png scaled with viewport using natural width
       const img = cheatText.querySelector("img");
       if (img && img.naturalWidth) img.style.width = (img.naturalWidth * scale) + "px";
     }
@@ -401,7 +400,6 @@
       document.body.classList.remove("cheat-open");
     }
 
-    // Events
     downloadBtn.addEventListener("click", (e) => {
       e.preventDefault();
       startDownload();
@@ -412,7 +410,6 @@
       openCheat();
     });
 
-    // Touch hover helper: brief glow on touchstart
     sunHotspot.addEventListener("touchstart", () => {
       sunHotspot.classList.add("touch-glow");
       setTimeout(() => sunHotspot.classList.remove("touch-glow"), 900);
@@ -430,7 +427,6 @@
       if (e.key.toLowerCase() === "h") document.body.classList.toggle("debug-hotspot");
     });
 
-    // Init
     buildArrowRow();
     cheatText.querySelector("img").addEventListener("load", layout);
     layout();

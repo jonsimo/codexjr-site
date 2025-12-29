@@ -1,131 +1,391 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Codex Jr</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Codex Jr Updater</title>
 
-<!-- Favicons -->
-<link rel="icon" href="assets/favicon.ico?v=1.0.1">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png?v=1.0.1">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png?v=1.0.1">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=1.0.1">
+  <!-- Favicons (in /assets) -->
+  <link rel="icon" href="assets/favicon.ico?v=1.0.1" sizes="any">
+  <link rel="icon" type="image/png" href="assets/favicon-32x32.png?v=1.0.1" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/favicon-16x16.png?v=1.0.1" sizes="16x16">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=1.0.1">
 
-<style>
-html, body {
-  margin: 0;
-  height: 100%;
-  background: #000;
-  overflow: hidden;
-}
+  <style>
+    :root{ --design-w: 2000; --design-h: 1185; }
+    html, body { height: 100%; margin: 0; }
+    body{
+      overflow: hidden;
+      background: #000;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
 
-/* HERO BACKGROUND */
-#hero {
-  position: fixed;
-  inset: 0;
-  background-image: image-set(
-    url("assets/codexjr-hero-1000.webp") 1x,
-    url("assets/codexjr-hero-2000.webp") 2x
-  );
-  background-size: cover;
-  background-position: center;
-}
+    @font-face{
+      font-family: "BitHUD";
+      src: url("assets/8-bit-hud.ttf?v=1.0.1") format("truetype");
+      font-display: swap;
+    }
 
-/* UI LAYER */
-#ui {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-}
+    #hero{
+      position: fixed;
+      inset: 0;
+      background-image: image-set(
+        url("assets/codexjr-hero-1000.webp?v=1.0.1") 1x,
+        url("assets/codexjr-hero-2000.webp?v=1.0.1") 2x
+      );
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      transform: translateZ(0);
+    }
 
-/* DOWNLOAD BUTTON */
-#download {
-  position: absolute;
-  left: 50%;
-  top: 76%;
-  transform: translate(-50%, -50%);
-  pointer-events: auto;
-}
+    #ui{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
 
-#download img {
-  width: 800px;
-  image-rendering: pixelated;
-  cursor: pointer;
-  transition: transform 150ms ease, filter 150ms ease;
-}
+    /* Download button */
+    #downloadBtn{
+      position: absolute;
+      border: 0;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      pointer-events: auto;
+      transform: translate(-50%, -50%);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      z-index: 20;
+    }
+    #downloadBtn img{
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+      transform: translateZ(0);
+      transition: transform 140ms ease, filter 140ms ease;
+    }
+    #downloadBtn:hover img{
+      transform: scale(1.03);
+      filter: brightness(1.08) drop-shadow(0 10px 22px rgba(0,0,0,0.45));
+    }
+    #downloadBtn:active img{
+      transform: scale(0.985);
+      filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+    }
 
-#download:hover img {
-  transform: scale(1.04);
-  filter: brightness(1.1) drop-shadow(0 12px 24px rgba(0,0,0,0.5));
-}
+    /*
+      KNOWN-GOOD SUN GLOW:
+      - Big glow aura that definitely shows
+      - Hitbox small (we’ll size it in JS)
+      - High z-index so nothing blocks hover/click
+    */
+    #sunHotspot{
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      cursor: pointer;
+      border-radius: 999px;
+      z-index: 30;
 
-/* SUN HOTSPOT — SMALL, BUT GLOW IS BIG */
-#sun {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 80px;
-  height: 80px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  pointer-events: auto;
-  cursor: pointer;
-  background: rgba(255,255,255,0.02); /* Safari hover fix */
-}
+      /* Safari: ensure hover works on an "invisible" element */
+      background: rgba(255,255,255,0.01);
+      transform: translate(-50%, -50%) translateZ(0);
+      will-change: transform, opacity;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      outline: none;
+    }
 
-/* THE GLOW — THIS WILL SHOW, PERIOD */
-#sun::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 260px;
-  height: 260px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(255,245,190,0.85) 0%,
-    rgba(255,210,120,0.55) 35%,
-    rgba(255,160,80,0.25) 55%,
-    rgba(0,0,0,0) 75%
-  );
-  filter: blur(14px);
-  opacity: 0;
-  transition: opacity 400ms ease;
-  pointer-events: none;
-}
+    #sunGlow{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 280%;
+      height: 280%;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      pointer-events: none;
 
-#sun:hover::after {
-  opacity: 1;
-}
+      /* this is the "too obvious" glow you said you could see */
+      background: radial-gradient(circle,
+        rgba(255,245,190,0.32) 0%,
+        rgba(255,210,120,0.18) 34%,
+        rgba(255,160,80,0.06) 52%,
+        rgba(0,0,0,0.00) 72%
+      );
+      filter: blur(12px);
+      opacity: 0;
+      transition: opacity 520ms ease-in-out;
+    }
 
-/* FOOTER VERSION */
-#version {
-  position: fixed;
-  bottom: 12px;
-  width: 100%;
-  text-align: center;
-  color: #f6df73;
-  font-size: 14px;
-  font-family: monospace;
-  opacity: 0.9;
-}
-</style>
+    #sunHotspot:hover #sunGlow,
+    #sunHotspot:focus-visible #sunGlow{
+      opacity: 1;
+    }
+
+    /* Cheat overlay */
+    #cheatOverlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      pointer-events: auto;
+      z-index: 50;
+    }
+    #cheatOverlay.show{ display: block; }
+    #cheatDim{ position:absolute; inset:0; background: rgba(0,0,0,0.55); }
+    #cheatStage{ position:absolute; left:0; top:0; transform: translateZ(0); }
+
+    #arrowRow{
+      position:absolute;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transform: translate(-50%, -50%);
+    }
+    .arrow{ opacity: 0; will-change: opacity; }
+    .arrow img{ display:block; image-rendering: pixelated; transform-origin: 50% 50%; }
+
+    #cheatText{
+      position:absolute;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      will-change: opacity;
+    }
+    #cheatText img{ display:block; height:auto; image-rendering: pixelated; }
+
+    body.cheat-open #downloadBtn{ display:none; }
+
+    #siteVersion{
+      position: fixed;
+      left: 0; right: 0; bottom: 10px;
+      text-align: center;
+      pointer-events: none;
+      font-family: "BitHUD", monospace;
+      font-size: 14px;
+      color: #f6df73;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.6);
+      letter-spacing: 0.5px;
+      -webkit-font-smoothing: none;
+      font-smooth: never;
+      z-index: 60;
+    }
+  </style>
 </head>
 
 <body>
-<div id="hero"></div>
+  <div id="hero" aria-hidden="true"></div>
 
-<div id="ui">
-  <div id="sun" title="hidden"></div>
+  <div id="ui">
+    <div id="sunHotspot" tabindex="0" aria-label="Hidden">
+      <div id="sunGlow" aria-hidden="true"></div>
+    </div>
 
-  <a id="download"
-     href="https://github.com/jonsimo/codex-jr-downloads/releases/tag/v1.0.4">
-    <img src="assets/dl_button.png" alt="Download Codex Jr">
-  </a>
-</div>
+    <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
+      <img src="assets/dl_button.png?v=1.0.1" alt="Download" draggable="false" />
+    </button>
+  </div>
 
-<div id="version">codex jr beta site v1.0.1</div>
+  <div id="cheatOverlay" role="dialog" aria-modal="true" aria-label="Cheat Code">
+    <div id="cheatDim"></div>
+    <div id="cheatStage">
+      <div id="arrowRow" aria-hidden="true"></div>
+      <div id="cheatText" aria-hidden="true">
+        <img src="assets/cheatcode.png?v=1.0.1" alt="" draggable="false" />
+      </div>
+    </div>
+  </div>
+
+  <div id="siteVersion">codex jr beta site v1.0.1</div>
+
+  <script>
+    const SITE_VERSION = "1.0.1";
+
+    const DESIGN_W = 2000;
+    const DESIGN_H = 1185;
+
+    const CHEAT_CX = 990;
+    const CHEAT_CY = 580;
+
+    const DL_CX = 1000;
+    const DL_CY = 760;
+
+    const SUN_CX = CHEAT_CX;
+    const SUN_CY = CHEAT_CY;
+
+    const ARROWS_TOTAL_MS = 4000;
+    const PAUSE_MS = 500;
+    const TEXT_FADE_MS = 3000;
+
+    const RELEASE_TAG = "v1.0.4";
+    const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
+    const DOWNLOADS = {
+      mac: `${RELEASE_BASE}CodexJr-Updater-mac-v1.0.4.zip`,
+      win: `${RELEASE_BASE}CodexJr-Updater-windows-v1.0.4.zip`,
+      fallback: `https://github.com/jonsimo/codex-jr-downloads/releases/tag/${RELEASE_TAG}`
+    };
+
+    const SEQ = ["up","up","up","left","down","right","up","up","up"];
+
+    const ui = {
+      downloadBtn: document.getElementById("downloadBtn"),
+      sunHotspot: document.getElementById("sunHotspot"),
+      cheatOverlay: document.getElementById("cheatOverlay"),
+      cheatStage: document.getElementById("cheatStage"),
+      arrowRow: document.getElementById("arrowRow"),
+      cheatText: document.getElementById("cheatText"),
+    };
+
+    function buildArrowRow() {
+      ui.arrowRow.innerHTML = "";
+      for (const dir of SEQ) {
+        const a = document.createElement("div");
+        a.className = "arrow";
+
+        const img = document.createElement("img");
+        img.src = `assets/8bitarrow.png?v=${SITE_VERSION}`;
+        img.alt = "";
+
+        let rot = 0;
+        if (dir === "right") rot = 90;
+        if (dir === "down")  rot = 180;
+        if (dir === "left")  rot = -90;
+        img.style.transform = `rotate(${rot}deg)`;
+
+        a.appendChild(img);
+        ui.arrowRow.appendChild(a);
+      }
+    }
+
+    function detectOS() {
+      const ua = navigator.userAgent.toLowerCase();
+      const platform = (navigator.platform || "").toLowerCase();
+      if (platform.includes("mac") || ua.includes("mac os")) return "mac";
+      if (platform.includes("win") || ua.includes("windows")) return "win";
+      return "unknown";
+    }
+
+    function startDownload() {
+      const os = detectOS();
+      const url = DOWNLOADS[os] || DOWNLOADS.fallback;
+      window.location.assign(url);
+    }
+
+    function coverTransform() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
+      const drawW = DESIGN_W * scale;
+      const drawH = DESIGN_H * scale;
+      const offsetX = (vw - drawW) / 2;
+      const offsetY = (vh - drawH) / 2;
+      return { scale, offsetX, offsetY };
+    }
+
+    function placeElement(el, x, y, w, h) {
+      const { scale, offsetX, offsetY } = coverTransform();
+      el.style.left = (offsetX + x * scale) + "px";
+      el.style.top  = (offsetY + y * scale) + "px";
+      if (w != null) el.style.width  = (w * scale) + "px";
+      if (h != null) el.style.height = (h * scale) + "px";
+    }
+
+    function layout() {
+      const { scale, offsetX, offsetY } = coverTransform();
+
+      placeElement(ui.downloadBtn, DL_CX, DL_CY, 802, 192);
+
+      // 50% inner sun click area (small, but still hittable):
+      // This is the part you asked for.
+      placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 80, 80);
+
+      ui.cheatStage.style.left = (offsetX + CHEAT_CX * scale) + "px";
+      ui.cheatStage.style.top  = (offsetY + CHEAT_CY * scale) + "px";
+
+      ui.arrowRow.style.left = "0px";
+      ui.arrowRow.style.top  = (-70 * scale) + "px";
+      ui.arrowRow.style.gap  = (22 * scale) + "px";
+
+      for (const node of ui.arrowRow.querySelectorAll(".arrow img")) {
+        node.style.width  = (64 * scale) + "px";
+        node.style.height = (64 * scale) + "px";
+      }
+
+      ui.cheatText.style.left = "0px";
+      ui.cheatText.style.top  = (62 * scale) + "px";
+
+      const img = ui.cheatText.querySelector("img");
+      if (img && img.naturalWidth) {
+        img.style.width = (img.naturalWidth * scale) + "px";
+      }
+    }
+
+    function resetCheatVisuals() {
+      for (const a of ui.arrowRow.querySelectorAll(".arrow")) {
+        a.style.opacity = "0";
+        a.style.transition = "none";
+      }
+      ui.cheatText.style.opacity = "0";
+      ui.cheatText.style.transition = "none";
+    }
+
+    function playCheatSequence() {
+      resetCheatVisuals();
+
+      const arrows = Array.from(ui.arrowRow.querySelectorAll(".arrow"));
+      const n = arrows.length;
+      const step = ARROWS_TOTAL_MS / n;
+      const fadeEach = Math.min(650, step * 0.85);
+
+      arrows.forEach((a, i) => {
+        setTimeout(() => {
+          a.style.transition = `opacity ${fadeEach}ms ease`;
+          a.style.opacity = "1";
+        }, i * step);
+      });
+
+      setTimeout(() => {
+        ui.cheatText.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
+        ui.cheatText.style.opacity = "1";
+      }, ARROWS_TOTAL_MS + PAUSE_MS);
+    }
+
+    function openCheat() {
+      document.body.classList.add("cheat-open");
+      ui.cheatOverlay.classList.add("show");
+      layout();
+      playCheatSequence();
+    }
+
+    function closeCheat() {
+      ui.cheatOverlay.classList.remove("show");
+      document.body.classList.remove("cheat-open");
+    }
+
+    ui.downloadBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      startDownload();
+    });
+
+    ui.sunHotspot.addEventListener("click", (e) => {
+      e.preventDefault();
+      openCheat();
+    });
+
+    ui.cheatOverlay.addEventListener("click", (e) => {
+      e.preventDefault();
+      closeCheat();
+    });
+
+    window.addEventListener("resize", layout);
+
+    buildArrowRow();
+    const cheatImg = ui.cheatText.querySelector("img");
+    cheatImg.addEventListener("load", layout);
+
+    layout();
+  </script>
 </body>
 </html>

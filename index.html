@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-  <meta name="codex-build" content="v1.0.4" />
+  <meta name="codex-build" content="v1.0.5" />
 
-  <link rel="icon" href="/assets/favicon.ico?v=104" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=104">
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=104">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=104">
+  <!-- Favicons -->
+  <link rel="icon" href="/assets/favicon.ico?v=105" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png?v=105">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png?v=105">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=105">
 
   <style>
     :root{
@@ -21,7 +22,7 @@
 
     @font-face{
       font-family: "BitHUD";
-      src: url("/assets/8-bit-hud.ttf?v=104") format("truetype");
+      src: url("/assets/8-bit-hud.ttf?v=105") format("truetype");
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -38,8 +39,8 @@
       position: fixed;
       inset: 0;
       background-image: image-set(
-        url("/assets/codexjr-hero-1000.webp?v=104") 1x,
-        url("/assets/codexjr-hero-2000.webp?v=104") 2x
+        url("/assets/codexjr-hero-1000.webp?v=105") 1x,
+        url("/assets/codexjr-hero-2000.webp?v=105") 2x
       );
       background-size: cover;
       background-position: center center;
@@ -86,46 +87,67 @@
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* Sun hotspot: FORCE above everything */
+    /* Sun hotspot */
     #sunHotspot{
       position: absolute;
       transform: translate(-50%, -50%);
       width: 170px;
       height: 170px;
       border-radius: 999px;
-      pointer-events: auto;        /* must be */
+      pointer-events: auto;
       cursor: pointer;
-      z-index: 9999;               /* FORCE top */
-      background: transparent;
+      z-index: 9999;
+      background: rgba(255,255,255,0.001); /* IMPORTANT: helps Safari register hover reliably */
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* Debug outline toggle */
     body.debug-hotspot #sunHotspot{
       outline: 2px dashed rgba(255,255,255,0.65);
       outline-offset: -2px;
-      background: rgba(255,255,255,0.05);
     }
 
-    /* Glow */
+    /* Glow (hover) — stronger + smoother, no ring edge */
     #sunHotspot::before{
       content:"";
       position:absolute;
-      inset:-18px;
+      inset:-26px;
       border-radius: 999px;
       background: radial-gradient(circle,
-        rgba(255,235,160,0.18) 0%,
-        rgba(255,205,110,0.075) 38%,
+        rgba(255,245,180,0.18) 0%,
+        rgba(255,210,120,0.10) 35%,
         rgba(0,0,0,0.00) 72%
       );
-      filter: blur(10px);
+      filter: blur(12px);
       opacity: 0;
-      transition: opacity 850ms ease-in-out;
+      transition: opacity 1100ms ease-in-out;
       pointer-events:none;
     }
-    #sunHotspot:hover::before{
-      opacity: 0.10;
+    #sunHotspot::after{
+      content:"";
+      position:absolute;
+      inset: 22px;
+      border-radius: 999px;
+      box-shadow:
+        0 0 22px rgba(255,235,160,0.18),
+        0 0 54px rgba(255,200,110,0.10);
+      opacity: 0;
+      transition: opacity 1100ms ease-in-out;
+      pointer-events:none;
     }
 
+    #sunHotspot:hover::before,
+    #sunHotspot:hover::after{
+      opacity: 1;
+    }
+
+    /* Touch/forced hover helper */
+    #sunHotspot.touch-glow::before,
+    #sunHotspot.touch-glow::after{
+      opacity: 1;
+    }
+
+    /* Footer version */
     #footerVersion{
       position: fixed;
       left: 0;
@@ -144,6 +166,60 @@
       text-shadow: 0 2px 0 rgba(0,0,0,0.55);
       opacity: 0.9;
     }
+
+    /* Cheat overlay */
+    #cheatOverlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 20000;
+      pointer-events: auto;
+    }
+    #cheatOverlay.show{ display:block; }
+    #cheatDim{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,0.55);
+    }
+    #cheatStage{
+      position:absolute;
+      left:0;
+      top:0;
+      transform: translateZ(0);
+    }
+    #arrowRow{
+      position:absolute;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transform: translate(-50%, -50%);
+      gap: 22px;
+    }
+    .arrow{
+      opacity: 0;
+      will-change: opacity;
+    }
+    .arrow img{
+      width: 100%;
+      height: 100%;
+      display:block;
+      image-rendering: pixelated;
+      transform-origin: 50% 50%;
+    }
+    #cheatText{
+      position:absolute;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      will-change: opacity;
+    }
+    #cheatText img{
+      display:block;
+      width: 100%;
+      height:auto;
+      image-rendering: pixelated;
+    }
+
+    body.cheat-open #downloadBtn{ display:none; }
   </style>
 </head>
 
@@ -154,23 +230,40 @@
     <div id="sunHotspot" aria-label="Hidden"></div>
 
     <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="/assets/dl_button.png?v=104" alt="Download" draggable="false" />
+      <img src="/assets/dl_button.png?v=105" alt="Download" draggable="false" />
     </button>
   </div>
 
+  <div id="cheatOverlay" role="dialog" aria-modal="true" aria-label="Cheat Code">
+    <div id="cheatDim"></div>
+    <div id="cheatStage">
+      <div id="arrowRow" aria-hidden="true"></div>
+      <div id="cheatText" aria-hidden="true">
+        <img src="/assets/cheatcode.png?v=105" alt="" draggable="false" />
+      </div>
+    </div>
+  </div>
+
   <div id="footerVersion">
-    <span>codex jr beta site v1.0.4</span>
+    <span>codex jr beta site v1.0.5</span>
   </div>
 
   <script>
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
 
-    // If glow isn't showing, 99% chance these are off.
-    // These are your earlier numbers; we'll adjust after you toggle debug outline.
-    const SUN_CX = 990, SUN_CY = 580;
-    const DL_CX  = 1000, DL_CY  = 760;
+    // Your alignment point (sun center / arrows center / cheat text center)
+    const CX = 990, CY = 580;
 
+    // Download button center in design pixels
+    const DL_CX = 1000, DL_CY = 760;
+
+    // Cheat animation timing
+    const ARROWS_TOTAL_MS = 4000;
+    const PAUSE_MS = 500;
+    const TEXT_FADE_MS = 3000;
+
+    // GitHub release (your public downloads repo)
     const RELEASE_TAG = "v1.0.4";
     const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
     const ASSETS = {
@@ -179,8 +272,14 @@
       fallback: `https://github.com/jonsimo/codex-jr-downloads/releases/tag/${RELEASE_TAG}`
     };
 
-    const downloadBtn = document.getElementById("downloadBtn");
-    const sunHotspot  = document.getElementById("sunHotspot");
+    const SEQ = ["up","up","up","left","down","right","up","up","up"];
+
+    const downloadBtn  = document.getElementById("downloadBtn");
+    const sunHotspot   = document.getElementById("sunHotspot");
+    const cheatOverlay = document.getElementById("cheatOverlay");
+    const cheatStage   = document.getElementById("cheatStage");
+    const arrowRow     = document.getElementById("arrowRow");
+    const cheatText    = document.getElementById("cheatText");
 
     function detectOS() {
       const ua = navigator.userAgent.toLowerCase();
@@ -215,24 +314,125 @@
       if (h != null) el.style.height = (h * scale) + "px";
     }
 
-    function layout() {
-      placeElement(downloadBtn, DL_CX, DL_CY, 802, 192);
-      placeElement(sunHotspot,  SUN_CX, SUN_CY, 170, 170);
+    function buildArrowRow() {
+      arrowRow.innerHTML = "";
+      for (const dir of SEQ) {
+        const a = document.createElement("div");
+        a.className = "arrow";
+        const img = document.createElement("img");
+        img.src = "/assets/8bitarrow.png?v=105";
+        img.alt = "";
+        let rot = 0;
+        if (dir === "right") rot = 90;
+        if (dir === "down")  rot = 180;
+        if (dir === "left")  rot = -90;
+        img.style.transform = `rotate(${rot}deg)`;
+        a.appendChild(img);
+        arrowRow.appendChild(a);
+      }
     }
 
+    function layout() {
+      const { scale, offsetX, offsetY } = coverTransform();
+
+      // Download
+      placeElement(downloadBtn, DL_CX, DL_CY, 802, 192);
+
+      // Sun hotspot
+      placeElement(sunHotspot, CX, CY, 170, 170);
+
+      // Cheat stage anchor
+      cheatStage.style.left = (offsetX + CX * scale) + "px";
+      cheatStage.style.top  = (offsetY + CY * scale) + "px";
+
+      // Arrow row: slightly above center (match mockup vibe)
+      arrowRow.style.left = "0px";
+      arrowRow.style.top  = (-70 * scale) + "px";
+      arrowRow.style.gap  = (22 * scale) + "px";
+
+      // Arrow sizes
+      for (const node of arrowRow.querySelectorAll(".arrow")) {
+        node.style.width  = (64 * scale) + "px";
+        node.style.height = (64 * scale) + "px";
+      }
+
+      // Cheat text: slightly below center (match mockup)
+      cheatText.style.left = "0px";
+      cheatText.style.top  = (55 * scale) + "px";
+
+      // Keep cheatcode.png scaled with viewport using natural width
+      const img = cheatText.querySelector("img");
+      if (img && img.naturalWidth) img.style.width = (img.naturalWidth * scale) + "px";
+    }
+
+    function resetCheat() {
+      for (const a of arrowRow.querySelectorAll(".arrow")) a.style.opacity = "0";
+      cheatText.style.opacity = "0";
+    }
+
+    function playCheatSequence() {
+      resetCheat();
+      const arrows = Array.from(arrowRow.querySelectorAll(".arrow"));
+      const step = ARROWS_TOTAL_MS / arrows.length;
+      const fadeEach = Math.min(650, step * 0.85);
+
+      arrows.forEach((a, i) => {
+        setTimeout(() => {
+          a.style.transition = `opacity ${fadeEach}ms ease`;
+          a.style.opacity = "1";
+        }, i * step);
+      });
+
+      setTimeout(() => {
+        cheatText.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
+        cheatText.style.opacity = "1";
+      }, ARROWS_TOTAL_MS + PAUSE_MS);
+    }
+
+    function openCheat() {
+      document.body.classList.add("cheat-open");
+      cheatOverlay.classList.add("show");
+      layout();
+      playCheatSequence();
+    }
+
+    function closeCheat() {
+      cheatOverlay.classList.remove("show");
+      document.body.classList.remove("cheat-open");
+    }
+
+    // Events
     downloadBtn.addEventListener("click", (e) => {
       e.preventDefault();
       startDownload();
     });
 
-    // Debug toggle: press H
-    window.addEventListener("keydown", (e) => {
-      if (e.key.toLowerCase() === "h") {
-        document.body.classList.toggle("debug-hotspot");
-      }
+    sunHotspot.addEventListener("click", (e) => {
+      e.preventDefault();
+      openCheat();
+    });
+
+    // Touch hover helper: brief glow on touchstart
+    sunHotspot.addEventListener("touchstart", () => {
+      sunHotspot.classList.add("touch-glow");
+      setTimeout(() => sunHotspot.classList.remove("touch-glow"), 900);
+    }, { passive: true });
+
+    cheatOverlay.addEventListener("click", (e) => {
+      e.preventDefault();
+      closeCheat();
     });
 
     window.addEventListener("resize", layout);
+
+    // Debug toggle: H
+    window.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "h") document.body.classList.toggle("debug-hotspot");
+    });
+
+    // Init
+    buildArrowRow();
+    cheatText.querySelector("img").addEventListener("load", layout);
     layout();
   </script>
 </body>

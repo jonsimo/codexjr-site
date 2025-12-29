@@ -19,11 +19,18 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
+    /* Pixel font for version label */
+    @font-face{
+      font-family: "PressStart2P";
+      src: url("fonts/PressStart2P.ttf") format("truetype");
+      font-display: swap;
+    }
+
     /* Full-screen hero */
     #hero{
       position:fixed;
       inset:0;
-      z-index: 0;
+      z-index:0;
       background-image: image-set(
         url("assets/codexjr-hero-1000.webp") 1x,
         url("assets/codexjr-hero-2000.webp") 2x
@@ -38,14 +45,14 @@
     #ui{
       position:fixed;
       inset:0;
-      z-index: 5;            /* ensure above hero */
+      z-index:5;
       pointer-events:none;
     }
 
     /* Download button */
     #downloadBtn{
       position:absolute;
-      z-index: 20;           /* above hotspot glow if overlapping */
+      z-index:20;
       border:0;
       background:transparent;
       padding:0;
@@ -73,298 +80,117 @@
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* SUN HOTSPOT */
+    /* SUN HOTSPOT (tuned + subtle fade) */
     #sunHotspot{
       position:absolute;
-      z-index: 30;           /* FORCE above everything in #ui */
+      z-index:30;
       transform: translate(-50%, -50%);
-      border-radius: 999px;
+      border-radius:999px;
       pointer-events:auto;
       cursor:pointer;
-
-      /* DEBUG: uncomment to see the clickable region */
-      /* outline: 2px solid rgba(0,255,255,0.6); */
+      background: rgba(0,0,0,0.001);
     }
 
-    /* big obvious hover glow */
-    #sunHotspot::before{
-      content:"";
-      position:absolute;
-      inset:-55px;
-      border-radius:999px;
-      pointer-events:none;
-
-      background: radial-gradient(circle,
-        rgba(255,245,200,0.55) 0%,
-        rgba(255,220,140,0.35) 28%,
-        rgba(255,190,110,0.18) 48%,
-        rgba(255,160,80,0.00) 70%
-      );
-      filter: blur(10px);
-      opacity: 0;
-      transform: translateZ(0);
-      will-change: opacity;
-      transition: opacity 120ms ease;
-    }
-
-    /* extra “core” so it’s visible even on bright sun */
+    #sunHotspot::before,
     #sunHotspot::after{
       content:"";
       position:absolute;
-      inset:-18px;
       border-radius:999px;
       pointer-events:none;
-
-      background: radial-gradient(circle,
-        rgba(255,255,210,0.35) 0%,
-        rgba(255,215,140,0.18) 40%,
-        rgba(0,0,0,0.0) 70%
-      );
-      filter: blur(6px);
-      opacity: 0;
-      transform: translateZ(0);
-      will-change: opacity;
-      transition: opacity 120ms ease;
-    }
-
-    #sunHotspot:hover::before{ opacity: 1; }
-    #sunHotspot:hover::after { opacity: 0.9; }
-
-    /* Cheat overlay */
-    #cheatOverlay{
-      position:fixed;
-      inset:0;
-      z-index: 50;
-      display:none;
-      pointer-events:auto;
-    }
-    #cheatOverlay.show{ display:block; }
-
-    #cheatDim{
-      position:absolute;
-      inset:0;
-      background: rgba(0,0,0,0.55);
-    }
-
-    #cheatStage{
-      position:absolute;
-      left:0; top:0;
-      width:0; height:0;
-      transform: translateZ(0);
-    }
-
-    /* Arrow row */
-    #arrowRow{
-      position:absolute;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      transform: translate(-50%, -50%);
-    }
-    .arrow{ opacity:0; will-change: opacity; }
-    .arrow img{
-      width:100%;
-      height:100%;
-      display:block;
-      image-rendering: pixelated;
-      transform-origin: 50% 50%;
-    }
-
-    /* Cheat text */
-    #cheatText{
-      position:absolute;
-      transform: translate(-50%, -50%);
       opacity:0;
+      transform: translateZ(0);
       will-change: opacity;
-    }
-    #cheatText img{
-      display:block;
-      width:100%;
-      height:auto;
-      image-rendering: pixelated;
+      transition: opacity 420ms ease-in-out;
     }
 
-    body.cheat-open #downloadBtn{ display:none; }
+    /* outer halo (reduced intensity) */
+    #sunHotspot::before{
+      inset:-55px;
+      background: radial-gradient(circle,
+        rgba(255,245,200,0.38) 0%,
+        rgba(255,220,140,0.24) 30%,
+        rgba(255,190,110,0.12) 50%,
+        rgba(0,0,0,0.00) 72%
+      );
+      filter: blur(12px);
+    }
+
+    /* inner warmth (reduced intensity) */
+    #sunHotspot::after{
+      inset:-18px;
+      background: radial-gradient(circle,
+        rgba(255,255,210,0.22) 0%,
+        rgba(255,215,140,0.10) 42%,
+        rgba(0,0,0,0.00) 70%
+      );
+      filter: blur(7px);
+    }
+
+    #sunHotspot:hover::before{ opacity: 0.7; }
+    #sunHotspot:hover::after { opacity: 0.6; }
+
+    /* Footer version label */
+    #version{
+      position:fixed;
+      bottom:16px;
+      left:50%;
+      transform: translateX(-50%);
+      font-family: "PressStart2P", monospace;
+      font-size:14px;
+      color:#FFD75A;
+      opacity:0.85;
+      pointer-events:none;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.4);
+      z-index:40;
+    }
   </style>
 </head>
 
 <body>
-  <div id="hero" aria-hidden="true"></div>
+  <div id="hero"></div>
 
   <div id="ui">
-    <div id="sunHotspot" aria-label="Hidden cheat"></div>
+    <div id="sunHotspot"></div>
 
-    <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="assets/dl_button.png" alt="Download" draggable="false" />
+    <button id="downloadBtn">
+      <img src="assets/dl_button.png" alt="Download" draggable="false">
     </button>
   </div>
 
-  <div id="cheatOverlay" role="dialog" aria-modal="true" aria-label="Cheat Code">
-    <div id="cheatDim"></div>
-    <div id="cheatStage">
-      <div id="arrowRow" aria-hidden="true"></div>
-      <div id="cheatText" aria-hidden="true">
-        <img src="assets/cheatcode.png" alt="" draggable="false" />
-      </div>
-    </div>
-  </div>
+  <div id="version">codex jr beta site v1.0.0</div>
 
   <script>
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
 
-    const CHEAT_CX = 990;
-    const CHEAT_CY = 580;
+    const SUN_X = 990;
+    const SUN_Y = 580;
 
-    const DL_CX = 1000;
-    const DL_CY = 760;
+    const DL_X = 1000;
+    const DL_Y = 760;
 
-    const SUN_CX = CHEAT_CX;
-    const SUN_CY = CHEAT_CY;
-
-    const ARROWS_TOTAL_MS = 4000;
-    const PAUSE_MS        = 500;
-    const TEXT_FADE_MS    = 3000;
-
-    const RELEASE_TAG = "v1.0.4";
-    const RELEASE_BASE = `https://github.com/jonsimo/codex-jr-downloads/releases/download/${RELEASE_TAG}/`;
-    const ASSETS = {
-      mac: `${RELEASE_BASE}Codex-Jr-Updater-mac-v1.0.4.zip`,
-      win: `${RELEASE_BASE}Codex-Jr-Updater-windows-v1.0.4.zip`,
-      fallback: `https://github.com/jonsimo/codex-jr-downloads/releases/tag/${RELEASE_TAG}`
-    };
-
-    const SEQ = ["up","up","up","left","down","right","up","up","up"];
-
-    const ui = {
-      downloadBtn: document.getElementById("downloadBtn"),
-      sunHotspot: document.getElementById("sunHotspot"),
-      cheatOverlay: document.getElementById("cheatOverlay"),
-      cheatStage: document.getElementById("cheatStage"),
-      arrowRow: document.getElementById("arrowRow"),
-      cheatText: document.getElementById("cheatText"),
-    };
-
-    function buildArrowRow() {
-      ui.arrowRow.innerHTML = "";
-      for (const dir of SEQ) {
-        const a = document.createElement("div");
-        a.className = "arrow";
-        const img = document.createElement("img");
-        img.src = "assets/8bitarrow.png";
-        img.alt = "";
-        let rot = 0;
-        if (dir === "right") rot = 90;
-        if (dir === "down")  rot = 180;
-        if (dir === "left")  rot = -90;
-        img.style.transform = `rotate(${rot}deg)`;
-        a.appendChild(img);
-        ui.arrowRow.appendChild(a);
-      }
-    }
-
-    function detectOS() {
-      const ua = navigator.userAgent.toLowerCase();
-      const platform = (navigator.platform || "").toLowerCase();
-      if (platform.includes("mac") || ua.includes("mac os")) return "mac";
-      if (platform.includes("win") || ua.includes("windows")) return "win";
-      return "unknown";
-    }
-
-    function startDownload() {
-      const os = detectOS();
-      const url = ASSETS[os] || ASSETS.fallback;
-      window.location.assign(url);
-    }
-
-    function coverTransform() {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+    function coverTransform(){
+      const vw = innerWidth, vh = innerHeight;
       const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
-      const drawW = DESIGN_W * scale;
-      const drawH = DESIGN_H * scale;
-      const offsetX = (vw - drawW) / 2;
-      const offsetY = (vh - drawH) / 2;
-      return { scale, offsetX, offsetY };
+      const ox = (vw - DESIGN_W * scale) / 2;
+      const oy = (vh - DESIGN_H * scale) / 2;
+      return { scale, ox, oy };
     }
 
-    function placeElement(el, x, y, w, h) {
-      const { scale, offsetX, offsetY } = coverTransform();
-      el.style.left = (offsetX + x * scale) + "px";
-      el.style.top  = (offsetY + y * scale) + "px";
-      if (w != null) el.style.width  = (w * scale) + "px";
-      if (h != null) el.style.height = (h * scale) + "px";
+    function place(el, x, y, w, h){
+      const { scale, ox, oy } = coverTransform();
+      el.style.left = (ox + x * scale) + "px";
+      el.style.top  = (oy + y * scale) + "px";
+      if(w) el.style.width  = (w * scale) + "px";
+      if(h) el.style.height = (h * scale) + "px";
     }
 
-    function layout() {
-      placeElement(ui.downloadBtn, DL_CX, DL_CY, 802, 192);
-      placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 170, 170);
-
-      const { scale, offsetX, offsetY } = coverTransform();
-      ui.cheatStage.style.left = (offsetX + CHEAT_CX * scale) + "px";
-      ui.cheatStage.style.top  = (offsetY + CHEAT_CY * scale) + "px";
-
-      ui.arrowRow.style.left = "0px";
-      ui.arrowRow.style.top  = (-70 * scale) + "px";
-      ui.arrowRow.style.gap  = (22 * scale) + "px";
-
-      for (const node of ui.arrowRow.querySelectorAll(".arrow")) {
-        node.style.width  = (64 * scale) + "px";
-        node.style.height = (64 * scale) + "px";
-      }
-
-      ui.cheatText.style.left = "0px";
-      ui.cheatText.style.top  = (55 * scale) + "px";
-
-      const img = ui.cheatText.querySelector("img");
-      if (img && img.naturalWidth) img.style.width = (img.naturalWidth * scale) + "px";
+    function layout(){
+      place(document.getElementById("sunHotspot"), SUN_X, SUN_Y, 170, 170);
+      place(document.getElementById("downloadBtn"), DL_X, DL_Y, 802, 192);
     }
 
-    function resetCheatVisuals() {
-      for (const a of ui.arrowRow.querySelectorAll(".arrow")) a.style.opacity = "0";
-      ui.cheatText.style.opacity = "0";
-    }
-
-    function playCheatSequence() {
-      resetCheatVisuals();
-      const arrows = Array.from(ui.arrowRow.querySelectorAll(".arrow"));
-      const n = arrows.length;
-      const step = ARROWS_TOTAL_MS / n;
-      const fadeEach = Math.min(650, step * 0.85);
-
-      arrows.forEach((a, i) => {
-        setTimeout(() => {
-          a.style.transition = `opacity ${fadeEach}ms ease`;
-          a.style.opacity = "1";
-        }, i * step);
-      });
-
-      setTimeout(() => {
-        ui.cheatText.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
-        ui.cheatText.style.opacity = "1";
-      }, ARROWS_TOTAL_MS + PAUSE_MS);
-    }
-
-    function openCheat() {
-      document.body.classList.add("cheat-open");
-      ui.cheatOverlay.classList.add("show");
-      layout();
-      playCheatSequence();
-    }
-
-    function closeCheat() {
-      ui.cheatOverlay.classList.remove("show");
-      document.body.classList.remove("cheat-open");
-    }
-
-    ui.downloadBtn.addEventListener("click", (e) => { e.preventDefault(); startDownload(); });
-    ui.sunHotspot.addEventListener("click", (e) => { e.preventDefault(); openCheat(); });
-    ui.cheatOverlay.addEventListener("click", (e) => { e.preventDefault(); closeCheat(); });
-
-    window.addEventListener("resize", layout);
-
-    buildArrowRow();
-    ui.cheatText.querySelector("img").addEventListener("load", layout);
+    addEventListener("resize", layout);
     layout();
   </script>
 </body>

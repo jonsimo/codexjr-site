@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-  <!-- Favicons -->
+  <!-- Favicons (in /assets) -->
   <link rel="icon" href="assets/favicon.ico?v=1.0.1" sizes="any">
   <link rel="icon" type="image/png" href="assets/favicon-32x32.png?v=1.0.1" sizes="32x32">
   <link rel="icon" type="image/png" href="assets/favicon-16x16.png?v=1.0.1" sizes="16x16">
@@ -34,39 +34,49 @@
         url("assets/codexjr-hero-2000.webp?v=1.0.1") 2x
       );
       background-size: cover;
-      background-position: center;
+      background-position: center center;
       background-repeat: no-repeat;
+      transform: translateZ(0);
     }
 
-    #ui{ position: fixed; inset: 0; pointer-events: none; }
+    #ui{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
 
+    /* Download button */
     #downloadBtn{
       position: absolute;
       border: 0;
       background: transparent;
       padding: 0;
+      margin: 0;
       cursor: pointer;
       pointer-events: auto;
       transform: translate(-50%, -50%);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
       z-index: 20;
     }
-
     #downloadBtn img{
+      display: block;
       width: 100%;
+      height: auto;
       image-rendering: pixelated;
+      transform: translateZ(0);
       transition: transform 140ms ease, filter 140ms ease;
     }
-
     #downloadBtn:hover img{
       transform: scale(1.03);
       filter: brightness(1.08) drop-shadow(0 10px 22px rgba(0,0,0,0.45));
     }
-
     #downloadBtn:active img{
       transform: scale(0.985);
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
+    /* Sun hotspot + glow */
     #sunHotspot{
       position: absolute;
       transform: translate(-50%, -50%);
@@ -75,6 +85,11 @@
       border-radius: 999px;
       z-index: 30;
       background: rgba(255,255,255,0.01);
+      transform: translate(-50%, -50%) translateZ(0);
+      will-change: transform, opacity;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      outline: none;
     }
 
     #sunGlow{
@@ -94,129 +109,272 @@
       );
       filter: blur(14px);
       opacity: 0;
-      transition: opacity 600ms ease;
+      transition: opacity 600ms ease-in-out;
     }
 
-    #sunHotspot:hover #sunGlow{ opacity: 1; }
+    #sunHotspot:hover #sunGlow,
+    #sunHotspot:focus-visible #sunGlow{
+      opacity: 1;
+    }
 
+    /* Footer version */
     #siteVersion{
       position: fixed;
       left: 0; right: 0; bottom: 10px;
       text-align: center;
+      pointer-events: none;
       font-family: "BitHUD", monospace;
       font-size: 14px;
       color: #f6df73;
       text-shadow: 0 2px 0 rgba(0,0,0,0.6);
+      letter-spacing: 0.5px;
+      -webkit-font-smoothing: none;
+      font-smooth: never;
       z-index: 60;
-      pointer-events: none;
+    }
+
+    /* MOBILE WARNING OVERLAY (soft block) */
+    #mobileOverlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 80;
+      pointer-events: auto;
+    }
+    #mobileOverlay.show{ display: block; }
+    #mobileDim{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,0.70);
+    }
+    #mobileDialog{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%, -50%);
+      width: min(680px, 86vw);
+      padding: 18px 18px 16px;
+      background: rgba(0,0,0,0.60);
+      border: 2px solid rgba(246,223,115,0.85);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+      border-radius: 10px;
+    }
+    #mobileTitle{
+      font-family: "BitHUD", monospace;
+      color: #f6df73;
+      font-size: 20px;
+      line-height: 1.25;
+      letter-spacing: 0.6px;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.7);
+      -webkit-font-smoothing: none;
+      font-smooth: never;
+      margin: 0 0 10px 0;
+      text-align: center;
+    }
+    #mobileBody{
+      font-family: "BitHUD", monospace;
+      color: rgba(246,223,115,0.92);
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: 0.4px;
+      -webkit-font-smoothing: none;
+      font-smooth: never;
+      margin: 0 0 14px 0;
+      text-align: center;
+    }
+    #mobileBtnRow{
+      display:flex;
+      justify-content:center;
+      gap: 12px;
+    }
+    #mobileOk{
+      font-family: "BitHUD", monospace;
+      font-size: 14px;
+      letter-spacing: 0.6px;
+      -webkit-font-smoothing: none;
+      font-smooth: never;
+      color: #0ff; /* teal-ish */
+      background: rgba(0,0,0,0.25);
+      border: 2px solid rgba(0,255,255,0.6);
+      border-radius: 10px;
+      padding: 10px 18px;
+      cursor: pointer;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.6);
+    }
+    #mobileOk:active{
+      transform: translateY(1px);
+      filter: brightness(0.95);
     }
   </style>
 </head>
 
 <body>
-  <div id="hero"></div>
+  <div id="hero" aria-hidden="true"></div>
 
   <div id="ui">
-    <div id="sunHotspot">
-      <div id="sunGlow"></div>
+    <div id="sunHotspot" tabindex="0" aria-label="Hidden">
+      <div id="sunGlow" aria-hidden="true"></div>
     </div>
 
-    <button id="downloadBtn" aria-label="Download Codex Jr Updater">
-      <img src="assets/dl_button.png?v=1.0.1" alt="Download">
+    <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
+      <img src="assets/dl_button.png?v=1.0.1" alt="Download" draggable="false" />
     </button>
   </div>
 
-  <div id="siteVersion">codex jr beta site</div>
+  <!-- Mobile warning (soft block) -->
+  <div id="mobileOverlay" role="dialog" aria-modal="true" aria-label="Mobile not supported">
+    <div id="mobileDim"></div>
+    <div id="mobileDialog">
+      <h2 id="mobileTitle">NOT DESIGNED FOR MOBILE</h2>
+      <p id="mobileBody">
+        PLEASE OPEN THIS SITE ON A DESKTOP COMPUTER TO DOWNLOAD THE CODEX JR UPDATER APP.
+      </p>
+      <div id="mobileBtnRow">
+        <button id="mobileOk" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="siteVersion">codex jr beta site v1.0.1</div>
 
   <script>
+    const SITE_VERSION = "1.0.1";
+
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
+
+    const CHEAT_CX = 990;
+    const CHEAT_CY = 580;
 
     const DL_CX = 1000;
     const DL_CY = 760;
 
-    const SUN_CX = 990;
-    const SUN_CY = 580;
+    const SUN_CX = CHEAT_CX;
+    const SUN_CY = CHEAT_CY;
 
-    // Download button size (30% smaller)
+    // Download button size reduced by 30% (from 802x192 -> 561x134)
     const DL_W = 561;
     const DL_H = 134;
 
+    // GitHub repo for downloads:
     const GH_OWNER = "jonsimo";
-    const GH_REPO = "codex-jr-downloads";
-    const GH_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/releases/latest`;
+    const GH_REPO  = "codex-jr-downloads";
+    const GH_LATEST_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/releases/latest`;
 
+    // Match your current naming pattern (adjust if needed)
     const ASSET_MATCH = {
       mac: ["osx", "arm64", ".zip"],
-      win: ["win", "x64", ".zip"]
+      win: ["win", "x64", ".zip"],
     };
 
     const ui = {
       downloadBtn: document.getElementById("downloadBtn"),
-      sunHotspot: document.getElementById("sunHotspot")
+      sunHotspot: document.getElementById("sunHotspot"),
+      mobileOverlay: document.getElementById("mobileOverlay"),
+      mobileOk: document.getElementById("mobileOk"),
     };
 
-    function detectOS(){
-      const p = (navigator.platform || "").toLowerCase();
+    function detectOS() {
       const ua = navigator.userAgent.toLowerCase();
-      if (p.includes("mac") || ua.includes("mac")) return "mac";
-      if (p.includes("win") || ua.includes("windows")) return "win";
-      return null;
+      const platform = (navigator.platform || "").toLowerCase();
+      if (platform.includes("mac") || ua.includes("mac os")) return "mac";
+      if (platform.includes("win") || ua.includes("windows")) return "win";
+      return "unknown";
     }
 
-    async function getLatestDownload(){
+    function isMobileOrSmall() {
+      // Soft detection: mobile pointer + no hover OR phone/tablet UA OR small viewport
+      const coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+      const noHover = window.matchMedia && window.matchMedia("(hover: none)").matches;
+      const ua = navigator.userAgent.toLowerCase();
+      const uaMobile = /android|iphone|ipad|ipod|mobile/.test(ua);
+
+      // If someone makes a tiny desktop window, still warn
+      const smallViewport = Math.min(window.innerWidth, window.innerHeight) < 720;
+
+      return (uaMobile || (coarse && noHover) || smallViewport);
+    }
+
+    function showMobileOverlayIfNeeded() {
+      // Only show once per session (soft block)
+      const dismissed = sessionStorage.getItem("mobileWarnDismissed") === "1";
+      if (dismissed) return;
+      if (isMobileOrSmall()) ui.mobileOverlay.classList.add("show");
+    }
+
+    async function getLatestDownloadUrl(os) {
+      const want = ASSET_MATCH[os];
+      if (!want) return `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
+
+      const res = await fetch(GH_LATEST_API, { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch latest release");
+      const release = await res.json();
+
+      const assets = Array.isArray(release.assets) ? release.assets : [];
+      const asset = assets.find(a => {
+        const name = (a.name || "").toLowerCase();
+        return want.every(s => name.includes(s));
+      });
+
+      if (!asset || !asset.browser_download_url) {
+        return release.html_url || `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
+      }
+      return asset.browser_download_url;
+    }
+
+    async function startDownload() {
       const os = detectOS();
-      if (!os) return `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
-
-      const res = await fetch(GH_API, { cache: "no-store" });
-      const data = await res.json();
-
-      const asset = data.assets.find(a =>
-        ASSET_MATCH[os].every(k => a.name.toLowerCase().includes(k))
-      );
-
-      return asset?.browser_download_url || data.html_url;
-    }
-
-    async function startDownload(){
-      try{
-        const url = await getLatestDownload();
-        window.location.href = url;
-      }catch{
-        window.location.href = `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
+      try {
+        const url = await getLatestDownloadUrl(os);
+        window.location.assign(url);
+      } catch (e) {
+        window.location.assign(`https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`);
       }
     }
 
-    function cover(){
-      const vw = innerWidth, vh = innerHeight;
-      const s = Math.max(vw / DESIGN_W, vh / DESIGN_H);
-      return {
-        s,
-        ox: (vw - DESIGN_W * s) / 2,
-        oy: (vh - DESIGN_H * s) / 2
-      };
+    function coverTransform() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
+      const drawW = DESIGN_W * scale;
+      const drawH = DESIGN_H * scale;
+      const offsetX = (vw - drawW) / 2;
+      const offsetY = (vh - drawH) / 2;
+      return { scale, offsetX, offsetY };
     }
 
-    function place(el, x, y, w, h){
-      const { s, ox, oy } = cover();
-      el.style.left = (ox + x * s) + "px";
-      el.style.top  = (oy + y * s) + "px";
-      if (w) el.style.width  = (w * s) + "px";
-      if (h) el.style.height = (h * s) + "px";
+    function placeElement(el, x, y, w, h) {
+      const { scale, offsetX, offsetY } = coverTransform();
+      el.style.left = (offsetX + x * scale) + "px";
+      el.style.top  = (offsetY + y * scale) + "px";
+      if (w != null) el.style.width  = (w * scale) + "px";
+      if (h != null) el.style.height = (h * scale) + "px";
     }
 
-    function layout(){
-      place(ui.downloadBtn, DL_CX, DL_CY, DL_W, DL_H);
-      place(ui.sunHotspot, SUN_CX, SUN_CY, 80, 80);
+    function layout() {
+      placeElement(ui.downloadBtn, DL_CX, DL_CY, DL_W, DL_H);
+      placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 80, 80);
     }
 
-    ui.downloadBtn.onclick = (e) => {
+    ui.downloadBtn.addEventListener("click", (e) => {
       e.preventDefault();
       startDownload();
-    };
+    });
 
-    window.addEventListener("resize", layout);
+    ui.mobileOk.addEventListener("click", (e) => {
+      e.preventDefault();
+      sessionStorage.setItem("mobileWarnDismissed", "1");
+      ui.mobileOverlay.classList.remove("show");
+    });
+
+    window.addEventListener("resize", () => {
+      layout();
+      // If they rotate or resize into small mode, show again unless dismissed
+      showMobileOverlayIfNeeded();
+    });
+
     layout();
+    showMobileOverlayIfNeeded();
   </script>
 </body>
 </html>

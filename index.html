@@ -12,8 +12,8 @@
 
   <style>
     :root{
-      --page-bg: #05010f;
-      --page-bg-soft: #0b0320;
+      --page-bg: #01010b;
+      --page-bg-soft: #01010b;
       --panel-bg: rgba(12, 9, 34, 0.96);
       --panel-bg-soft: rgba(20, 16, 54, 0.94);
       --pixel-gold: #ffe55c;
@@ -33,8 +33,8 @@
       margin: 0;
       min-height: 100%;
       background:
-        radial-gradient(circle at top, rgba(73, 27, 128, 0.32), transparent 48%),
-        linear-gradient(180deg, #05010f 0%, #090318 48%, #04010d 100%);
+        radial-gradient(circle at top, rgba(73, 27, 128, 0.22), transparent 44%),
+        linear-gradient(180deg, #01010b 0%, #01010b 100%);
       color: var(--pixel-cream);
     }
 
@@ -193,11 +193,11 @@
       position: absolute;
       inset: 0;
       background-image: image-set(
-        url("assets/codexjr-hero-1000.webp?v=1.2.0") 1x,
-        url("assets/codexjr-hero-2000.webp?v=1.2.0") 2x
+        url("assets/codexjr_webste_bg_v2.png?v=1.3.0") 1x,
+        url("assets/codexjr_webste_bg_v2.png?v=1.3.0") 2x
       );
       background-size: cover;
-      background-position: center center;
+      background-position: center top;
       background-repeat: no-repeat;
       transform: translateZ(0);
     }
@@ -258,13 +258,15 @@
       transition: text-shadow 160ms ease, color 160ms ease, filter 160ms ease;
     }
 
-    #heroSignupBtn:hover{
-      color: #fff29c;
-      text-shadow:
-        0 2px 0 rgba(0,0,0,0.52),
-        0 0 10px rgba(255, 236, 120, 0.55),
-        0 0 22px rgba(255, 196, 74, 0.38);
-      filter: brightness(1.04);
+    @media (hover: hover) and (pointer: fine){
+      #heroSignupBtn:hover{
+        color: #fff29c;
+        text-shadow:
+          0 2px 0 rgba(0,0,0,0.52),
+          0 0 10px rgba(255, 236, 120, 0.55),
+          0 0 22px rgba(255, 196, 74, 0.38);
+        filter: brightness(1.04);
+      }
     }
 
     #heroSignupBtn:active{
@@ -295,6 +297,7 @@
       text-transform: uppercase;
       text-shadow: 0 3px 0 rgba(0,0,0,0.46);
       pointer-events: auto;
+      white-space: nowrap;
     }
 
     #scrollPrompt img{
@@ -303,6 +306,10 @@
       image-rendering: pixelated;
       transform: rotate(180deg);
       animation: pixel-bounce 1.3s ease-in-out infinite;
+    }
+
+    #mobileInstagramBtn{
+      display: none;
     }
 
     #signupSection{
@@ -424,6 +431,15 @@
       padding-top: 90px;
     }
 
+    body.mobile-signup-mode #updaterSection,
+    body.mobile-signup-mode #mediaSection{
+      display: none;
+    }
+
+    body.mobile-signup-mode #siteFooter{
+      padding-top: 42px;
+    }
+
     #siteFooter{
       padding: 72px clamp(20px, 4vw, 48px) 54px;
     }
@@ -448,9 +464,10 @@
       color: #f6df73;
       font-size: 14px;
       line-height: 1.2;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       text-shadow: 0 2px 0 rgba(0,0,0,0.6);
       text-transform: lowercase;
+      white-space: nowrap;
     }
 
     #footerInstagram{
@@ -620,80 +637,6 @@
       background: transparent;
     }
 
-    #mobileOverlay{
-      position: fixed;
-      inset: 0;
-      display: none;
-      z-index: 80;
-      pointer-events: auto;
-    }
-
-    #mobileOverlay.show{
-      display: block;
-    }
-
-    #mobileDim{
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.70);
-    }
-
-    #mobileDialog{
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: min(680px, 86vw);
-      padding: 18px 18px 16px;
-      background: rgba(0,0,0,0.76);
-      border: 2px solid rgba(246,223,115,0.85);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.55);
-      border-radius: 10px;
-    }
-
-    #mobileTitle{
-      margin: 0 0 10px;
-      text-align: center;
-      color: #f6df73;
-      font-size: 20px;
-      line-height: 1.25;
-      letter-spacing: 0.6px;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.7);
-    }
-
-    #mobileBody{
-      margin: 0 0 14px;
-      text-align: center;
-      color: rgba(246,223,115,0.92);
-      font-size: 14px;
-      line-height: 1.5;
-      letter-spacing: 0.4px;
-    }
-
-    #mobileBtnRow{
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    #mobileOk{
-      padding: 10px 18px;
-      border: 2px solid rgba(0,255,255,0.6);
-      border-radius: 10px;
-      background: rgba(0,0,0,0.25);
-      color: #0ff;
-      font-family: "BitHUD", monospace;
-      font-size: 14px;
-      letter-spacing: 0.6px;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.6);
-      cursor: pointer;
-    }
-
-    #mobileOk:active{
-      transform: translateY(1px);
-      filter: brightness(0.95);
-    }
-
     @keyframes pixel-bounce{
       0%, 100% { transform: rotate(180deg) translateY(0); }
       50% { transform: rotate(180deg) translateY(-5px); }
@@ -713,12 +656,160 @@
 
     @media (max-width: 760px){
       #heroScene{
-        min-height: max(760px, 100svh);
+        min-height: clamp(620px, 82svh, 760px);
+      }
+
+      #hero{
+        background-image: url("assets/codexjr_webste_bg_mobile.png?v=1.3.0");
+        background-position: center top;
+      }
+
+      #heroScene::after{
+        background:
+          linear-gradient(180deg, rgba(5, 1, 15, 0.04) 0%, rgba(5, 1, 15, 0.10) 44%, rgba(5, 1, 15, 0.96) 100%),
+          radial-gradient(circle at 50% 60%, rgba(255, 228, 92, 0.14), transparent 22%);
       }
 
       #heroSignupBtn{
         min-width: 0;
-        width: calc(100% - 40px);
+        width: calc(100% - 24px);
+        max-width: 366px;
+        padding: 11px 22px 13px;
+        border-color: rgba(27, 79, 142, 0.52);
+        background:
+          linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) left 8px top 8px / 18px 18px no-repeat,
+          linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) right 8px top 8px / 18px 18px no-repeat,
+          linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) left 8px bottom 8px / 18px 18px no-repeat,
+          linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) right 8px bottom 8px / 18px 18px no-repeat,
+          linear-gradient(180deg, rgba(197,219,242,0.49), rgba(106,138,176,0.43)) left 28px top 6px / calc(100% - 56px) 10px no-repeat,
+          linear-gradient(180deg, rgba(197,219,242,0.19), rgba(80,110,149,0.37)) left 28px bottom 6px / calc(100% - 56px) 10px no-repeat,
+          linear-gradient(180deg, rgba(38,79,130,0.42), rgba(10,26,55,0.46)) left 6px center / 14px calc(100% - 34px) no-repeat,
+          linear-gradient(180deg, rgba(38,79,130,0.42), rgba(10,26,55,0.46)) right 6px center / 14px calc(100% - 34px) no-repeat,
+          linear-gradient(180deg, rgba(55,33,74,0.33) 0%, rgba(18,10,28,0.39) 52%, rgba(34,19,48,0.35) 100%);
+        box-shadow:
+          inset 0 0 0 2px rgba(170, 201, 235, 0.10),
+          inset 0 0 0 12px rgba(7, 10, 20, 0.24),
+          0 14px 24px rgba(0,0,0,0.18);
+        font-size: clamp(10px, 3.2vw, 13px);
+        line-height: 0.94;
+        letter-spacing: 0.02px;
+        white-space: nowrap;
+        transform: translate(-50%, -50%) translateY(-1px);
+      }
+
+      #scrollPrompt{
+        bottom: 72px;
+        gap: 10px;
+        font-size: 10px;
+        letter-spacing: 0.4px;
+        width: 100%;
+        justify-content: center;
+        transform: translateX(-50%);
+      }
+
+      #scrollPrompt span{
+        max-width: none;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      #scrollPrompt img{
+        width: 18px;
+        height: 18px;
+        margin-top: 1px;
+      }
+
+      #mobileInstagramBtn{
+        position: absolute;
+        left: 50%;
+        bottom: 118px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px 8px 8px;
+        border: 3px solid var(--pixel-cyan);
+        background: linear-gradient(180deg, #14091f 0%, #090318 100%);
+        box-shadow:
+          inset 0 0 0 2px rgba(255,255,255,0.05),
+          0 8px 18px rgba(0,0,0,0.28);
+        transform: translateX(-50%);
+        pointer-events: auto;
+        z-index: 2;
+      }
+
+      #mobileInstagramIcon{
+        position: relative;
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        border: 3px solid var(--pixel-gold);
+        background: linear-gradient(180deg, #ff6fc8 0%, #b140f4 55%, #4d7cff 100%);
+        box-shadow:
+          inset 0 0 0 3px rgba(18, 5, 39, 0.68),
+          0 0 0 2px rgba(9, 3, 24, 0.92);
+      }
+
+      #mobileInstagramIcon::before{
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 10px;
+        height: 10px;
+        border: 3px solid var(--pixel-cream);
+        transform: translate(-50%, -50%);
+        box-shadow: inset 0 0 0 2px rgba(9, 3, 24, 0.95);
+      }
+
+      #mobileInstagramIcon::after{
+        content: "";
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        width: 5px;
+        height: 5px;
+        background: var(--pixel-cream);
+        box-shadow: 0 0 0 2px rgba(9, 3, 24, 0.9);
+      }
+
+      #mobileInstagramLabel{
+        color: var(--pixel-cream);
+        font-size: 12px;
+        line-height: 1.2;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        text-shadow: 0 2px 0 rgba(0,0,0,0.42);
+        white-space: nowrap;
+      }
+
+      .section-shell{
+        padding: 12px 16px 0;
+      }
+
+      .section-header{
+        margin-bottom: 24px;
+      }
+
+      .section-header h2{
+        max-width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: clamp(18px, 6.1vw, 24px);
+        line-height: 1.28;
+        text-wrap: balance;
+      }
+
+      .section-header p{
+        max-width: 350px;
+        margin: 0 auto;
+        font-size: 12px;
+        line-height: 1.45;
+        letter-spacing: 0.28px;
+        text-wrap: balance;
+      }
+
+      #signupSection{
+        padding-top: 0;
       }
 
       #kitSignupCard{
@@ -739,6 +830,17 @@
         flex-direction: column;
         justify-content: center;
         text-align: center;
+        gap: 14px;
+        padding: 16px 12px;
+      }
+
+      #footerInstagram{
+        display: none;
+      }
+
+      #footerVersion{
+        font-size: 11px;
+        letter-spacing: 0.2px;
       }
     }
   </style>
@@ -751,7 +853,16 @@
 
       <div id="heroContent">
         <a id="heroSignupBtn" class="pixel-btn" href="#signupSection">JOIN THE WAITLIST</a>
-        
+        <a
+          id="mobileInstagramBtn"
+          href="https://www.instagram.com/getcodexjr"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Visit Codex Jr on Instagram"
+        >
+          <span id="mobileInstagramIcon" aria-hidden="true"></span>
+          <span id="mobileInstagramLabel">Instagram</span>
+        </a>
 
         <a id="scrollPrompt" href="#signupSection" aria-label="Scroll to signup">
           <img src="assets/8bitarrow.png?v=1.2.0" alt="" aria-hidden="true" />
@@ -843,19 +954,6 @@
     </div>
   </footer>
 
-  <div id="mobileOverlay" role="dialog" aria-modal="true" aria-label="Mobile not supported">
-    <div id="mobileDim"></div>
-    <div id="mobileDialog">
-      <h2 id="mobileTitle">NOT DESIGNED FOR MOBILE</h2>
-      <p id="mobileBody">
-        PLEASE OPEN THIS SITE ON A DESKTOP COMPUTER TO DOWNLOAD THE CODEX JR UPDATER APP.
-      </p>
-      <div id="mobileBtnRow">
-        <button id="mobileOk" type="button">OK</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     const GH_OWNER = "jonsimo";
     const GH_REPO  = "codex-jr-downloads";
@@ -884,8 +982,6 @@
       heroSignupBtn: document.getElementById("heroSignupBtn"),
       mediaSection: document.getElementById("mediaSection"),
       instagramEmbed: document.getElementById("instagramEmbed"),
-      mobileOverlay: document.getElementById("mobileOverlay"),
-      mobileOk: document.getElementById("mobileOk"),
     };
 
     function detectOS() {
@@ -906,10 +1002,8 @@
       return (uaMobile || (coarse && noHover) || smallViewport);
     }
 
-    function showMobileOverlayIfNeeded() {
-      const dismissed = sessionStorage.getItem("mobileWarnDismissed") === "1";
-      if (dismissed) return;
-      if (isMobileOrSmall()) ui.mobileOverlay.classList.add("show");
+    function syncResponsiveMode() {
+      document.body.classList.toggle("mobile-signup-mode", isMobileOrSmall());
     }
 
     async function getLatestDownloadUrl(os) {
@@ -955,9 +1049,20 @@
     }
 
     function placeHeroButton() {
+      if (isMobileOrSmall()) {
+        const width = Math.min(window.innerWidth - 24, 366);
+        ui.heroSignupBtn.style.left = "50%";
+        ui.heroSignupBtn.style.top = "auto";
+        ui.heroSignupBtn.style.bottom = `${Math.max(200, Math.round(window.innerHeight * 0.25))}px`;
+        ui.heroSignupBtn.style.width = `${Math.max(width, 220)}px`;
+        ui.heroSignupBtn.style.minHeight = "74px";
+        return;
+      }
+
       const { scale, offsetX, offsetY } = coverTransform();
       ui.heroSignupBtn.style.left = `${offsetX + WAITLIST_CX * scale}px`;
       ui.heroSignupBtn.style.top = `${offsetY + WAITLIST_CY * scale}px`;
+      ui.heroSignupBtn.style.bottom = "auto";
       ui.heroSignupBtn.style.width = `${WAITLIST_W * scale}px`;
       ui.heroSignupBtn.style.minHeight = `${WAITLIST_H * scale}px`;
     }
@@ -1020,19 +1125,15 @@
       startDownload();
     });
 
-    ui.mobileOk.addEventListener("click", (event) => {
-      event.preventDefault();
-      sessionStorage.setItem("mobileWarnDismissed", "1");
-      ui.mobileOverlay.classList.remove("show");
+    window.addEventListener("resize", () => {
+      syncResponsiveMode();
+      placeHeroButton();
     });
 
-    window.addEventListener("resize", showMobileOverlayIfNeeded);
-    window.addEventListener("resize", placeHeroButton);
-
+    syncResponsiveMode();
     placeHeroButton();
     enhanceKitForm();
     setupMediaSection();
-    showMobileOverlayIfNeeded();
   </script>
 </body>
 </html>

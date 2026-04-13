@@ -5,33 +5,196 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Codex Jr Updater</title>
 
-  <!-- Favicons (in /assets) -->
-  <link rel="icon" href="assets/favicon.ico?v=1.0.1" sizes="any">
-  <link rel="icon" type="image/png" href="assets/favicon-32x32.png?v=1.0.1" sizes="32x32">
-  <link rel="icon" type="image/png" href="assets/favicon-16x16.png?v=1.0.1" sizes="16x16">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=1.0.1">
+  <link rel="icon" href="assets/favicon.ico?v=1.2.0" sizes="any">
+  <link rel="icon" type="image/png" href="assets/favicon-32x32.png?v=1.2.0" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/favicon-16x16.png?v=1.2.0" sizes="16x16">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=1.2.0">
 
   <style>
-    :root{ --design-w: 2000; --design-h: 1185; }
-    html, body { height: 100%; margin: 0; }
+    :root{
+      --page-bg: #05010f;
+      --page-bg-soft: #0b0320;
+      --panel-bg: rgba(12, 9, 34, 0.96);
+      --panel-bg-soft: rgba(20, 16, 54, 0.94);
+      --pixel-gold: #ffe55c;
+      --pixel-cyan: #4be5ff;
+      --pixel-pink: #ff65d5;
+      --pixel-cream: #f7efd0;
+      --pixel-ink: #090318;
+      --pixel-shadow: rgba(0, 0, 0, 0.48);
+      --content-max: 1180px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(73, 27, 128, 0.32), transparent 48%),
+        linear-gradient(180deg, #05010f 0%, #090318 48%, #04010d 100%);
+      color: var(--pixel-cream);
+    }
+
     body{
-      overflow: hidden;
-      background: #000;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow-x: hidden;
+      font-family: "BitHUD", monospace;
     }
 
     @font-face{
       font-family: "BitHUD";
-      src: url("assets/8-bit-hud.ttf?v=1.0.1") format("truetype");
+      src: url("assets/8-bit-hud.ttf?v=1.2.0") format("truetype");
       font-display: swap;
     }
 
+    @font-face{
+      font-family: "PressStart2P";
+      src: url("assets/PressStart2P.ttf?v=1.2.0") format("truetype");
+      font-display: swap;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .pixel-card{
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(18, 16, 49, 0.94), rgba(8, 7, 22, 0.98));
+      border: 4px solid var(--pixel-gold);
+      box-shadow:
+        0 0 0 4px rgba(9, 3, 24, 0.82),
+        0 20px 36px var(--pixel-shadow);
+    }
+
+    .pixel-card::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.07), transparent 28%),
+        repeating-linear-gradient(
+          180deg,
+          rgba(255,255,255,0.05) 0 2px,
+          rgba(0,0,0,0) 2px 6px
+        );
+      mix-blend-mode: screen;
+      opacity: 0.34;
+    }
+
+    .pixel-btn{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60px;
+      padding: 16px 24px;
+      border: 3px solid var(--pixel-cyan);
+      background: linear-gradient(180deg, #061631 0%, #0d3362 100%);
+      color: var(--pixel-gold);
+      font-family: "BitHUD", monospace;
+      font-size: 20px;
+      line-height: 1.1;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      box-shadow:
+        inset 0 0 0 2px rgba(255,255,255,0.06),
+        0 12px 24px rgba(0,0,0,0.28);
+      transition: transform 140ms ease, filter 140ms ease, border-color 140ms ease;
+    }
+
+    .pixel-btn:hover{
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+      border-color: #82f1ff;
+    }
+
+    .pixel-btn:active{
+      transform: translateY(1px);
+      filter: brightness(0.96);
+    }
+
+    .eyebrow{
+      margin: 0 0 12px;
+      color: var(--pixel-cyan);
+      font-size: 13px;
+      line-height: 1.25;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+    }
+
+    .status-chip{
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-bottom: 18px;
+      padding: 6px 10px 5px;
+      border: 2px solid currentColor;
+      background: rgba(0,0,0,0.24);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .section-shell{
+      position: relative;
+      padding: 110px clamp(20px, 4vw, 48px) 0;
+    }
+
+    .section-inner{
+      max-width: var(--content-max);
+      margin: 0 auto;
+    }
+
+    .section-header{
+      max-width: 860px;
+      margin: 0 auto 30px;
+      text-align: center;
+    }
+
+    .section-header h2{
+      margin: 0 0 16px;
+      font-family: "PressStart2P", monospace;
+      font-size: clamp(24px, 2.4vw, 34px);
+      line-height: 1.45;
+      color: var(--pixel-gold);
+      text-shadow: 0 4px 0 rgba(0,0,0,0.42);
+    }
+
+    .section-header p{
+      margin: 0;
+      color: rgba(247, 239, 208, 0.88);
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    #heroScene{
+      position: relative;
+      min-height: 100svh;
+      isolation: isolate;
+    }
+
     #hero{
-      position: fixed;
+      position: absolute;
       inset: 0;
       background-image: image-set(
-        url("assets/codexjr-hero-1000.webp?v=1.0.1") 1x,
-        url("assets/codexjr-hero-2000.webp?v=1.0.1") 2x
+        url("assets/codexjr-hero-1000.webp?v=1.2.0") 1x,
+        url("assets/codexjr-hero-2000.webp?v=1.2.0") 2x
       );
       background-size: cover;
       background-position: center center;
@@ -39,101 +202,421 @@
       transform: translateZ(0);
     }
 
-    #ui{
-      position: fixed;
+    #heroScene::after{
+      content: "";
+      position: absolute;
       inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(5, 1, 15, 0.1) 0%, rgba(5, 1, 15, 0.08) 52%, rgba(5, 1, 15, 0.94) 100%),
+        radial-gradient(circle at 50% 62%, rgba(255, 228, 92, 0.17), transparent 20%);
+      z-index: 1;
+    }
+
+    #heroContent{
+      position: absolute;
+      inset: 0;
+      z-index: 2;
       pointer-events: none;
     }
 
-    /* Download button */
-    #downloadBtn{
+    #heroSignupBtn{
       position: absolute;
+      min-width: min(660px, calc(100vw - 40px));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 42px;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      z-index: 2;
+      min-height: 126px;
+      border: 4px solid #1b4f8e;
+      background:
+        linear-gradient(#1986ff, #1986ff) left 8px top 8px / 18px 18px no-repeat,
+        linear-gradient(#1986ff, #1986ff) right 8px top 8px / 18px 18px no-repeat,
+        linear-gradient(#1986ff, #1986ff) left 8px bottom 8px / 18px 18px no-repeat,
+        linear-gradient(#1986ff, #1986ff) right 8px bottom 8px / 18px 18px no-repeat,
+        linear-gradient(180deg, rgba(197,219,242,0.96), rgba(106,138,176,0.92)) left 28px top 6px / calc(100% - 56px) 10px no-repeat,
+        linear-gradient(180deg, rgba(197,219,242,0.7), rgba(80,110,149,0.86)) left 28px bottom 6px / calc(100% - 56px) 10px no-repeat,
+        linear-gradient(180deg, rgba(38,79,130,0.96), rgba(10,26,55,0.98)) left 6px center / 14px calc(100% - 34px) no-repeat,
+        linear-gradient(180deg, rgba(38,79,130,0.96), rgba(10,26,55,0.98)) right 6px center / 14px calc(100% - 34px) no-repeat,
+        linear-gradient(180deg, rgba(55,33,74,0.9) 0%, rgba(18,10,28,0.97) 52%, rgba(34,19,48,0.92) 100%);
+      box-shadow:
+        inset 0 0 0 2px rgba(170, 201, 235, 0.46),
+        inset 0 0 0 12px rgba(7, 10, 20, 0.92),
+        0 16px 28px rgba(0,0,0,0.42);
+      color: var(--pixel-gold);
+      font-family: "BitHUD", monospace;
+      font-size: clamp(18px, 1.55vw, 28px);
+      line-height: 1.05;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.52);
+      transition: text-shadow 160ms ease, color 160ms ease, filter 160ms ease;
+    }
+
+    #heroSignupBtn:hover{
+      color: #fff29c;
+      text-shadow:
+        0 2px 0 rgba(0,0,0,0.52),
+        0 0 10px rgba(255, 236, 120, 0.55),
+        0 0 22px rgba(255, 196, 74, 0.38);
+      filter: brightness(1.04);
+    }
+
+    #heroSignupBtn:active{
+      color: #ffe55c;
+      text-shadow:
+        0 2px 0 rgba(0,0,0,0.52),
+        0 0 6px rgba(255, 236, 120, 0.35);
+      filter: brightness(0.98);
+    }
+
+    #heroSignupBtn:focus-visible{
+      outline: 3px solid rgba(255, 229, 92, 0.9);
+      outline-offset: 5px;
+    }
+
+    #scrollPrompt{
+      position: absolute;
+      left: 50%;
+      bottom: 74px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateX(-50%);
+      color: rgba(255, 247, 207, 0.96);
+      font-size: 13px;
+      line-height: 1.25;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      text-shadow: 0 3px 0 rgba(0,0,0,0.46);
+      pointer-events: auto;
+    }
+
+    #scrollPrompt img{
+      width: 22px;
+      height: 22px;
+      image-rendering: pixelated;
+      transform: rotate(180deg);
+      animation: pixel-bounce 1.3s ease-in-out infinite;
+    }
+
+    #signupSection{
+      padding-top: 70px;
+    }
+
+    #kitSignupCard{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    #kitSignupMount{
+      position: relative;
+      z-index: 1;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"]{
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 auto;
+      background: transparent !important;
+      color: var(--pixel-cream) !important;
+      font-family: "BitHUD", monospace !important;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] [data-style="clean"]{
+      width: 100% !important;
+      padding: 0 !important;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-fields{
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-field{
+      flex: 1 1 420px !important;
+      margin: 0 !important;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-submit{
+      flex: 0 0 280px !important;
+      margin: 0 !important;
+      border: 3px solid var(--pixel-pink) !important;
+      border-radius: 0 !important;
+      background: linear-gradient(180deg, #3a1037 0%, #6f1d62 100%) !important;
+      display: flex !important;
+      align-items: stretch !important;
+      justify-content: center !important;
+      text-align: center !important;
+      box-shadow:
+        inset 0 0 0 2px rgba(255,255,255,0.05),
+        0 10px 20px rgba(0,0,0,0.26) !important;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-submit > span{
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+      padding: 18px 20px !important;
+      color: var(--pixel-gold) !important;
+      font-family: "BitHUD", monospace !important;
+      font-size: 20px !important;
+      line-height: 1.1;
+      text-align: center !important;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-input{
+      min-height: 66px;
+      padding: 16px 18px !important;
+      border: 3px solid var(--pixel-cyan) !important;
+      border-radius: 0 !important;
+      background: var(--pixel-ink) !important;
+      color: var(--pixel-gold) !important;
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+      font-size: 24px !important;
+      line-height: 1.1;
+      letter-spacing: 0.3px !important;
+      text-transform: lowercase !important;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.05);
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-input::placeholder{
+      color: rgba(247, 239, 208, 0.58) !important;
+      opacity: 1 !important;
+      font-family: "BitHUD", monospace !important;
+      font-size: 20px !important;
+      letter-spacing: 0.8px !important;
+      text-transform: lowercase !important;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-input:focus{
+      border-color: #85f3ff !important;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-powered-by-convertkit-container,
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-powered-by-convertkit,
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-powered-by,
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] [data-element="powered-by"],
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] a[href*="kit.com/features/email-newsletter-app/"]{
+      display: none !important;
+    }
+
+    #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-alert{
+      margin: 0 0 14px !important;
+      border-radius: 0 !important;
+      font-family: "BitHUD", monospace !important;
+      font-size: 15px !important;
+      line-height: 1.5;
+    }
+
+    #updaterSection{
+      padding-top: 90px;
+    }
+
+    #siteFooter{
+      padding: 72px clamp(20px, 4vw, 48px) 54px;
+    }
+
+    #footerInner{
+      max-width: var(--content-max);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px 22px;
+      border: 4px solid var(--pixel-gold);
+      background:
+        linear-gradient(180deg, rgba(22, 18, 50, 0.96), rgba(9, 7, 24, 0.98));
+      box-shadow:
+        0 0 0 4px rgba(9, 3, 24, 0.82),
+        0 16px 28px rgba(0,0,0,0.34);
+    }
+
+    #footerVersion{
+      color: #f6df73;
+      font-size: 14px;
+      line-height: 1.2;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.6);
+      text-transform: lowercase;
+    }
+
+    #footerInstagram{
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 8px 14px 8px 8px;
+      border: 3px solid var(--pixel-cyan);
+      background: linear-gradient(180deg, #14091f 0%, #090318 100%);
+      box-shadow:
+        inset 0 0 0 2px rgba(255,255,255,0.05),
+        0 8px 18px rgba(0,0,0,0.28);
+      transition: filter 140ms ease, border-color 140ms ease;
+    }
+
+    #footerInstagram:hover{
+      filter: brightness(1.08);
+      border-color: #85f3ff;
+    }
+
+    #footerInstagram:focus-visible{
+      outline: 3px solid rgba(255, 229, 92, 0.9);
+      outline-offset: 5px;
+    }
+
+    #instagramPixelIcon{
+      position: relative;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border: 3px solid var(--pixel-gold);
+      background:
+        linear-gradient(180deg, #ff6fc8 0%, #b140f4 55%, #4d7cff 100%);
+      box-shadow:
+        inset 0 0 0 3px rgba(18, 5, 39, 0.68),
+        0 0 0 2px rgba(9, 3, 24, 0.92);
+    }
+
+    #instagramPixelIcon::before{
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border: 3px solid var(--pixel-cream);
+      transform: translate(-50%, -50%);
+      box-shadow: inset 0 0 0 2px rgba(9, 3, 24, 0.95);
+    }
+
+    #instagramPixelIcon::after{
+      content: "";
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      width: 6px;
+      height: 6px;
+      background: var(--pixel-cream);
+      box-shadow: 0 0 0 2px rgba(9, 3, 24, 0.9);
+    }
+
+    #footerInstagramLabel{
+      color: var(--pixel-cream);
+      font-size: 13px;
+      line-height: 1.2;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.42);
+    }
+
+    #updaterCard{
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: center;
+      padding: 28px;
+    }
+
+    #updaterCopy h2{
+      margin: 0 0 16px;
+      font-family: "PressStart2P", monospace;
+      font-size: clamp(22px, 2vw, 30px);
+      line-height: 1.5;
+      color: var(--pixel-gold);
+      text-shadow: 0 4px 0 rgba(0,0,0,0.42);
+    }
+
+    #updaterCopy p{
+      margin: 0;
+      color: rgba(247, 239, 208, 0.86);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    #downloadColumn{
+      display: grid;
+      justify-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    #downloadBtn{
       border: 0;
       background: transparent;
       padding: 0;
       margin: 0;
       cursor: pointer;
-      pointer-events: auto;
-      transform: translate(-50%, -50%);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      z-index: 20;
     }
+
     #downloadBtn img{
-      display: block;
-      width: 100%;
+      width: min(560px, 100%);
       height: auto;
       image-rendering: pixelated;
-      transform: translateZ(0);
       transition: transform 140ms ease, filter 140ms ease;
     }
+
     #downloadBtn:hover img{
       transform: scale(1.03);
       filter: brightness(1.08) drop-shadow(0 10px 22px rgba(0,0,0,0.45));
     }
+
     #downloadBtn:active img{
       transform: scale(0.985);
       filter: brightness(0.98) drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     }
 
-    /* Sun hotspot + glow */
-    #sunHotspot{
-      position: absolute;
-      transform: translate(-50%, -50%);
-      pointer-events: auto;
-      cursor: pointer;
-      border-radius: 999px;
-      z-index: 30;
-      background: rgba(255,255,255,0.01);
-      transform: translate(-50%, -50%) translateZ(0);
-      will-change: transform, opacity;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      outline: none;
-    }
-
-    #sunGlow{
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 280%;
-      height: 280%;
-      transform: translate(-50%, -50%);
-      border-radius: 999px;
-      pointer-events: none;
-      background: radial-gradient(circle,
-        rgba(255,250,210,0.55) 0%,
-        rgba(255,225,150,0.32) 32%,
-        rgba(255,180,90,0.18) 52%,
-        rgba(0,0,0,0.00) 72%
-      );
-      filter: blur(14px);
-      opacity: 0;
-      transition: opacity 600ms ease-in-out;
-    }
-
-    #sunHotspot:hover #sunGlow,
-    #sunHotspot:focus-visible #sunGlow{
-      opacity: 1;
-    }
-
-    /* Footer version */
-    #siteVersion{
-      position: fixed;
-      left: 0; right: 0; bottom: 10px;
-      text-align: center;
-      pointer-events: none;
-      font-family: "BitHUD", monospace;
+    #downloadNote{
+      max-width: 440px;
+      color: rgba(247, 239, 208, 0.78);
       font-size: 14px;
-      color: #f6df73;
-      text-shadow: 0 2px 0 rgba(0,0,0,0.6);
-      letter-spacing: 0.5px;
-      -webkit-font-smoothing: none;
-      font-smooth: never;
-      z-index: 60;
+      line-height: 1.6;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
     }
 
-    /* MOBILE WARNING OVERLAY (soft block) */
+    #mediaSection{
+      padding-top: 90px;
+      padding-bottom: 120px;
+    }
+
+    #mediaSection[hidden]{
+      display: none;
+    }
+
+    #mediaCard{
+      padding: 28px;
+    }
+
+    #instagramEmbedWrap{
+      position: relative;
+      z-index: 1;
+      width: min(640px, 100%);
+      margin: 0 auto;
+      display: grid;
+      justify-items: center;
+    }
+
+    #instagramEmbed{
+      width: 100%;
+      min-height: 760px;
+      border: 0;
+      background: transparent;
+    }
+
     #mobileOverlay{
       position: fixed;
       inset: 0;
@@ -141,87 +624,222 @@
       z-index: 80;
       pointer-events: auto;
     }
-    #mobileOverlay.show{ display: block; }
+
+    #mobileOverlay.show{
+      display: block;
+    }
+
     #mobileDim{
-      position:absolute;
-      inset:0;
+      position: absolute;
+      inset: 0;
       background: rgba(0,0,0,0.70);
     }
+
     #mobileDialog{
-      position:absolute;
-      left:50%;
-      top:50%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
       transform: translate(-50%, -50%);
       width: min(680px, 86vw);
       padding: 18px 18px 16px;
-      background: rgba(0,0,0,0.60);
+      background: rgba(0,0,0,0.76);
       border: 2px solid rgba(246,223,115,0.85);
       box-shadow: 0 12px 30px rgba(0,0,0,0.55);
       border-radius: 10px;
     }
+
     #mobileTitle{
-      font-family: "BitHUD", monospace;
+      margin: 0 0 10px;
+      text-align: center;
       color: #f6df73;
       font-size: 20px;
       line-height: 1.25;
       letter-spacing: 0.6px;
       text-shadow: 0 2px 0 rgba(0,0,0,0.7);
-      -webkit-font-smoothing: none;
-      font-smooth: never;
-      margin: 0 0 10px 0;
-      text-align: center;
     }
+
     #mobileBody{
-      font-family: "BitHUD", monospace;
+      margin: 0 0 14px;
+      text-align: center;
       color: rgba(246,223,115,0.92);
       font-size: 14px;
       line-height: 1.5;
       letter-spacing: 0.4px;
-      -webkit-font-smoothing: none;
-      font-smooth: never;
-      margin: 0 0 14px 0;
-      text-align: center;
     }
+
     #mobileBtnRow{
-      display:flex;
-      justify-content:center;
+      display: flex;
+      justify-content: center;
       gap: 12px;
     }
+
     #mobileOk{
+      padding: 10px 18px;
+      border: 2px solid rgba(0,255,255,0.6);
+      border-radius: 10px;
+      background: rgba(0,0,0,0.25);
+      color: #0ff;
       font-family: "BitHUD", monospace;
       font-size: 14px;
       letter-spacing: 0.6px;
-      -webkit-font-smoothing: none;
-      font-smooth: never;
-      color: #0ff; /* teal-ish */
-      background: rgba(0,0,0,0.25);
-      border: 2px solid rgba(0,255,255,0.6);
-      border-radius: 10px;
-      padding: 10px 18px;
-      cursor: pointer;
       text-shadow: 0 2px 0 rgba(0,0,0,0.6);
+      cursor: pointer;
     }
+
     #mobileOk:active{
       transform: translateY(1px);
       filter: brightness(0.95);
+    }
+
+    @keyframes pixel-bounce{
+      0%, 100% { transform: rotate(180deg) translateY(0); }
+      50% { transform: rotate(180deg) translateY(-5px); }
+    }
+
+    @media (max-width: 1120px){
+      #updaterCard,
+      #instagramEmbed{
+        min-height: 720px;
+      }
+
+      #downloadColumn{
+        justify-items: start;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 760px){
+      #heroScene{
+        min-height: max(760px, 100svh);
+      }
+
+      #heroSignupBtn{
+        min-width: 0;
+        width: calc(100% - 40px);
+      }
+
+      #kitSignupCard{
+        padding: 22px 18px;
+      }
+
+      #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-field,
+      #kitSignupCard .formkit-form[data-uid="4410da4e3e"] .formkit-submit{
+        flex: 1 1 100% !important;
+      }
+
+      #downloadColumn{
+        justify-items: center;
+        text-align: center;
+      }
+
+      #footerInner{
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div id="hero" aria-hidden="true"></div>
+  <main id="page">
+    <section id="heroScene" aria-label="Codex Jr hero">
+      <div id="hero" aria-hidden="true"></div>
 
-  <div id="ui">
-    <div id="sunHotspot" tabindex="0" aria-label="Hidden">
-      <div id="sunGlow" aria-hidden="true"></div>
+      <div id="heroContent">
+        <a id="heroSignupBtn" class="pixel-btn" href="#signupSection">JOIN THE WAITLIST</a>
+        
+
+        <a id="scrollPrompt" href="#signupSection" aria-label="Scroll to signup">
+          <img src="assets/8bitarrow.png?v=1.2.0" alt="" aria-hidden="true" />
+          <span>More Quests Below</span>
+        </a>
+
+      </div>
+    </section>
+
+    <section id="signupSection" class="section-shell" aria-labelledby="signupTitle">
+      <div class="section-inner">
+        <header class="section-header">
+          <h2 id="signupTitle">ENTER THE CODEX JR WORLD</h2>
+          <p>
+            sign up here for the codex jr beta program, launch announcements, storefront updates and future codex jr development!
+          </p>
+        </header>
+
+        <div id="kitSignupCard" class="pixel-card">
+          <div id="kitSignupMount">
+            <script async data-uid="4410da4e3e" src="https://codexjr.kit.com/4410da4e3e/index.js"></script>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="updaterSection" class="section-shell" aria-labelledby="updaterTitle">
+      <div class="section-inner">
+        <div id="updaterCard" class="pixel-card">
+          <div id="updaterCopy">
+            <p class="eyebrow">Already a beta tester?</p>
+            <h2 id="updaterTitle">GET THE UPDATER APP</h2>
+            <p>
+              this HANDY APP SYNCS WITH YOUR CODEX JR DEVICE TO GIVE YOU THE LATEST FIRMWARE UPDATES AND ENHANCED
+              FUNCTIONALITY WITH YOUR DEVICE. APP IS IN BETA STATE, FEATURES MAY COME AND GO WITH NIGHTLY BUILDS.
+            </p>
+          </div>
+
+          <div id="downloadColumn">
+            <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
+              <img src="assets/dl_button.png?v=1.2.0" alt="Download" draggable="false" />
+            </button>
+            <p id="downloadNote">
+              Latest desktop updater release for macOS and Windows.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mediaSection" class="section-shell" aria-labelledby="mediaTitle" hidden>
+      <div class="section-inner">
+        <header class="section-header">
+          <p class="eyebrow">Media</p>
+          <h2 id="mediaTitle">Latest From Instagram</h2>
+          <p>
+            A featured post or reel can live here once you have a public Instagram embed URL ready.
+          </p>
+        </header>
+
+        <div id="mediaCard" class="pixel-card">
+          <div id="instagramEmbedWrap">
+            <iframe
+              id="instagramEmbed"
+              title="Instagram media"
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowtransparency="true"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="siteFooter" aria-label="Site footer">
+    <div id="footerInner">
+      <div id="footerVersion">codex jr beta site v1.2.0</div>
+      <a
+        id="footerInstagram"
+        href="https://www.instagram.com/getcodexjr"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Visit Codex Jr on Instagram"
+      >
+        <span id="instagramPixelIcon" aria-hidden="true"></span>
+        <span id="footerInstagramLabel">instagram</span>
+      </a>
     </div>
+  </footer>
 
-    <button id="downloadBtn" type="button" aria-label="Download Codex Jr Updater">
-      <img src="assets/dl_button.png?v=1.0.1" alt="Download" draggable="false" />
-    </button>
-  </div>
-
-  <!-- Mobile warning (soft block) -->
   <div id="mobileOverlay" role="dialog" aria-modal="true" aria-label="Mobile not supported">
     <div id="mobileDim"></div>
     <div id="mobileDialog">
@@ -235,41 +853,34 @@
     </div>
   </div>
 
-  <div id="siteVersion">codex jr beta site v1.0.1</div>
-
   <script>
-    const SITE_VERSION = "1.0.1";
-
-    const DESIGN_W = 2000;
-    const DESIGN_H = 1185;
-
-    const CHEAT_CX = 990;
-    const CHEAT_CY = 580;
-
-    const DL_CX = 1000;
-    const DL_CY = 760;
-
-    const SUN_CX = CHEAT_CX;
-    const SUN_CY = CHEAT_CY;
-
-    // Download button size reduced by 30% (from 802x192 -> 561x134)
-    const DL_W = 561;
-    const DL_H = 134;
-
-    // GitHub repo for downloads:
     const GH_OWNER = "jonsimo";
     const GH_REPO  = "codex-jr-downloads";
     const GH_LATEST_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/releases/latest`;
+    const DESIGN_W = 2000;
+    const DESIGN_H = 1185;
+    const WAITLIST_CX = 1000;
+    const WAITLIST_CY = 760;
+    const WAITLIST_W = 740;
+    const WAITLIST_H = 112;
 
-    // Match your current naming pattern (adjust if needed)
     const ASSET_MATCH = {
       mac: ["osx", "arm64", ".zip"],
       win: ["win", "x64", ".zip"],
     };
 
+    // Optional media lane. Leave blank to hide the section.
+    // Example: https://www.instagram.com/p/POST_ID/embed
+    // Example: https://www.instagram.com/reel/POST_ID/embed
+    const MEDIA = {
+      instagramEmbedUrl: "",
+    };
+
     const ui = {
       downloadBtn: document.getElementById("downloadBtn"),
-      sunHotspot: document.getElementById("sunHotspot"),
+      heroSignupBtn: document.getElementById("heroSignupBtn"),
+      mediaSection: document.getElementById("mediaSection"),
+      instagramEmbed: document.getElementById("instagramEmbed"),
       mobileOverlay: document.getElementById("mobileOverlay"),
       mobileOk: document.getElementById("mobileOk"),
     };
@@ -283,20 +894,16 @@
     }
 
     function isMobileOrSmall() {
-      // Soft detection: mobile pointer + no hover OR phone/tablet UA OR small viewport
       const coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
       const noHover = window.matchMedia && window.matchMedia("(hover: none)").matches;
       const ua = navigator.userAgent.toLowerCase();
       const uaMobile = /android|iphone|ipad|ipod|mobile/.test(ua);
-
-      // If someone makes a tiny desktop window, still warn
       const smallViewport = Math.min(window.innerWidth, window.innerHeight) < 720;
 
       return (uaMobile || (coarse && noHover) || smallViewport);
     }
 
     function showMobileOverlayIfNeeded() {
-      // Only show once per session (soft block)
       const dismissed = sessionStorage.getItem("mobileWarnDismissed") === "1";
       if (dismissed) return;
       if (isMobileOrSmall()) ui.mobileOverlay.classList.add("show");
@@ -311,14 +918,15 @@
       const release = await res.json();
 
       const assets = Array.isArray(release.assets) ? release.assets : [];
-      const asset = assets.find(a => {
-        const name = (a.name || "").toLowerCase();
-        return want.every(s => name.includes(s));
+      const asset = assets.find((entry) => {
+        const name = (entry.name || "").toLowerCase();
+        return want.every((needle) => name.includes(needle));
       });
 
       if (!asset || !asset.browser_download_url) {
         return release.html_url || `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
       }
+
       return asset.browser_download_url;
     }
 
@@ -327,7 +935,7 @@
       try {
         const url = await getLatestDownloadUrl(os);
         window.location.assign(url);
-      } catch (e) {
+      } catch (error) {
         window.location.assign(`https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`);
       }
     }
@@ -343,37 +951,84 @@
       return { scale, offsetX, offsetY };
     }
 
-    function placeElement(el, x, y, w, h) {
+    function placeHeroButton() {
       const { scale, offsetX, offsetY } = coverTransform();
-      el.style.left = (offsetX + x * scale) + "px";
-      el.style.top  = (offsetY + y * scale) + "px";
-      if (w != null) el.style.width  = (w * scale) + "px";
-      if (h != null) el.style.height = (h * scale) + "px";
+      ui.heroSignupBtn.style.left = `${offsetX + WAITLIST_CX * scale}px`;
+      ui.heroSignupBtn.style.top = `${offsetY + WAITLIST_CY * scale}px`;
+      ui.heroSignupBtn.style.width = `${WAITLIST_W * scale}px`;
+      ui.heroSignupBtn.style.minHeight = `${WAITLIST_H * scale}px`;
     }
 
-    function layout() {
-      placeElement(ui.downloadBtn, DL_CX, DL_CY, DL_W, DL_H);
-      placeElement(ui.sunHotspot, SUN_CX, SUN_CY, 80, 80);
+    function setupMediaSection() {
+      const url = MEDIA.instagramEmbedUrl.trim();
+      if (!/^https:\/\/www\.instagram\.com\/(p|reel)\/.+\/embed\/?/.test(url)) {
+        ui.mediaSection.hidden = true;
+        return;
+      }
+
+      ui.instagramEmbed.src = url;
+      ui.mediaSection.hidden = false;
     }
 
-    ui.downloadBtn.addEventListener("click", (e) => {
-      e.preventDefault();
+    function enhanceKitForm() {
+      const input = document.querySelector('#kitSignupCard .formkit-input[name="email_address"]');
+      if (input && input.dataset.codexEnhanced !== "1") {
+        input.dataset.codexEnhanced = "1";
+        input.placeholder = "email address";
+        input.setAttribute("autocapitalize", "none");
+        input.setAttribute("autocorrect", "off");
+        input.setAttribute("autocomplete", "email");
+        input.spellcheck = false;
+        input.addEventListener("input", () => {
+          const start = input.selectionStart;
+          const end = input.selectionEnd;
+          const lowered = input.value.toLowerCase();
+          if (input.value !== lowered) {
+            input.value = lowered;
+            if (start != null && end != null) input.setSelectionRange(start, end);
+          }
+        });
+      }
+
+      document
+        .querySelectorAll(
+          '#kitSignupCard .formkit-powered-by-convertkit-container, ' +
+          '#kitSignupCard .formkit-powered-by-convertkit, ' +
+          '#kitSignupCard .formkit-powered-by, ' +
+          '#kitSignupCard [data-element="powered-by"], ' +
+          '#kitSignupCard a[href*="kit.com/features/email-newsletter-app/"]'
+        )
+        .forEach((node) => {
+          node.style.display = "none";
+        });
+    }
+
+    const kitObserver = new MutationObserver(() => {
+      enhanceKitForm();
+    });
+
+    kitObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+
+    ui.downloadBtn.addEventListener("click", (event) => {
+      event.preventDefault();
       startDownload();
     });
 
-    ui.mobileOk.addEventListener("click", (e) => {
-      e.preventDefault();
+    ui.mobileOk.addEventListener("click", (event) => {
+      event.preventDefault();
       sessionStorage.setItem("mobileWarnDismissed", "1");
       ui.mobileOverlay.classList.remove("show");
     });
 
-    window.addEventListener("resize", () => {
-      layout();
-      // If they rotate or resize into small mode, show again unless dismissed
-      showMobileOverlayIfNeeded();
-    });
+    window.addEventListener("resize", showMobileOverlayIfNeeded);
+    window.addEventListener("resize", placeHeroButton);
 
-    layout();
+    placeHeroButton();
+    enhanceKitForm();
+    setupMediaSection();
     showMobileOverlayIfNeeded();
   </script>
 </body>

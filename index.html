@@ -1060,6 +1060,7 @@
 
     const ui = {
       downloadBtn: document.getElementById("downloadBtn"),
+      heroScene: document.getElementById("heroScene"),
       heroSignupBtn: document.getElementById("heroSignupBtn"),
       desktopHeroBanner: document.getElementById("desktopHeroBanner"),
       scrollPrompt: document.getElementById("scrollPrompt"),
@@ -1134,6 +1135,7 @@
     function placeHeroButton() {
       if (isMobileOrSmall()) {
         const width = Math.min(window.innerWidth - 24, 366);
+        ui.heroScene.style.minHeight = "";
         ui.heroSignupBtn.style.left = "50%";
         ui.heroSignupBtn.style.top = "auto";
         ui.heroSignupBtn.style.bottom = `${Math.max(200, Math.round(window.innerHeight * 0.25))}px`;
@@ -1157,6 +1159,7 @@
       const fadeAlignedTop = heroHeight - bannerHeight - 92;
       const bannerTop = Math.max(buttonBottom + DESKTOP_BANNER_MIN_GAP, fadeAlignedTop);
       const promptTop = bannerTop + bannerHeight + DESKTOP_PROMPT_GAP;
+      const requiredHeroHeight = Math.max(heroHeight, promptTop + 72);
 
       ui.heroSignupBtn.style.left = `${offsetX + WAITLIST_CX * scale}px`;
       ui.heroSignupBtn.style.top = `${buttonCenterY}px`;
@@ -1169,6 +1172,8 @@
 
       ui.scrollPrompt.style.top = `${promptTop}px`;
       ui.scrollPrompt.style.bottom = "auto";
+
+      ui.heroScene.style.minHeight = `${requiredHeroHeight}px`;
     }
 
     function setupMediaSection() {

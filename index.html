@@ -3,7 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Codex Jr Updater</title>
+  <title>Codex Jr Web Portal</title>
+  <meta
+    name="description"
+    content="Join the Codex Jr beta program for launch announcements, storefront updates, and future Codex Jr development."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Codex Jr" />
+  <meta property="og:title" content="Codex Jr Web Portal" />
+  <meta
+    property="og:description"
+    content="Join the Codex Jr beta program for launch announcements, storefront updates, and future Codex Jr development."
+  />
+  <meta property="og:url" content="https://www.codexjr.com/" />
+  <meta property="og:image" content="https://www.codexjr.com/assets/codexjr_webste_bg_v2.png?v=1.3.4" />
+  <meta property="og:image:width" content="1247" />
+  <meta property="og:image:height" content="738" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Codex Jr Web Portal" />
+  <meta
+    name="twitter:description"
+    content="Join the Codex Jr beta program for launch announcements, storefront updates, and future Codex Jr development."
+  />
+  <meta name="twitter:image" content="https://www.codexjr.com/assets/codexjr_webste_bg_v2.png?v=1.3.4" />
 
   <link rel="icon" href="assets/favicon.ico?v=1.2.0" sizes="any">
   <link rel="icon" type="image/png" href="assets/favicon-32x32.png?v=1.2.0" sizes="32x32">
@@ -16,7 +38,7 @@
       --page-bg-soft: #01010b;
       --panel-bg: rgba(12, 9, 34, 0.96);
       --panel-bg-soft: rgba(20, 16, 54, 0.94);
-      --pixel-gold: #ffe55c;
+      --pixel-gold: #f7d507;
       --pixel-cyan: #4be5ff;
       --pixel-pink: #ff65d5;
       --pixel-cream: #f7efd0;
@@ -193,8 +215,8 @@
       position: absolute;
       inset: 0;
       background-image: image-set(
-        url("assets/codexjr_webste_bg_v2.png?v=1.3.0") 1x,
-        url("assets/codexjr_webste_bg_v2.png?v=1.3.0") 2x
+        url("assets/codexjr_webste_bg_v2.png?v=1.3.4") 1x,
+        url("assets/codexjr_webste_bg_v2.png?v=1.3.4") 2x
       );
       background-size: cover;
       background-position: center top;
@@ -285,7 +307,7 @@
     #scrollPrompt{
       position: absolute;
       left: 50%;
-      bottom: 74px;
+      bottom: 18px;
       display: inline-flex;
       align-items: center;
       gap: 12px;
@@ -306,6 +328,28 @@
       image-rendering: pixelated;
       transform: rotate(180deg);
       animation: pixel-bounce 1.3s ease-in-out infinite;
+    }
+
+    #desktopHeroBanner{
+      position: absolute;
+      left: calc(50% - 28px);
+      top: clamp(430px, 58vh, 470px);
+      width: min(760px, calc(100vw - 360px));
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 2;
+      filter: drop-shadow(0 14px 22px rgba(0,0,0,0.28));
+    }
+
+    #desktopHeroBanner img{
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+    }
+
+    #mobileHeroBannerSection{
+      display: none;
     }
 
     #mobileInstagramBtn{
@@ -461,7 +505,7 @@
     }
 
     #footerVersion{
-      color: #f6df73;
+      color: #f7d507;
       font-size: 14px;
       line-height: 1.2;
       letter-spacing: 0.4px;
@@ -659,6 +703,27 @@
         min-height: clamp(620px, 82svh, 760px);
       }
 
+      #desktopHeroBanner{
+        display: none;
+      }
+
+      #mobileHeroBannerSection{
+        display: block;
+        padding: 4px 16px 0;
+      }
+
+      #mobileHeroBannerInner{
+        max-width: 360px;
+        margin: 0 auto;
+      }
+
+      #mobileHeroBannerImg{
+        display: block;
+        width: 100%;
+        height: auto;
+        image-rendering: pixelated;
+      }
+
       #hero{
         background-image: url("assets/codexjr_webste_bg_mobile.png?v=1.3.0");
         background-position: center top;
@@ -853,6 +918,9 @@
 
       <div id="heroContent">
         <a id="heroSignupBtn" class="pixel-btn" href="#signupSection">JOIN THE WAITLIST</a>
+        <div id="desktopHeroBanner" aria-hidden="true">
+          <img src="assets/codex_jr_website_banner_transparent_v2.png?v=1.3.3" alt="" />
+        </div>
         <a
           id="mobileInstagramBtn"
           href="https://www.instagram.com/getcodexjr"
@@ -869,6 +937,16 @@
           <span>More Quests Below</span>
         </a>
 
+      </div>
+    </section>
+
+    <section id="mobileHeroBannerSection" aria-hidden="true">
+      <div id="mobileHeroBannerInner">
+        <img
+          id="mobileHeroBannerImg"
+          src="assets/codex_jr_website_banner_transparent_v2.png?v=1.3.3"
+          alt=""
+        />
       </div>
     </section>
 
@@ -960,10 +1038,10 @@
     const GH_LATEST_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/releases/latest`;
     const DESIGN_W = 2000;
     const DESIGN_H = 1185;
-    const WAITLIST_CX = 1000;
-    const WAITLIST_CY = 760;
-    const WAITLIST_W = 740;
-    const WAITLIST_H = 112;
+    const WAITLIST_CX = 1005;
+    const WAITLIST_CY = 690;
+    const WAITLIST_W = 660;
+    const WAITLIST_H = 104;
 
     const ASSET_MATCH = {
       mac: ["osx", "arm64", ".zip"],

@@ -333,7 +333,6 @@
     #desktopHeroBanner{
       position: absolute;
       left: calc(50% - 28px);
-      top: clamp(430px, 58vh, 470px);
       width: min(760px, calc(100vw - 360px));
       transform: translateX(-50%);
       pointer-events: none;
@@ -1042,6 +1041,10 @@
     const WAITLIST_CY = 690;
     const WAITLIST_W = 660;
     const WAITLIST_H = 104;
+    const DESKTOP_BANNER_W = 760;
+    const DESKTOP_BANNER_H = 293 / 899 * DESKTOP_BANNER_W;
+    const DESKTOP_BANNER_MIN_GAP = 30;
+    const DESKTOP_PROMPT_GAP = 18;
 
     const ASSET_MATCH = {
       mac: ["osx", "arm64", ".zip"],
@@ -1058,6 +1061,8 @@
     const ui = {
       downloadBtn: document.getElementById("downloadBtn"),
       heroSignupBtn: document.getElementById("heroSignupBtn"),
+      desktopHeroBanner: document.getElementById("desktopHeroBanner"),
+      scrollPrompt: document.getElementById("scrollPrompt"),
       mediaSection: document.getElementById("mediaSection"),
       instagramEmbed: document.getElementById("instagramEmbed"),
     };
@@ -1134,15 +1139,36 @@
         ui.heroSignupBtn.style.bottom = `${Math.max(200, Math.round(window.innerHeight * 0.25))}px`;
         ui.heroSignupBtn.style.width = `${Math.max(width, 220)}px`;
         ui.heroSignupBtn.style.minHeight = "74px";
+        ui.scrollPrompt.style.top = "auto";
+        ui.scrollPrompt.style.bottom = "";
         return;
       }
 
       const { scale, offsetX, offsetY } = coverTransform();
+      const heroWidth = window.innerWidth;
+      const heroHeight = window.innerHeight;
+      const buttonWidth = WAITLIST_W * scale;
+      const buttonHeight = WAITLIST_H * scale;
+      const buttonCenterY = offsetY + WAITLIST_CY * scale;
+      const buttonTop = buttonCenterY - (buttonHeight / 2);
+      const buttonBottom = buttonCenterY + (buttonHeight / 2);
+      const bannerWidth = Math.min(DESKTOP_BANNER_W, heroWidth - 360);
+      const bannerHeight = bannerWidth * (293 / 899);
+      const fadeAlignedTop = heroHeight - bannerHeight - 92;
+      const bannerTop = Math.max(buttonBottom + DESKTOP_BANNER_MIN_GAP, fadeAlignedTop);
+      const promptTop = bannerTop + bannerHeight + DESKTOP_PROMPT_GAP;
+
       ui.heroSignupBtn.style.left = `${offsetX + WAITLIST_CX * scale}px`;
-      ui.heroSignupBtn.style.top = `${offsetY + WAITLIST_CY * scale}px`;
+      ui.heroSignupBtn.style.top = `${buttonCenterY}px`;
       ui.heroSignupBtn.style.bottom = "auto";
-      ui.heroSignupBtn.style.width = `${WAITLIST_W * scale}px`;
-      ui.heroSignupBtn.style.minHeight = `${WAITLIST_H * scale}px`;
+      ui.heroSignupBtn.style.width = `${buttonWidth}px`;
+      ui.heroSignupBtn.style.minHeight = `${buttonHeight}px`;
+
+      ui.desktopHeroBanner.style.width = `${bannerWidth}px`;
+      ui.desktopHeroBanner.style.top = `${bannerTop}px`;
+
+      ui.scrollPrompt.style.top = `${promptTop}px`;
+      ui.scrollPrompt.style.bottom = "auto";
     }
 
     function setupMediaSection() {

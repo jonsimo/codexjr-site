@@ -347,6 +347,11 @@
       image-rendering: pixelated;
     }
 
+    #mobileHeroFlow,
+    #mobileAfterHero{
+      display: none;
+    }
+
     #mobileHeroBannerSection{
       display: none;
     }
@@ -704,24 +709,48 @@
 
     @media (max-width: 760px){
       #heroScene{
-        min-height: clamp(620px, 82svh, 760px);
+        min-height: clamp(540px, 72svh, 680px);
       }
 
       #desktopHeroBanner{
         display: none;
       }
 
+      #mobileHeroFlow{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 0;
+        padding: 0 16px 12px;
+      }
+
+      #mobileAfterHero{
+        display: block;
+        padding: 52px 16px 0;
+      }
+
       #mobileHeroBannerSection{
         display: block;
+        width: 100%;
+        padding: 0;
         position: relative;
-        z-index: 2;
-        margin-top: -74px;
-        padding: 0 16px 18px;
+        top: -74px;
+        margin-bottom: -58px;
+        overflow: visible;
       }
 
       #mobileHeroBannerInner{
+        max-width: 262px;
+        margin: 0 auto;
+      }
+
+      #mobileAfterHeroInner{
         max-width: 360px;
         margin: 0 auto;
+        display: grid;
+        justify-items: center;
+        gap: 16px;
       }
 
       #mobileHeroBannerImg{
@@ -746,7 +775,7 @@
         min-width: 0;
         width: calc(100% - 24px);
         max-width: 366px;
-        padding: 11px 22px 13px;
+        padding: 15px 22px 9px;
         border-color: rgba(27, 79, 142, 0.52);
         background:
           linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) left 8px top 8px / 18px 18px no-repeat,
@@ -762,9 +791,9 @@
           inset 0 0 0 2px rgba(170, 201, 235, 0.10),
           inset 0 0 0 12px rgba(7, 10, 20, 0.24),
           0 14px 24px rgba(0,0,0,0.18);
-        font-size: clamp(10px, 3.2vw, 13px);
-        line-height: 0.94;
-        letter-spacing: 0.02px;
+        font-size: clamp(11px, 3.5vw, 14px);
+        line-height: 1;
+        letter-spacing: 0;
         white-space: nowrap;
         transform: translate(-50%, -50%) translateY(-1px);
       }
@@ -778,8 +807,8 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        width: 100%;
-        padding: 0 16px 18px;
+        width: auto;
+        padding: 0 0 2px;
         color: rgba(255, 247, 207, 0.96);
         font-size: 10px;
         line-height: 1.25;
@@ -829,14 +858,16 @@
         display: none;
       }
 
-      #mobileInstagramFlowBtn{
+      #mobileInstagramFlowBtn,
+      #mobileInstagramBelowFold{
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        width: fit-content;
-        margin: 0 auto 16px;
-        padding: 8px 14px 8px 8px;
+        width: auto;
+        max-width: calc(100vw - 32px);
+        margin: 0 auto;
+        padding: 7px 13px 7px 7px;
         border: 3px solid var(--pixel-cyan);
         background: linear-gradient(180deg, #14091f 0%, #090318 100%);
         box-shadow:
@@ -844,6 +875,10 @@
           0 8px 18px rgba(0,0,0,0.28);
         pointer-events: auto;
         z-index: 2;
+      }
+
+      #mobileInstagramFlowBtn{
+        display: none;
       }
 
       #mobileInstagramBtn{
@@ -1005,31 +1040,37 @@
       </div>
     </section>
 
-    <section id="mobileHeroBannerSection" aria-hidden="true">
-      <div id="mobileHeroBannerInner">
-        <img
-          id="mobileHeroBannerImg"
-          src="assets/codex_jr_website_banner_transparent_v2.png?v=1.3.3"
-          alt=""
-        />
-      </div>
+    <section id="mobileHeroFlow" aria-label="Mobile hero details">
+      <section id="mobileHeroBannerSection" aria-hidden="true">
+        <div id="mobileHeroBannerInner">
+          <img
+            id="mobileHeroBannerImg"
+            src="assets/codex_jr_website_banner_transparent_v2.png?v=1.3.3"
+            alt=""
+          />
+        </div>
+      </section>
+
+      <a id="mobileScrollPrompt" href="#signupSection" aria-label="Scroll to signup">
+        <img src="assets/8bitarrow.png?v=1.2.0" alt="" aria-hidden="true" />
+        <span>More Quests Below</span>
+      </a>
     </section>
 
-    <a
-      id="mobileInstagramFlowBtn"
-      href="https://www.instagram.com/getcodexjr"
-      target="_blank"
-      rel="noreferrer"
-      aria-label="Visit Codex Jr on Instagram"
-    >
-      <span class="mobileInstagramIcon" aria-hidden="true"></span>
-      <span class="mobileInstagramLabel">Instagram</span>
-    </a>
-
-    <a id="mobileScrollPrompt" href="#signupSection" aria-label="Scroll to signup">
-      <img src="assets/8bitarrow.png?v=1.2.0" alt="" aria-hidden="true" />
-      <span>More Quests Below</span>
-    </a>
+    <section id="mobileAfterHero" aria-label="Mobile signup details">
+      <div id="mobileAfterHeroInner">
+        <a
+          id="mobileInstagramBelowFold"
+          href="https://www.instagram.com/getcodexjr"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Visit Codex Jr on Instagram"
+        >
+          <span class="mobileInstagramIcon" aria-hidden="true"></span>
+          <span class="mobileInstagramLabel">Instagram</span>
+        </a>
+      </div>
+    </section>
 
     <section id="signupSection" class="section-shell" aria-labelledby="signupTitle">
       <div class="section-inner">
@@ -1218,11 +1259,11 @@
       const button = ui.heroSignupBtn;
       const isMobile = isMobileOrSmall();
       const minFont = isMobile ? 8 : 16;
-      const maxFont = isMobile ? 13 : 28;
+      const maxFont = isMobile ? 14.5 : 28;
       const minLetter = isMobile ? -0.08 : 0.4;
       const maxLetter = isMobile ? 0.02 : 1.0;
-      const widthBudget = button.clientWidth - (isMobile ? 64 : 96);
-      const heightBudget = button.clientHeight - (isMobile ? 22 : 28);
+      const widthBudget = button.clientWidth - (isMobile ? 58 : 96);
+      const heightBudget = button.clientHeight - (isMobile ? 18 : 28);
 
       if (widthBudget <= 0 || heightBudget <= 0) return;
 
@@ -1258,7 +1299,7 @@
         ui.heroScene.style.minHeight = "";
         ui.heroSignupBtn.style.left = "50%";
         ui.heroSignupBtn.style.top = "auto";
-        ui.heroSignupBtn.style.bottom = `${Math.max(200, Math.round(window.innerHeight * 0.25))}px`;
+        ui.heroSignupBtn.style.bottom = `${Math.max(228, Math.round(window.innerHeight * 0.28))}px`;
         ui.heroSignupBtn.style.width = `${Math.max(width, 220)}px`;
         ui.heroSignupBtn.style.minHeight = "74px";
         ui.scrollPrompt.style.top = "auto";

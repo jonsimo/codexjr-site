@@ -727,7 +727,7 @@
 
       #mobileAfterHero{
         display: block;
-        padding: 52px 16px 0;
+        padding: 136px 16px 0;
       }
 
       #mobileHeroBannerSection{
@@ -735,13 +735,14 @@
         width: 100%;
         padding: 0;
         position: relative;
-        top: -74px;
-        margin-bottom: -58px;
+        top: -128px;
+        margin-bottom: -110px;
         overflow: visible;
       }
 
       #mobileHeroBannerInner{
-        max-width: 262px;
+        width: min(350px, calc(100vw - 40px));
+        max-width: 350px;
         margin: 0 auto;
       }
 
@@ -774,8 +775,8 @@
       #heroSignupBtn{
         min-width: 0;
         width: calc(100% - 24px);
-        max-width: 366px;
-        padding: 15px 22px 9px;
+        max-width: 318px;
+        padding: 12px 18px 10px;
         border-color: rgba(27, 79, 142, 0.52);
         background:
           linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) left 8px top 8px / 18px 18px no-repeat,
@@ -791,9 +792,9 @@
           inset 0 0 0 2px rgba(170, 201, 235, 0.10),
           inset 0 0 0 12px rgba(7, 10, 20, 0.24),
           0 14px 24px rgba(0,0,0,0.18);
-        font-size: clamp(11px, 3.5vw, 14px);
-        line-height: 1;
-        letter-spacing: 0;
+        font-size: clamp(13px, 4.1vw, 16px);
+        line-height: 0.96;
+        letter-spacing: -0.02px;
         white-space: nowrap;
         transform: translate(-50%, -50%) translateY(-1px);
       }
@@ -1259,11 +1260,11 @@
       const button = ui.heroSignupBtn;
       const isMobile = isMobileOrSmall();
       const minFont = isMobile ? 8 : 16;
-      const maxFont = isMobile ? 14.5 : 28;
-      const minLetter = isMobile ? -0.08 : 0.4;
+      const maxFont = isMobile ? 17.5 : 28;
+      const minLetter = isMobile ? -0.12 : 0.4;
       const maxLetter = isMobile ? 0.02 : 1.0;
-      const widthBudget = button.clientWidth - (isMobile ? 58 : 96);
-      const heightBudget = button.clientHeight - (isMobile ? 18 : 28);
+      const widthBudget = button.clientWidth - (isMobile ? 38 : 96);
+      const heightBudget = button.clientHeight - (isMobile ? 14 : 28);
 
       if (widthBudget <= 0 || heightBudget <= 0) return;
 
@@ -1295,13 +1296,13 @@
 
     function placeHeroButton() {
       if (isMobileOrSmall()) {
-        const width = Math.min(window.innerWidth - 24, 366);
+        const width = Math.min(window.innerWidth - 54, 318);
         ui.heroScene.style.minHeight = "";
         ui.heroSignupBtn.style.left = "50%";
         ui.heroSignupBtn.style.top = "auto";
-        ui.heroSignupBtn.style.bottom = `${Math.max(228, Math.round(window.innerHeight * 0.28))}px`;
+        ui.heroSignupBtn.style.bottom = `${Math.max(182, Math.round(window.innerHeight * 0.225))}px`;
         ui.heroSignupBtn.style.width = `${Math.max(width, 220)}px`;
-        ui.heroSignupBtn.style.minHeight = "74px";
+        ui.heroSignupBtn.style.minHeight = "66px";
         ui.scrollPrompt.style.top = "auto";
         ui.scrollPrompt.style.bottom = "";
         fitHeroButtonLabel();

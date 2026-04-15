@@ -16,16 +16,16 @@
     content="Join the Codex Jr beta program for launch announcements, storefront updates, and future Codex Jr development."
   />
   <meta property="og:url" content="https://www.codexjr.com/" />
-  <meta property="og:image" content="https://www.codexjr.com/assets/codexjr_webste_bg_v2.png?v=1.3.4" />
-  <meta property="og:image:width" content="1247" />
-  <meta property="og:image:height" content="738" />
+  <meta property="og:image" content="https://www.codexjr.com/assets/codexjr_share_banner.png?v=1.0.0" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Codex Jr Web Portal" />
   <meta
     name="twitter:description"
     content="Join the Codex Jr beta program for launch announcements, storefront updates, and future Codex Jr development."
   />
-  <meta name="twitter:image" content="https://www.codexjr.com/assets/codexjr_webste_bg_v2.png?v=1.3.4" />
+  <meta name="twitter:image" content="https://www.codexjr.com/assets/codexjr_share_banner.png?v=1.0.0" />
 
   <link rel="icon" href="assets/favicon.ico?v=1.2.0" sizes="any">
   <link rel="icon" type="image/png" href="assets/favicon-32x32.png?v=1.2.0" sizes="32x32">
@@ -351,7 +351,12 @@
       display: none;
     }
 
-    #mobileInstagramBtn{
+    #mobileScrollPrompt{
+      display: none;
+    }
+
+    #mobileInstagramBtn,
+    #mobileInstagramFlowBtn{
       display: none;
     }
 
@@ -708,7 +713,10 @@
 
       #mobileHeroBannerSection{
         display: block;
-        padding: 0 16px 30px;
+        position: relative;
+        z-index: 2;
+        margin-top: -74px;
+        padding: 0 16px 18px;
       }
 
       #mobileHeroBannerInner{
@@ -762,6 +770,40 @@
       }
 
       #scrollPrompt{
+        display: none;
+      }
+
+      #mobileScrollPrompt{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 0 16px 18px;
+        color: rgba(255, 247, 207, 0.96);
+        font-size: 10px;
+        line-height: 1.25;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        text-shadow: 0 3px 0 rgba(0,0,0,0.46);
+        white-space: nowrap;
+      }
+
+      #mobileScrollPrompt span{
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      #mobileScrollPrompt img{
+        width: 18px;
+        height: 18px;
+        margin-top: 1px;
+        image-rendering: pixelated;
+        transform: rotate(180deg);
+        animation: pixel-bounce 1.3s ease-in-out infinite;
+      }
+
+      #scrollPrompt{
         bottom: 72px;
         gap: 10px;
         font-size: 10px;
@@ -784,10 +826,30 @@
       }
 
       #mobileInstagramBtn{
+        display: none;
+      }
+
+      #mobileInstagramFlowBtn{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: fit-content;
+        margin: 0 auto 16px;
+        padding: 8px 14px 8px 8px;
+        border: 3px solid var(--pixel-cyan);
+        background: linear-gradient(180deg, #14091f 0%, #090318 100%);
+        box-shadow:
+          inset 0 0 0 2px rgba(255,255,255,0.05),
+          0 8px 18px rgba(0,0,0,0.28);
+        pointer-events: auto;
+        z-index: 2;
+      }
+
+      #mobileInstagramBtn{
         position: absolute;
         left: 50%;
         bottom: 118px;
-        display: inline-flex;
         align-items: center;
         gap: 10px;
         padding: 8px 14px 8px 8px;
@@ -801,7 +863,8 @@
         z-index: 2;
       }
 
-      #mobileInstagramIcon{
+      #mobileInstagramIcon,
+      .mobileInstagramIcon{
         position: relative;
         width: 32px;
         height: 32px;
@@ -813,7 +876,8 @@
           0 0 0 2px rgba(9, 3, 24, 0.92);
       }
 
-      #mobileInstagramIcon::before{
+      #mobileInstagramIcon::before,
+      .mobileInstagramIcon::before{
         content: "";
         position: absolute;
         left: 50%;
@@ -825,7 +889,8 @@
         box-shadow: inset 0 0 0 2px rgba(9, 3, 24, 0.95);
       }
 
-      #mobileInstagramIcon::after{
+      #mobileInstagramIcon::after,
+      .mobileInstagramIcon::after{
         content: "";
         position: absolute;
         right: 4px;
@@ -836,7 +901,8 @@
         box-shadow: 0 0 0 2px rgba(9, 3, 24, 0.9);
       }
 
-      #mobileInstagramLabel{
+      #mobileInstagramLabel,
+      .mobileInstagramLabel{
         color: var(--pixel-cream);
         font-size: 12px;
         line-height: 1.2;
@@ -948,6 +1014,22 @@
         />
       </div>
     </section>
+
+    <a
+      id="mobileInstagramFlowBtn"
+      href="https://www.instagram.com/getcodexjr"
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Visit Codex Jr on Instagram"
+    >
+      <span class="mobileInstagramIcon" aria-hidden="true"></span>
+      <span class="mobileInstagramLabel">Instagram</span>
+    </a>
+
+    <a id="mobileScrollPrompt" href="#signupSection" aria-label="Scroll to signup">
+      <img src="assets/8bitarrow.png?v=1.2.0" alt="" aria-hidden="true" />
+      <span>More Quests Below</span>
+    </a>
 
     <section id="signupSection" class="section-shell" aria-labelledby="signupTitle">
       <div class="section-inner">
@@ -1132,6 +1214,44 @@
       return { scale, offsetX, offsetY };
     }
 
+    function fitHeroButtonLabel() {
+      const button = ui.heroSignupBtn;
+      const isMobile = isMobileOrSmall();
+      const minFont = isMobile ? 8 : 16;
+      const maxFont = isMobile ? 13 : 28;
+      const minLetter = isMobile ? -0.08 : 0.4;
+      const maxLetter = isMobile ? 0.02 : 1.0;
+      const widthBudget = button.clientWidth - (isMobile ? 64 : 96);
+      const heightBudget = button.clientHeight - (isMobile ? 22 : 28);
+
+      if (widthBudget <= 0 || heightBudget <= 0) return;
+
+      let low = minFont;
+      let high = maxFont;
+      let best = minFont;
+
+      for (let i = 0; i < 18; i += 1) {
+        const mid = (low + high) / 2;
+        const t = (mid - minFont) / Math.max(maxFont - minFont, 1);
+        const tracking = minLetter + ((maxLetter - minLetter) * t);
+
+        button.style.fontSize = `${mid}px`;
+        button.style.letterSpacing = `${tracking}px`;
+
+        if (button.scrollWidth <= widthBudget && button.scrollHeight <= heightBudget) {
+          best = mid;
+          low = mid;
+        } else {
+          high = mid;
+        }
+      }
+
+      const finalT = (best - minFont) / Math.max(maxFont - minFont, 1);
+      const finalTracking = minLetter + ((maxLetter - minLetter) * finalT);
+      button.style.fontSize = `${best}px`;
+      button.style.letterSpacing = `${finalTracking}px`;
+    }
+
     function placeHeroButton() {
       if (isMobileOrSmall()) {
         const width = Math.min(window.innerWidth - 24, 366);
@@ -1143,6 +1263,7 @@
         ui.heroSignupBtn.style.minHeight = "74px";
         ui.scrollPrompt.style.top = "auto";
         ui.scrollPrompt.style.bottom = "";
+        fitHeroButtonLabel();
         return;
       }
 
@@ -1174,6 +1295,7 @@
       ui.scrollPrompt.style.bottom = "auto";
 
       ui.heroScene.style.minHeight = `${requiredHeroHeight}px`;
+      fitHeroButtonLabel();
     }
 
     function setupMediaSection() {
@@ -1239,8 +1361,18 @@
       placeHeroButton();
     });
 
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", placeHeroButton);
+      window.visualViewport.addEventListener("scroll", placeHeroButton);
+    }
+
     syncResponsiveMode();
     placeHeroButton();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        placeHeroButton();
+      });
+    }
     enhanceKitForm();
     setupMediaSection();
   </script>

@@ -727,7 +727,7 @@
 
       #mobileAfterHero{
         display: block;
-        padding: 136px 16px 0;
+        padding: 152px 16px 0;
       }
 
       #mobileHeroBannerSection{
@@ -735,14 +735,14 @@
         width: 100%;
         padding: 0;
         position: relative;
-        top: -128px;
-        margin-bottom: -110px;
+        top: -138px;
+        margin-bottom: -118px;
         overflow: visible;
       }
 
       #mobileHeroBannerInner{
-        width: min(350px, calc(100vw - 40px));
-        max-width: 350px;
+        width: min(364px, calc(100vw - 26px));
+        max-width: 364px;
         margin: 0 auto;
       }
 
@@ -752,6 +752,16 @@
         display: grid;
         justify-items: center;
         gap: 16px;
+        opacity: 0;
+        transform: translateY(22px);
+        transition: opacity 220ms ease, transform 220ms ease;
+        pointer-events: none;
+      }
+
+      body.mobile-afterhero-visible #mobileAfterHeroInner{
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
       }
 
       #mobileHeroBannerImg{
@@ -775,28 +785,25 @@
       #heroSignupBtn{
         min-width: 0;
         width: calc(100% - 24px);
-        max-width: 318px;
-        padding: 12px 18px 10px;
-        border-color: rgba(27, 79, 142, 0.52);
-        background:
-          linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) left 8px top 8px / 18px 18px no-repeat,
-          linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) right 8px top 8px / 18px 18px no-repeat,
-          linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) left 8px bottom 8px / 18px 18px no-repeat,
-          linear-gradient(rgba(25, 134, 255, 0.68), rgba(25, 134, 255, 0.68)) right 8px bottom 8px / 18px 18px no-repeat,
-          linear-gradient(180deg, rgba(197,219,242,0.49), rgba(106,138,176,0.43)) left 28px top 6px / calc(100% - 56px) 10px no-repeat,
-          linear-gradient(180deg, rgba(197,219,242,0.19), rgba(80,110,149,0.37)) left 28px bottom 6px / calc(100% - 56px) 10px no-repeat,
-          linear-gradient(180deg, rgba(38,79,130,0.42), rgba(10,26,55,0.46)) left 6px center / 14px calc(100% - 34px) no-repeat,
-          linear-gradient(180deg, rgba(38,79,130,0.42), rgba(10,26,55,0.46)) right 6px center / 14px calc(100% - 34px) no-repeat,
-          linear-gradient(180deg, rgba(55,33,74,0.33) 0%, rgba(18,10,28,0.39) 52%, rgba(34,19,48,0.35) 100%);
-        box-shadow:
-          inset 0 0 0 2px rgba(170, 201, 235, 0.10),
-          inset 0 0 0 12px rgba(7, 10, 20, 0.24),
-          0 14px 24px rgba(0,0,0,0.18);
-        font-size: clamp(13px, 4.1vw, 16px);
-        line-height: 0.96;
-        letter-spacing: -0.02px;
+        max-width: 300px;
+        aspect-ratio: 802 / 148;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        background: center / 100% 100% no-repeat url("assets/JOIN_THE_WAITLIST.png");
+        box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+        color: transparent;
+        font-size: 0;
+        line-height: 0;
+        letter-spacing: 0;
+        text-shadow: none;
         white-space: nowrap;
-        transform: translate(-50%, -50%) translateY(-1px);
+        transform: translate(-50%, -50%);
+      }
+
+      #heroSignupBtn:active{
+        background-image: url("assets/JOIN_THE_WAITLIST_GLOW.png");
+        filter: none;
       }
 
       #scrollPrompt{
@@ -1214,6 +1221,11 @@
       document.body.classList.toggle("mobile-signup-mode", isMobileOrSmall());
     }
 
+    function updateMobileAfterHeroState() {
+      const visible = !isMobileOrSmall() || window.scrollY > 36;
+      document.body.classList.toggle("mobile-afterhero-visible", visible);
+    }
+
     async function getLatestDownloadUrl(os) {
       const want = ASSET_MATCH[os];
       if (!want) return `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
@@ -1296,16 +1308,15 @@
 
     function placeHeroButton() {
       if (isMobileOrSmall()) {
-        const width = Math.min(window.innerWidth - 54, 318);
+        const width = Math.min(window.innerWidth - 74, 300);
         ui.heroScene.style.minHeight = "";
         ui.heroSignupBtn.style.left = "50%";
         ui.heroSignupBtn.style.top = "auto";
-        ui.heroSignupBtn.style.bottom = `${Math.max(182, Math.round(window.innerHeight * 0.225))}px`;
+        ui.heroSignupBtn.style.bottom = `${Math.max(166, Math.round(window.innerHeight * 0.205))}px`;
         ui.heroSignupBtn.style.width = `${Math.max(width, 220)}px`;
-        ui.heroSignupBtn.style.minHeight = "66px";
+        ui.heroSignupBtn.style.minHeight = "";
         ui.scrollPrompt.style.top = "auto";
         ui.scrollPrompt.style.bottom = "";
-        fitHeroButtonLabel();
         return;
       }
 
@@ -1401,7 +1412,10 @@
     window.addEventListener("resize", () => {
       syncResponsiveMode();
       placeHeroButton();
+      updateMobileAfterHeroState();
     });
+
+    window.addEventListener("scroll", updateMobileAfterHeroState, { passive: true });
 
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", placeHeroButton);
@@ -1410,9 +1424,11 @@
 
     syncResponsiveMode();
     placeHeroButton();
+    updateMobileAfterHeroState();
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         placeHeroButton();
+        updateMobileAfterHeroState();
       });
     }
     enhanceKitForm();

@@ -662,26 +662,47 @@
     }
 
     #manualDownloadLinks{
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px 12px;
-      max-width: 520px;
-      color: rgba(247, 239, 208, 0.86);
-      font-size: 12px;
-      line-height: 1.4;
-      letter-spacing: 0.35px;
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      max-width: 560px;
+      font-size: clamp(13px, 1.3vw, 18px);
+      line-height: 1.12;
+      letter-spacing: 0.7px;
       text-transform: uppercase;
     }
 
+    .manualDownloadRow{
+      display: grid;
+      grid-template-columns: auto auto auto;
+      align-items: center;
+      justify-content: center;
+      column-gap: 12px;
+    }
+
     #manualDownloadLinks a{
-      color: var(--pixel-cyan);
       text-decoration: underline;
       text-underline-offset: 3px;
     }
 
-    #manualDownloadLinks a:hover{
+    #manualDownloadLinks .macDownloadLink{
+      color: var(--pixel-cyan);
+    }
+
+    #manualDownloadLinks .macDownloadLink:hover{
       color: #85f3ff;
+    }
+
+    #manualDownloadLinks .winDownloadLink{
+      color: var(--pixel-pink);
+    }
+
+    #manualDownloadLinks .winDownloadLink:hover{
+      color: #ff94e0;
+    }
+
+    .downloadDivider{
+      color: rgba(247, 239, 208, 0.62);
     }
 
     #mediaSection{
@@ -1137,13 +1158,19 @@
               <img src="assets/dl_button.png?v=1.2.0" alt="Download" draggable="false" />
             </button>
             <p id="downloadNote">
-              Latest desktop updater release for macOS and Windows.
+              Latest desktop updater release for macOS and Windows
             </p>
             <div id="manualDownloadLinks" aria-label="Manual downloads">
-              <a data-download-kind="macArm" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">macOS Apple Silicon</a>
-              <a data-download-kind="macIntel" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">macOS Intel</a>
-              <a data-download-kind="win64" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">Windows 64-bit</a>
-              <a data-download-kind="win32" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">Windows 32-bit</a>
+              <div class="manualDownloadRow">
+                <a class="macDownloadLink" data-download-kind="macArm" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">MAC SILICON</a>
+                <span class="downloadDivider" aria-hidden="true">|</span>
+                <a class="macDownloadLink" data-download-kind="macIntel" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">MAC INTEL</a>
+              </div>
+              <div class="manualDownloadRow">
+                <a class="winDownloadLink" data-download-kind="win64" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">WIN 64BIT</a>
+                <span class="downloadDivider" aria-hidden="true">|</span>
+                <a class="winDownloadLink" data-download-kind="win32" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">WIN 32BIT</a>
+              </div>
             </div>
           </div>
         </div>
@@ -1177,7 +1204,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.2.1</div>
+      <div id="footerVersion">codex jr beta site v1.2.2</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"

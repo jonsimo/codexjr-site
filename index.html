@@ -661,6 +661,29 @@
       text-transform: uppercase;
     }
 
+    #manualDownloadLinks{
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 12px;
+      max-width: 520px;
+      color: rgba(247, 239, 208, 0.86);
+      font-size: 12px;
+      line-height: 1.4;
+      letter-spacing: 0.35px;
+      text-transform: uppercase;
+    }
+
+    #manualDownloadLinks a{
+      color: var(--pixel-cyan);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    #manualDownloadLinks a:hover{
+      color: #85f3ff;
+    }
+
     #mediaSection{
       padding-top: 90px;
       padding-bottom: 120px;
@@ -1116,6 +1139,12 @@
             <p id="downloadNote">
               Latest desktop updater release for macOS and Windows.
             </p>
+            <div id="manualDownloadLinks" aria-label="Manual downloads">
+              <a data-download-kind="macArm" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">macOS Apple Silicon</a>
+              <a data-download-kind="macIntel" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">macOS Intel</a>
+              <a data-download-kind="win64" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">Windows 64-bit</a>
+              <a data-download-kind="win32" href="https://github.com/jonsimo/codex-jr-downloads/releases/latest">Windows 32-bit</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1148,7 +1177,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.2.0</div>
+      <div id="footerVersion">codex jr beta site v1.2.1</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"
@@ -1177,10 +1206,14 @@
     const DESKTOP_BANNER_MIN_GAP = 30;
     const DESKTOP_PROMPT_GAP = 18;
 
-    const ASSET_MATCH = {
-      mac: ["osx", "arm64", ".zip"],
-      win: ["win", "x64", ".zip"],
+    const RELEASE_PAGE = `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
+    const ASSET_PATTERNS = {
+      macArm: /CodexJrUpdater-v[\d.]+-osx-arm64\.dmg$/,
+      macIntel: /CodexJrUpdater-v[\d.]+-osx-x64\.dmg$/,
+      win64: /CodexJrUpdater-v[\d.]+-win-x64-Setup\.exe$/,
+      win32: /CodexJrUpdater-v[\d.]+-win-x86-Setup\.exe$/,
     };
+    let latestReleasePromise = null;
 
     // Optional media lane. Leave blank to hide the section.
     // Example: https://www.instagram.com/p/POST_ID/embed
@@ -1191,6 +1224,7 @@
 
     const ui = {
       downloadBtn: document.getElementById("downloadBtn"),
+      manualDownloadLinks: document.getElementById("manualDownloadLinks"),
       heroScene: document.getElementById("heroScene"),
       heroSignupBtn: document.getElementById("heroSignupBtn"),
       desktopHeroBanner: document.getElementById("desktopHeroBanner"),
@@ -1204,6 +1238,45 @@
       const platform = (navigator.platform || "").toLowerCase();
       if (platform.includes("mac") || ua.includes("mac os")) return "mac";
       if (platform.includes("win") || ua.includes("windows")) return "win";
+      return "unknown";
+    }
+
+    async function detectDownloadKind() {
+      const os = detectOS();
+      if (os === "mac") {
+        const arch = await detectArchitecture();
+        return arch === "x64" ? "macIntel" : "macArm";
+      }
+
+      if (os === "win") {
+        const arch = await detectArchitecture();
+        return arch === "x86" ? "win32" : "win64";
+      }
+
+      return null;
+    }
+
+    async function detectArchitecture() {
+      const ua = navigator.userAgent.toLowerCase();
+      const platform = (navigator.platform || "").toLowerCase();
+
+      if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+        try {
+          const values = await navigator.userAgentData.getHighEntropyValues(["architecture", "bitness"]);
+          const architecture = String(values.architecture || "").toLowerCase();
+          const bitness = String(values.bitness || "").toLowerCase();
+
+          if (architecture.includes("arm")) return "arm64";
+          if (bitness === "64" || architecture.includes("x86_64") || architecture.includes("x64")) return "x64";
+          if (bitness === "32" || architecture === "x86") return "x86";
+        } catch (error) {
+          // Fall through to user-agent hints.
+        }
+      }
+
+      if (/arm64|aarch64/.test(ua + platform)) return "arm64";
+      if (/win64|wow64|x64|x86_64|amd64/.test(ua + platform)) return "x64";
+      if (/i386|i686|x86/.test(ua + platform)) return "x86";
       return "unknown";
     }
 
@@ -1226,34 +1299,53 @@
       document.body.classList.toggle("mobile-afterhero-visible", visible);
     }
 
-    async function getLatestDownloadUrl(os) {
-      const want = ASSET_MATCH[os];
-      if (!want) return `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
-
-      const res = await fetch(GH_LATEST_API, { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch latest release");
-      const release = await res.json();
-
-      const assets = Array.isArray(release.assets) ? release.assets : [];
-      const asset = assets.find((entry) => {
-        const name = (entry.name || "").toLowerCase();
-        return want.every((needle) => name.includes(needle));
+    async function fetchLatestRelease() {
+      if (latestReleasePromise) return latestReleasePromise;
+      latestReleasePromise = fetch(GH_LATEST_API, { cache: "no-store" }).then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch latest release");
+        return res.json();
       });
+      return latestReleasePromise;
+    }
 
-      if (!asset || !asset.browser_download_url) {
-        return release.html_url || `https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`;
+    async function getLatestDownloadMap() {
+      const release = await fetchLatestRelease();
+      const assets = Array.isArray(release.assets) ? release.assets : [];
+      return Object.fromEntries(
+        Object.entries(ASSET_PATTERNS).map(([kind, pattern]) => {
+          const asset = assets.find((entry) => pattern.test(entry.name || ""));
+          return [kind, asset && asset.browser_download_url ? asset.browser_download_url : (release.html_url || RELEASE_PAGE)];
+        })
+      );
+    }
+
+    async function getLatestDownloadUrl(kind) {
+      if (!kind || !ASSET_PATTERNS[kind]) return RELEASE_PAGE;
+      const downloads = await getLatestDownloadMap();
+      return downloads[kind] || RELEASE_PAGE;
+    }
+
+    async function syncManualDownloadLinks() {
+      try {
+        const downloads = await getLatestDownloadMap();
+        ui.manualDownloadLinks.querySelectorAll("[data-download-kind]").forEach((link) => {
+          const kind = link.dataset.downloadKind;
+          link.href = downloads[kind] || RELEASE_PAGE;
+        });
+      } catch (error) {
+        ui.manualDownloadLinks.querySelectorAll("[data-download-kind]").forEach((link) => {
+          link.href = RELEASE_PAGE;
+        });
       }
-
-      return asset.browser_download_url;
     }
 
     async function startDownload() {
-      const os = detectOS();
+      const kind = await detectDownloadKind();
       try {
-        const url = await getLatestDownloadUrl(os);
+        const url = await getLatestDownloadUrl(kind);
         window.location.assign(url);
       } catch (error) {
-        window.location.assign(`https://github.com/${GH_OWNER}/${GH_REPO}/releases/latest`);
+        window.location.assign(RELEASE_PAGE);
       }
     }
 
@@ -1433,6 +1525,7 @@
     }
     enhanceKitForm();
     setupMediaSection();
+    syncManualDownloadLinks();
   </script>
 </body>
 </html>

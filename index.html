@@ -347,8 +347,7 @@
       image-rendering: pixelated;
     }
 
-    #mobileHeroFlow,
-    #mobileAfterHero{
+    #mobileHeroFlow{
       display: none;
     }
 
@@ -764,14 +763,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: clamp(18px, 4.8vw, 28px);
         margin-top: 0;
-        padding: 0 16px 12px;
-      }
-
-      #mobileAfterHero{
-        display: block;
-        padding: 152px 16px 0;
+        padding: 0 14px 12px;
       }
 
       #mobileHeroBannerSection{
@@ -779,33 +773,15 @@
         width: 100%;
         padding: 0;
         position: relative;
-        top: -138px;
-        margin-bottom: -118px;
+        top: clamp(-150px, -19vw, -104px);
+        margin-bottom: clamp(-126px, -16vw, -88px);
         overflow: visible;
       }
 
       #mobileHeroBannerInner{
-        width: min(364px, calc(100vw - 26px));
-        max-width: 364px;
+        width: min(440px, calc(100vw - 14px));
+        max-width: 440px;
         margin: 0 auto;
-      }
-
-      #mobileAfterHeroInner{
-        max-width: 360px;
-        margin: 0 auto;
-        display: grid;
-        justify-items: center;
-        gap: 16px;
-        opacity: 0;
-        transform: translateY(22px);
-        transition: opacity 220ms ease, transform 220ms ease;
-        pointer-events: none;
-      }
-
-      body.mobile-afterhero-visible #mobileAfterHeroInner{
-        opacity: 1;
-        transform: none;
-        pointer-events: auto;
       }
 
       #mobileHeroBannerImg{
@@ -858,13 +834,13 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: clamp(10px, 2.6vw, 14px);
         width: auto;
         padding: 0 0 2px;
         color: rgba(255, 247, 207, 0.96);
-        font-size: 10px;
+        font-size: clamp(12px, 4vw, 17px);
         line-height: 1.25;
-        letter-spacing: 0.4px;
+        letter-spacing: 0.45px;
         text-transform: uppercase;
         text-shadow: 0 3px 0 rgba(0,0,0,0.46);
         white-space: nowrap;
@@ -876,8 +852,8 @@
       }
 
       #mobileScrollPrompt img{
-        width: 18px;
-        height: 18px;
+        width: clamp(20px, 5.2vw, 26px);
+        height: clamp(20px, 5.2vw, 26px);
         margin-top: 1px;
         image-rendering: pixelated;
         transform: rotate(180deg);
@@ -910,8 +886,7 @@
         display: none;
       }
 
-      #mobileInstagramFlowBtn,
-      #mobileInstagramBelowFold{
+      #mobileInstagramFlowBtn{
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -930,7 +905,7 @@
       }
 
       #mobileInstagramFlowBtn{
-        display: none;
+        display: inline-flex;
       }
 
       #mobileInstagramBtn{
@@ -1103,25 +1078,21 @@
         </div>
       </section>
 
+      <a
+        id="mobileInstagramFlowBtn"
+        href="https://www.instagram.com/getcodexjr"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Visit Codex Jr on Instagram"
+      >
+        <span class="mobileInstagramIcon" aria-hidden="true"></span>
+        <span class="mobileInstagramLabel">Instagram</span>
+      </a>
+
       <a id="mobileScrollPrompt" href="#signupSection" aria-label="Scroll to signup">
         <img src="assets/8bitarrow.png?v=1.2.0" alt="" aria-hidden="true" />
         <span>More Quests Below</span>
       </a>
-    </section>
-
-    <section id="mobileAfterHero" aria-label="Mobile signup details">
-      <div id="mobileAfterHeroInner">
-        <a
-          id="mobileInstagramBelowFold"
-          href="https://www.instagram.com/getcodexjr"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Visit Codex Jr on Instagram"
-        >
-          <span class="mobileInstagramIcon" aria-hidden="true"></span>
-          <span class="mobileInstagramLabel">Instagram</span>
-        </a>
-      </div>
     </section>
 
     <section id="signupSection" class="section-shell" aria-labelledby="signupTitle">
@@ -1204,7 +1175,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.2.2</div>
+      <div id="footerVersion">codex jr beta site v1.2.3</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"
@@ -1319,11 +1290,6 @@
 
     function syncResponsiveMode() {
       document.body.classList.toggle("mobile-signup-mode", isMobileOrSmall());
-    }
-
-    function updateMobileAfterHeroState() {
-      const visible = !isMobileOrSmall() || window.scrollY > 36;
-      document.body.classList.toggle("mobile-afterhero-visible", visible);
     }
 
     async function fetchLatestRelease() {
@@ -1531,10 +1497,7 @@
     window.addEventListener("resize", () => {
       syncResponsiveMode();
       placeHeroButton();
-      updateMobileAfterHeroState();
     });
-
-    window.addEventListener("scroll", updateMobileAfterHeroState, { passive: true });
 
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", placeHeroButton);
@@ -1543,11 +1506,9 @@
 
     syncResponsiveMode();
     placeHeroButton();
-    updateMobileAfterHeroState();
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         placeHeroButton();
-        updateMobileAfterHeroState();
       });
     }
     enhanceKitForm();

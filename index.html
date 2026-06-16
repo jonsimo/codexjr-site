@@ -741,9 +741,34 @@
     }
 
     @media (max-width: 1120px){
-      #updaterCard,
       #instagramEmbed{
         min-height: 720px;
+      }
+
+      #updaterCard{
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 24px;
+        min-height: 0;
+      }
+
+      #updaterCopy{
+        max-width: 720px;
+        text-align: center;
+      }
+
+      #updaterCopy h2{
+        font-size: clamp(18px, 3.2vw, 26px);
+        line-height: 1.32;
+      }
+
+      #updaterCopy p{
+        max-width: 680px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: clamp(11px, 1.75vw, 14px);
+        line-height: 1.42;
+        letter-spacing: 0.28px;
       }
 
       #downloadColumn{
@@ -1191,7 +1216,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.2.6</div>
+      <div id="footerVersion">codex jr beta site v1.2.7</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"

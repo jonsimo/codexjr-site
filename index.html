@@ -750,7 +750,7 @@
       }
     }
 
-    @media (max-width: 760px){
+    @media (max-width: 760px) and (hover: none) and (pointer: coarse){
       #heroScene{
         min-height: clamp(540px, 72svh, 680px);
       }
@@ -1180,7 +1180,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.2.4</div>
+      <div id="footerVersion">codex jr beta site v1.2.5</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"
@@ -1288,9 +1288,11 @@
       const noHover = window.matchMedia && window.matchMedia("(hover: none)").matches;
       const ua = navigator.userAgent.toLowerCase();
       const uaMobile = /android|iphone|ipad|ipod|mobile/.test(ua);
-      const smallViewport = Math.min(window.innerWidth, window.innerHeight) < 720;
+      const narrowViewport = window.innerWidth <= 760;
 
-      return (uaMobile || (coarse && noHover) || smallViewport);
+      // Desktop laptops can report narrow/short CSS viewports because of browser chrome,
+      // Windows display scaling, or page zoom. Only use the mobile layout for touch-first devices.
+      return uaMobile || (narrowViewport && coarse && noHover);
     }
 
     function syncResponsiveMode() {

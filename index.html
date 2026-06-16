@@ -601,10 +601,11 @@
     #updaterCopy h2{
       margin: 0 0 16px;
       font-family: "PressStart2P", monospace;
-      font-size: clamp(22px, 2vw, 30px);
-      line-height: 1.5;
+      font-size: clamp(17px, 1.55vw, 24px);
+      line-height: 1.35;
       color: var(--pixel-gold);
       text-shadow: 0 4px 0 rgba(0,0,0,0.42);
+      white-space: nowrap;
     }
 
     #updaterCopy p{
@@ -615,6 +616,10 @@
       line-height: 1.28;
       letter-spacing: 0.45px;
       text-transform: lowercase;
+    }
+
+    #updaterCopy .updaterBeta{
+      margin-top: 14px;
     }
 
     #downloadColumn{
@@ -758,7 +763,7 @@
       }
 
       #updaterCopy h2{
-        font-size: clamp(18px, 3.2vw, 26px);
+        font-size: clamp(16px, 2.55vw, 22px);
         line-height: 1.32;
       }
 
@@ -1159,9 +1164,12 @@
           <div id="updaterCopy">
             <p class="eyebrow">Already a beta tester?</p>
             <h2 id="updaterTitle">GET THE UPDATER APP</h2>
-            <p>
+            <p class="updaterLead">
               this handy app syncs with your codex jr device to give you the latest firmware updates and enhanced
-              functionality with your device. app is in beta state, features may come and go with nightly builds.
+              functionality with your device.
+            </p>
+            <p class="updaterBeta">
+              app is in beta state, features may come and go with nightly builds.
             </p>
           </div>
 
@@ -1170,7 +1178,8 @@
               <img src="assets/dl_button.png?v=1.2.0" alt="Download" draggable="false" />
             </button>
             <p id="downloadNote">
-              Latest desktop updater release for macOS and Windows
+              CLICK ABOVE OR CHOOSE<br />
+              AN APP VERSION BELOW
             </p>
             <div id="manualDownloadLinks" aria-label="Manual downloads">
               <div class="manualDownloadRow">
@@ -1216,7 +1225,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.2.7</div>
+      <div id="footerVersion">codex jr beta site v1.2.8</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"

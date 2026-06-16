@@ -664,24 +664,26 @@
       display: grid;
       justify-items: center;
       gap: 8px;
-      max-width: 560px;
-      font-size: clamp(13px, 1.3vw, 18px);
+      width: min(560px, 100%);
+      font-size: clamp(12px, 1.25vw, 18px);
       line-height: 1.12;
-      letter-spacing: 0.7px;
+      letter-spacing: 0.45px;
       text-transform: uppercase;
     }
 
     .manualDownloadRow{
-      display: grid;
-      grid-template-columns: auto auto auto;
+      display: flex;
       align-items: center;
       justify-content: center;
-      column-gap: 12px;
+      gap: 10px;
+      width: 100%;
+      white-space: nowrap;
     }
 
     #manualDownloadLinks a{
       text-decoration: underline;
       text-underline-offset: 3px;
+      white-space: nowrap;
     }
 
     #manualDownloadLinks .macDownloadLink{
@@ -745,8 +747,17 @@
       }
 
       #downloadColumn{
-        justify-items: start;
-        text-align: left;
+        justify-items: center;
+        text-align: center;
+      }
+
+      #manualDownloadLinks{
+        font-size: clamp(10px, 1.55vw, 14px);
+        letter-spacing: 0.25px;
+      }
+
+      .manualDownloadRow{
+        gap: 8px;
       }
     }
 
@@ -1180,7 +1191,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.2.5</div>
+      <div id="footerVersion">codex jr beta site v1.2.6</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"

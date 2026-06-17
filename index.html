@@ -501,13 +501,54 @@
       text-transform: uppercase;
     }
 
-    #kitFallbackLink{
+    #kitFallbackForm{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    #kitFallbackEmail{
+      flex: 1 1 420px;
+      min-height: 66px;
+      min-width: 0;
+      padding: 16px 18px;
+      border: 3px solid var(--pixel-cyan);
+      border-radius: 0;
+      background: var(--pixel-ink);
+      color: var(--pixel-gold);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 24px;
+      line-height: 1.1;
+      letter-spacing: 0.3px;
+      text-transform: lowercase;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.05);
+    }
+
+    #kitFallbackEmail::placeholder{
+      color: rgba(247, 239, 208, 0.58);
+      opacity: 1;
+      font-family: "BitHUD", monospace;
+      font-size: 20px;
+      letter-spacing: 0.8px;
+      text-transform: lowercase;
+    }
+
+    #kitFallbackEmail:focus{
+      border-color: #85f3ff;
+      outline: none;
+    }
+
+    #kitFallbackSubmit{
+      flex: 0 0 280px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       min-height: 60px;
       padding: 16px 22px;
       border: 3px solid var(--pixel-pink);
+      border-radius: 0;
       background: linear-gradient(180deg, #3a1037 0%, #6f1d62 100%);
       color: var(--pixel-gold);
       font-family: "BitHUD", monospace;
@@ -520,7 +561,7 @@
         0 10px 20px rgba(0,0,0,0.26);
     }
 
-    #kitFallbackLink:hover{
+    #kitFallbackSubmit:hover{
       filter: brightness(1.08);
     }
 
@@ -1201,14 +1242,26 @@
           </div>
           <div id="kitFallback" aria-live="polite">
             <p>Email signup blocked by your browser?</p>
-            <a
-              id="kitFallbackLink"
-              href="https://codexjr.kit.com/4410da4e3e"
+            <form
+              id="kitFallbackForm"
+              action="https://app.kit.com/forms/9317018/subscriptions"
+              method="post"
               target="_blank"
-              rel="noreferrer"
             >
-              Open signup form
-            </a>
+              <input
+                id="kitFallbackEmail"
+                name="email_address"
+                type="email"
+                placeholder="email address"
+                aria-label="Email Address"
+                autocomplete="email"
+                autocapitalize="none"
+                autocorrect="off"
+                spellcheck="false"
+                required
+              />
+              <button id="kitFallbackSubmit" type="submit">Subscribe</button>
+            </form>
           </div>
         </div>
       </div>
@@ -1281,7 +1334,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.3.1</div>
+      <div id="footerVersion">codex jr beta site v1.3.2</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"

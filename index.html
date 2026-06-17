@@ -1281,7 +1281,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.3.0</div>
+      <div id="footerVersion">codex jr beta site v1.3.1</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"
@@ -1557,8 +1557,24 @@
 
     let kitFallbackReady = false;
 
+    function getKitEmailInput() {
+      return document.querySelector('#kitSignupCard .formkit-input[name="email_address"]');
+    }
+
+    function isKitEmailInputUsable(input) {
+      if (!input || input.disabled || input.type === "hidden") return false;
+
+      const style = window.getComputedStyle(input);
+      if (style.display === "none" || style.visibility === "hidden" || style.pointerEvents === "none") {
+        return false;
+      }
+
+      const rect = input.getBoundingClientRect();
+      return rect.width >= 80 && rect.height >= 24;
+    }
+
     function enhanceKitForm() {
-      const input = document.querySelector('#kitSignupCard .formkit-input[name="email_address"]');
+      const input = getKitEmailInput();
       if (input && input.dataset.codexEnhanced !== "1") {
         input.dataset.codexEnhanced = "1";
         input.placeholder = "email address";
@@ -1593,8 +1609,8 @@
     }
 
     function syncKitFallback() {
-      const input = document.querySelector('#kitSignupCard .formkit-input[name="email_address"]');
-      document.body.classList.toggle("kit-fallback-visible", kitFallbackReady && !input);
+      const input = getKitEmailInput();
+      document.body.classList.toggle("kit-fallback-visible", kitFallbackReady && !isKitEmailInputUsable(input));
     }
 
     const kitObserver = new MutationObserver(() => {
@@ -1632,7 +1648,7 @@
     window.setTimeout(() => {
       kitFallbackReady = true;
       syncKitFallback();
-    }, 3500);
+    }, 4500);
     setupMediaSection();
     syncManualDownloadLinks();
   </script>

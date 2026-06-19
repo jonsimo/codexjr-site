@@ -480,25 +480,19 @@
     }
 
     #kitFallback{
-      display: none;
+      display: grid;
       position: relative;
       z-index: 1;
       justify-items: center;
-      gap: 16px;
       text-align: center;
     }
 
-    body.kit-fallback-visible #kitFallback{
-      display: grid;
+    body.kit-embed-visible #kitFallback{
+      display: none;
     }
 
-    #kitFallback p{
-      margin: 0;
-      color: var(--pixel-cream);
-      font-size: 15px;
-      line-height: 1.45;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+    body.kit-embed-visible #kitSignupMount{
+      display: block;
     }
 
     #kitFallbackForm{
@@ -1253,7 +1247,6 @@
             <script async data-uid="4410da4e3e" src="https://codexjr.kit.com/4410da4e3e/index.js"></script>
           </div>
           <div id="kitFallback" aria-live="polite">
-            <p>Email signup blocked by your browser?</p>
             <form
               id="kitFallbackForm"
               action="https://app.kit.com/forms/9317018/subscriptions"
@@ -1346,7 +1339,7 @@
 
   <footer id="siteFooter" aria-label="Site footer">
     <div id="footerInner">
-      <div id="footerVersion">codex jr beta site v1.3.3</div>
+      <div id="footerVersion">codex jr beta site v1.3.4</div>
       <a
         id="footerInstagram"
         href="https://www.instagram.com/getcodexjr"
@@ -1620,8 +1613,6 @@
       ui.mediaSection.hidden = false;
     }
 
-    let kitFallbackReady = false;
-
     function getKitEmailInput() {
       return document.querySelector('#kitSignupCard .formkit-input[name="email_address"]');
     }
@@ -1675,7 +1666,7 @@
 
     function syncKitFallback() {
       const input = getKitEmailInput();
-      document.body.classList.toggle("kit-fallback-visible", kitFallbackReady && !isKitEmailInputUsable(input));
+      document.body.classList.toggle("kit-embed-visible", isKitEmailInputUsable(input));
     }
 
     const kitObserver = new MutationObserver(() => {
@@ -1710,10 +1701,9 @@
       });
     }
     enhanceKitForm();
-    window.setTimeout(() => {
-      kitFallbackReady = true;
-      syncKitFallback();
-    }, 4500);
+    window.setTimeout(syncKitFallback, 500);
+    window.setTimeout(syncKitFallback, 1500);
+    window.setTimeout(syncKitFallback, 3500);
     setupMediaSection();
     syncManualDownloadLinks();
   </script>
